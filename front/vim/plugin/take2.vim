@@ -100,32 +100,8 @@ def closeBuffer():
         gTimer = None
 endpython
 
-command! -bar
-\ SendTake2
-\ call s:cmd_Send(<q-args>, expand('<abuf>') == '')
-
-function! s:cmd_Send(name, interactive_use_p)
-    python << endpython
-
-
-endpython
-  if &l:buftype != ''
-    if a:interactive_use_p
-      echo 'This buffer is not a normal one. Skeleton leaves it as is.'
-    endif
-    return
-  endif
-endfunction
-
-function! s:cmd_SkeletonLoad_complete(arglead, cmdline, cursorpos)
-  return map(split(globpath(&runtimepath, s:SKELETON_DIR.a:arglead.'*'), "\n"),
-  \ 'fnamemodify(v:val, ":t")')
-endfunction
-
-
-augroup plugin-skeleton
+augroup plugin-take2
   autocmd!
-  autocmd BufNewFile * call s:on_BufNewFile()
   autocmd BufWinEnter * call s:on_EnterWin()
   autocmd BufWinLeave * call s:on_CloseWin()
 augroup END
@@ -142,17 +118,6 @@ function! s:on_CloseWin()
 closeBuffer()
 endpython
 endfunction
-
-function! s:on_BufNewFile()
-  silent doautocmd User plugin-skeleton-detect
-
-  if &l:filetype != ''
-    execute 'SkeletonLoad' &l:filetype
-  endif
-endfunction
-
-
-
 
 let g:loaded_take2 = 1
 
