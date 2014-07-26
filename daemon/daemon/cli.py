@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 
 from daemon import DAEMON_MAIN
+from daemon.scm.git import Git
 
 def main():
     parser = ArgumentParser(
@@ -13,4 +14,5 @@ def main():
     parser.add_argument('--end',  type=int)
     opt = parser.parse_args()
 
-    print opt
+    git = Git()
+    print git.get_commit(opt.filename)

@@ -24,5 +24,5 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'GitPython>=0.3.1',
+        'Envoy>=0.0.2',
     ],)
