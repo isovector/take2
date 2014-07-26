@@ -10,3 +10,5 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 GET 	/directory		    controllers.Application.directory
 
+GET 	/file			    controllers.Application.file
+

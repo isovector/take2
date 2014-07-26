@@ -12,5 +12,8 @@ object Application extends Controller {
   def directory = Action {
     Ok(views.html.directory())
   }
+  def file = Action {
+    Ok(views.html.file())
+  }
 
 }
