@@ -11,16 +11,18 @@ except ImportError:
 from daemon import get_package_version, DAEMON_MAIN
 
 setup(
-    name=DAEMON_MAIN,
+    name='daemon',
     version=get_package_version(),
     author='Matt Maclean',
     author_email='matthewcmaclean@gmail.com',
     description='Sends information from code editors to server',
     entry_points={
         'console_scripts': {
-            DAEMON_MAIN + ' = daemon.accio:main',
+            DAEMON_MAIN + ' = daemon.cli:main',
         }
     },
     packages=find_packages(),
     include_package_data=True,
-    )
+    install_requires=[
+        'GitPython>=0.3.1',
+    ],)

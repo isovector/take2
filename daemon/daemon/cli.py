@@ -13,4 +13,4 @@ def main():
     parser.add_argument('--end',  type=int)
     opt = parser.parse_args()
 
-
+    print opt
