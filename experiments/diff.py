@@ -3,7 +3,7 @@ import re
 
 # TODO(sandy): this might not work for changes
 
-def get_diff(b, a):
+def get_diff(new, old):
     pipe = Popen("diff -y %s %s" % (a, b), shell = True, stdout = PIPE)
     pipe.wait()
     return pipe.stdout
@@ -38,5 +38,5 @@ def apply_diff(diff, start, end):
                 rightLine += 1
 
 
-apply_diff(get_diff("head.txt", "buffer.txt"), 1, 8)
+apply_diff(get_diff(new="head.txt", old="buffer.txt"), 1, 8)
 

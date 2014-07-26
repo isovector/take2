@@ -7,6 +7,7 @@ from daemon.config import REPOSITORY_PATHS
 from daemon.scm.git import Git
 from daemon.utils import make_tempfile, delete_tempfile
 
+
 def main():
     parser = ArgumentParser(
         prog=DAEMON_MAIN,
@@ -18,19 +19,25 @@ def main():
     parser.add_argument('--end',  type=int)
     opt = parser.parse_args()
 
-    server_urls = repo_url(opt.filename)
+    repo_path, server_urls = repo_url(opt.filename)
 
     if server_urls is None:
         return
 
-    git = Git()
-    print git.get_commit(opt.filename)
+    git = Git(opt.filename, repo_path)
+    commit_id = git.commit
 
     current_file = make_tempfile(stdin.read())
 
-# DO STUFF
+    print current_file
 
-    delete_tempfile(current_file)
+    diff = git.diff(new=current_file)
+    lines = git.apply_diff(diff=diff, start=opt.start, end=opt.end)
+
+    #delete_tempfile(current_file)
+    #delete_tempfile(git.original_file)
+
+    print lines
 
 def repo_url(path):
     """
@@ -39,6 +46,6 @@ def repo_url(path):
     """
     for k, v in REPOSITORY_PATHS.iteritems():
         if path.startswith(k):
-            return v
+            return k, v
 
     return None
