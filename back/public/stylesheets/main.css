@@ -1,0 +1,12 @@
+/*Tertiary blue 2D6ECC
+Secondary blue 496A99
+Primary  blue 52F4FF
+Pink FFAE91
+Red CC3F2D*/
+
+header {
+	position: fixed;
+	width: 100%;
+	background-color: #496A99;
+	height: 45px;
+}
