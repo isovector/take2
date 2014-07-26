@@ -50,6 +50,14 @@ var directories = angular.module('directories', ['ui.listview'])
     return "0.0.0.0/directory/" + item.thumb
   }
 
+  function direc(item) {
+    if (item.isDirec) {
+	return "assets/images/directory.png"
+    } else {
+	return "assets/images/file.png"
+    }
+  }
+
   function filename(item) {
     return item.filename
   }
@@ -60,6 +68,7 @@ var directories = angular.module('directories', ['ui.listview'])
     editedlast: formatDate,
     filesize: humanFileSize,
     thumb: thumb,
+    direc: direc
   }
 
 
