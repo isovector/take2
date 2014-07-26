@@ -9,4 +9,11 @@ object Application extends Controller {
     Ok(views.html.index("Your new application is ready."))
   }
 
+  def directory = Action {
+    Ok(views.html.directory())
+  }
+  def file = Action {
+    Ok(views.html.file())
+  }
+
 }
