@@ -1,4 +1,4 @@
-from os import unlink
+from os import unlink, write, close
 from tempfile import mkstemp
 
 def make_tempfile(content=None):
@@ -6,9 +6,9 @@ def make_tempfile(content=None):
     fd, tmpfile = mkstemp()
 
     if content:
-        os.write(fd, content)
+        write(fd, content)
 
-    os.close()
+    close(fd)
     return tmpfile
 
 def delete_tempfile(path):
