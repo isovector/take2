@@ -10,7 +10,6 @@ import play.api.Play.current
 import com.github.nscala_time.time.Imports._
 
 import models._
-//import utils.MapFormatter._
 
 import play.api.db.slick.Config.driver.simple._
 
