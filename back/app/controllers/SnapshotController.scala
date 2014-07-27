@@ -38,7 +38,7 @@ object SnapshotController extends Controller {
         // WHY DOES THIS HAVE TO SUCK SO HARD?
         case class SnapshotFormData(
             id: Option[Int] = None,
-            timestamp: Int,
+            timestamp: Long,
             file: String,
             email: String,
             commit: String,
@@ -47,7 +47,7 @@ object SnapshotController extends Controller {
 
         val snapFormData = Form(mapping(
             "id" -> optional(number),
-            "timestamp" -> number,
+            "timestamp" -> longNumber,
             "file" -> text,
             "email" -> text,
             "commit" -> text,
@@ -55,7 +55,7 @@ object SnapshotController extends Controller {
         )(SnapshotFormData.apply)(SnapshotFormData.unapply)).bindFromRequest.get
 
         User.getByEmail(snapFormData.email) match {
-            case None => User(None, "Anonymous User", snapFormData.email, DateTime.now).insert()
+            case None => User(None, "Anonymous User", snapFormData.email, new DateTime(snapFormData.timestamp)).insert()
             case Some(user) => {
                 user.lastActivity = new DateTime(snapFormData.timestamp)
                 user.save()

@@ -50,7 +50,10 @@ object Snapshot {
 
     implicit val implicitSeqColumnMapper = MappedColumnType.base[Seq[Int], String](
         si => si.map(_.toString).mkString(","),
-        s => s.split(",").map(_.toInt)
+        s => s match {
+            case "" => Seq()
+            case s => s.split(",").map(_.toInt)
+        }
     )
 }
 

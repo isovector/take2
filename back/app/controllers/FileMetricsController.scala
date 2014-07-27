@@ -72,7 +72,7 @@ object FileMetricsController extends Controller {
 
         val users = DB.withSession { implicit session =>
         Table.where(_.file.like(file + "%")).where( x =>
-                x.timestamp < recentStamp
+                x.timestamp > recentStamp
             ).list
         }.groupBy(_.user).toSeq.map {
             case (k, v) => k
