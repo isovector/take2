@@ -22,18 +22,20 @@
     <div class="container">
       <div breadcrumbs></div>
 
-      <ul class="list-group">
-        <li href="#" class="list-group-item" ng-repeat="item in items" class="item" id="item">
-          <div id="container">
-            <div id="left">
-              <img ng-src="{{item | isDirectory }}" alt="" width="24" height="24">
-              <a id="filename" href="/directory/{{item.path}}">{{item.name}}</a>
-            </div>
-            <div id="right"><a id="users" href="/users/{{item.path}}">{{item.currentUsers}}</a></div>
-            <div id="center">{{item.editedlast | date:'short'}}</div>
-          </div>
-        </li>
-      </ul>
+<ul class="list-group">
+  <li href="#" class="list-group-item"
+      ng-repeat="item in items" class="item" id="item">
+	<div id="container">
+	<div id="left">
+        <img ng-src="{{item | isDirectory }}" alt="" width="24" height="24">
+        <a id="filename" href="/directory/{{item.path}}">{{item.name}}</a>
+	</div>
+
+	<div id="right"><a id="users" href="/users/{{item.path}}">{{item.currentUsers}}</a></div>
+        <div id="center" title="Last viewed by {{item.users[0].name}}">{{item.editedlast.time | date:'short'}}</div>
+	</div>
+  </li>
+</ul>
 </body>
 
 </html>

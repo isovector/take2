@@ -1,4 +1,4 @@
 #! /usr/bin/env bash
 
-ln -s front/vim /home/`whoami`/.vim/plugins/take2
+ln -s front/vim /home/`whoami`/.vim/bundle/take2
 
