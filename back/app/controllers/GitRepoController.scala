@@ -22,11 +22,6 @@ import play.api.db.slick.Config.driver.simple._
 object GitRepoController extends Controller {
     implicit val implFutureTimeout = Timeout(600 seconds)
 
-    // Used by the twirl templates
-    case class DirectoryTemplateObject(name: String, path: String, isDir: Boolean)
-    case class FileTemplateObject(name: String, path: String, contents: String)
-    
-
     val repoActor = Akka.system.actorOf(
         Props[RepoManagementActor], 
         name = "repoMgr"
@@ -57,22 +52,22 @@ object GitRepoController extends Controller {
         }) match {
             case Some(true) => 
                 Ok(views.html.directory(
-                    getPath(fileObj),
-                    fileObj.listFiles.filter(!_.isHidden).map {
-                        file => DirectoryTemplateObject(
-                            file.getName, 
-                            getPath(file), 
-                            file.isDirectory
-                        )
-                    }
+                    toJson(fileObj.listFiles.filter(!_.isHidden).map(
+                    file => toJson(Map(
+                        "name" -> toJson(file.getName),
+                        "path" -> toJson(getPath(file)),
+                        "isDir" -> toJson(file.isDirectory)
+                    ))))
                 ))
 
             case Some(false) => 
-                Ok(views.html.file(FileTemplateObject(
-                    fileObj.getName,
-                    getPath(fileObj),
-                    readFile(fileObj)
-                )))
+                Ok(views.html.file(
+                    toJson(Map(
+                        "name" -> toJson(fileObj.getName),
+                        "path" -> toJson(getPath(fileObj)),
+                        "contents" -> toJson(readFile(fileObj))
+                    ))
+                ))
 
             case None =>
                 NotFound
