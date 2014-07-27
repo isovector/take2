@@ -10,7 +10,6 @@ class Git(SCMBase):
         r = envoy_run('git rev-list HEAD')
         commits = r.std_out.split('\n')
         for commit in commits:
-            print commit
             r = envoy_run('git branch -r --contains %s' % commit)
             if r.std_out != "":
                 return commit

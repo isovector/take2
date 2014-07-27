@@ -5,6 +5,7 @@ from os.path import dirname
 
 from daemon.utils import cached_property
 
+NEW_LINE="%c'\012'"
 
 class SCMBase(object):
     __metaclass__ = ABCMeta
@@ -38,15 +39,12 @@ class SCMBase(object):
         specified file at the base commit. The same path should be returned
         every time.
         """
-        print "HUH"
         original_path = getcwd()
         chdir(dirname(self.file_path))
 
         path = self._get_original_file()
 
         chdir(original_path)
-        print path
-        print self.commit
         return path
 
     @abstractmethod
@@ -61,40 +59,31 @@ class SCMBase(object):
     def diff(self, new, old=None):
         """ Returns the diff between the new and old file """
         old = old or self.original_file
-        r = envoy_run("diff -y %s %s" % (new, old))
+        r = envoy_run(
+            ("diff "
+            "--unchanged-line-format=\"%s\" "
+            "--old-line-format=\"<%s\" "
+            "--new-line-format=\">%s\" "
+            "%s %s") % (NEW_LINE, NEW_LINE, NEW_LINE, new, old))
         return r.std_out.split("\n")
 
     # get line numbers in second arg to diff, given a range in first arg
     def apply_diff(self, diff, start, end):
-        leftLine = 0
-        rightLine = 0
+        left_line = 0
+        right_line = 0
         lines = []
         for line in diff:
-            bits = line.split("\t", 1)
-
-            left = bits[0]
-            # strip out spacing
-            print "=" + line + "="
-            print "-" + bits[1] + "-"
-            right = bits[1][6:]
-
-            isMod = right[0] != "\t"
-            publish = False
-            if not isMod:
-                # if not a mod, move both pointers
-                leftLine += 1
-                rightLine += 1
-
-                # output if in the correct range
-                if start <= leftLine and leftLine <= end:
-                    lines.append(rightLine)
-                    print rightLine
+            if line == '<':
+                left_line += 1
+            elif line == '>':
+                right_line += 1
             else:
-                # otherwise only move one pointer
-                right = right[6:]
-                if right[0] == "<":
-                    leftLine += 1
-                else:
-                    rightLine += 1
+                left_line += 1
+                right_line += 1
+                if start <= left_line and left_line <= end:
+                    lines.append(right_line)
+
+            if left_line > end:
+                break
 
         return lines
