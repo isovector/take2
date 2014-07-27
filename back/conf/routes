@@ -11,6 +11,9 @@ GET     /api/snapshot               controllers.SnapshotController.list
 POST    /api/snapshot               controllers.SnapshotController.create
 DELETE  /api/snapshot/:id           controllers.SnapshotController.delete(id: Int)
 
+GET     /manage-repo/initialize     controllers.GitRepoController.initialize
+GET     /manage-repo/update         controllers.GitRepoController.update
+
 GET     /repo/                      controllers.GitRepoController.retrieveFileByPath(file = "")
 GET     /repo/*file                 controllers.GitRepoController.retrieveFileByPath(file)
 GET     /api/metrics/all/*file      controllers.FileMetricsController.listAll(file)

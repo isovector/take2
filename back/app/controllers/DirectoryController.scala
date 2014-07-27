@@ -15,7 +15,6 @@ import java.io.File
 import play.api.db.slick.Config.driver.simple._
 
 object DirectoryController extends Controller {
-
   def directory(filename: String) = Action {
       //TODO: GET DATA FROM SERVER
       var absPath = RepoModel.local + File.separator + filename
