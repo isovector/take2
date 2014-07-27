@@ -1,13 +1,13 @@
 from envoy import run as envoy_run
 
 from daemon.scm import SCMBase
-from daemon.utils import make_tempfile, cached_property
+from daemon.utils import make_tempfile, cached_property, norm_path
 
 import os
 
 
 class Git(SCMBase):
-    def _get_commit_cwd(self):
+    def _get_commit(self):
         r = envoy_run('git rev-list HEAD')
         commits = r.std_out.split('\n')
         for commit in commits:
@@ -20,7 +20,7 @@ class Git(SCMBase):
     def _get_original_file(self):
         r = envoy_run('git show %s:"%s"' % (
             self.commit,
-            self.relative_file_path))
+            norm_path(self.relative_file_path)))
 
         return make_tempfile(r.std_out)
 

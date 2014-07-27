@@ -3,9 +3,9 @@ from envoy import run as envoy_run
 from os import chdir, getcwd
 from os.path import dirname, relpath
 
-from daemon.utils import cached_property
+from daemon.utils import cached_property, norm_path
 
-NEW_LINE="%c'\012'"
+NL="%c'\012'"
 
 class SCMBase(object):
     __metaclass__ = ABCMeta
@@ -17,7 +17,7 @@ class SCMBase(object):
         chdir(dirname(self.__file_path))
 
         self.email = self._get_email()
-        self.commit = self._get_commit_cwd()
+        self.commit = self._get_commit()
         self.original_file = self._get_original_file()
 
         chdir(original_path)
@@ -29,13 +29,13 @@ class SCMBase(object):
     def diff(self, new, old=None):
         """ Returns the diff between the new and old file """
         old = old or self.original_file
-        r = envoy_run(
-            ("diff "
+        r = envoy_run(("diff "
             "--unchanged-line-format=\"%s\" "
             "--old-line-format=\"<%s\" "
             "--new-line-format=\">%s\" "
-            "%s %s") % (NEW_LINE, NEW_LINE, NEW_LINE, new, old))
-        return r.std_out.split("\n")
+            "%s %s") % (NL, NL, NL, norm_path(new), norm_path(old))
+        )
+        return r.std_out.replace('%c', '\n').split("\n")
 
     # get line numbers in second arg to diff, given a range in first arg
     def apply_diff(self, diff, start, end):
@@ -70,7 +70,7 @@ class SCMBase(object):
             self.relative_file_path))
 
     @abstractmethod
-    def _get_commit_cwd(self):
+    def _get_commit(self):
         """
         Retrieve commit id of the most recent commit pushed to remote from
         the current directory.
