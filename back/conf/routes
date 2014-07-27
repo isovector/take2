@@ -7,7 +7,11 @@ GET     /                           controllers.Application.index
 GET     /example                    controllers.ExampleController.index
 POST    /example/form               controllers.ExampleController.update
 
+GET     /api/snapshot               controllers.SnapshotController.list
+POST    /api/snapshot               controllers.SnapshotController.create
+DELETE  /api/snapshot/:id           controllers.SnapshotController.delete(id: Int)
 
+GET     /api/metrics/all/*file      controllers.FileMetricsController.listAll(file)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
