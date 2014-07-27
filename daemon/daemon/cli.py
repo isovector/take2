@@ -1,5 +1,4 @@
 from argparse import ArgumentParser
-from os.path import commonprefix
 from sys import stdin
 
 from daemon import DAEMON_MAIN
