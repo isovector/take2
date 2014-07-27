@@ -25,4 +25,5 @@ setup(
     include_package_data=True,
     install_requires=[
         'Envoy>=0.0.2',
+        'requests>=2.3.0',
     ],)
