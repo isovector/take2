@@ -19,11 +19,11 @@
 <body ng-controller="DirecCtrl" ng-init="setFilename('@filename')">
 
 <div class="list-group">
-  <a href="{{item.filename}}" class="list-group-item"
+  <a href="directory/{{item.name}}" class="list-group-item"
       ng-repeat="item in items" class="item" style="height:36px;padding:3px;">
 	<p style="text-align:left;">
         <img ng-src="{{item | isDirectory }}" alt="" width="30" height="30">
-        {{item.filename}}
+        {{item.name}}
         <span style="float:right;vertical-align:middle;line-height:30px;">{{item.editedlast | date:'short'}}</span>
 	</p>
   </a>
