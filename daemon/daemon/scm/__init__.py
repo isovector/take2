@@ -16,6 +16,7 @@ class SCMBase(object):
         original_path = getcwd()
         chdir(dirname(self.__file_path))
 
+        self.name = self._get_name()
         self.email = self._get_email()
         self.commit = self._get_commit()
         self.original_file = self._get_original_file()
@@ -64,10 +65,14 @@ class SCMBase(object):
         return relpath(self.__file_path, self.__repo_path)
 
     @abstractmethod
+    def _get_name(self):
+        """ Gets the name associated with the SCM """
+        return
+
+    @abstractmethod
     def _get_email(self):
-        r = envoy_run('git config user.email' % (
-            self.commit,
-            self.relative_file_path))
+        """ Gets the email associated with the SCM """
+        return
 
     @abstractmethod
     def _get_commit(self):

@@ -24,6 +24,10 @@ class Git(SCMBase):
 
         return make_tempfile(r.std_out)
 
+    def _get_name(self):
+        r = envoy_run('git config user.name')
+        return r.std_out.strip()
+
     def _get_email(self):
         r = envoy_run('git config user.email')
-        return r.std_out
+        return r.std_out.strip()

@@ -40,6 +40,7 @@ object SnapshotController extends Controller {
             id: Option[Int] = None,
             timestamp: Long,
             file: String,
+            name: String,
             email: String,
             commit: String,
             lines: Seq[Int]
@@ -49,13 +50,20 @@ object SnapshotController extends Controller {
             "id" -> optional(number),
             "timestamp" -> longNumber,
             "file" -> text,
+            "name" -> text,
             "email" -> text,
             "commit" -> text,
             "lines" -> seq(number)
         )(SnapshotFormData.apply)(SnapshotFormData.unapply)).bindFromRequest.get
 
         User.getByEmail(snapFormData.email) match {
-            case None => User(None, "Anonymous User", snapFormData.email, new DateTime(snapFormData.timestamp)).insert()
+            case None => 
+                User(
+                    None, 
+                    snapFormData.name, 
+                    snapFormData.email, 
+                    new DateTime(snapFormData.timestamp)
+                ).insert()
             case Some(user) => {
                 user.lastActivity = new DateTime(snapFormData.timestamp)
                 user.save()
