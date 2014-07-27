@@ -14,16 +14,12 @@ DELETE  /api/snapshot/:id           controllers.SnapshotController.delete(id: In
 GET     /manage-repo/initialize     controllers.GitRepoController.initialize
 GET     /manage-repo/update         controllers.GitRepoController.update
 
-GET     /repo/                      controllers.GitRepoController.retrieveFileByPath(file = "")
-GET     /repo/*file                 controllers.GitRepoController.retrieveFileByPath(file)
+GET     /directory/                 controllers.GitRepoController.retrieveFileByPath(file = "")
+GET     /directory/*file            controllers.GitRepoController.retrieveFileByPath(file)
 GET     /api/metrics/all/*file      controllers.FileMetricsController.listAll(file)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
-
-GET	/directory		    controllers.DirectoryController.directory(filename = "")
-GET 	/directory/		    controllers.DirectoryController.directory(filename = "")
-GET 	/directory/$filename<.+>	    controllers.DirectoryController.directory(filename : String)
 
 GET 	/file			    controllers.Application.file
 
