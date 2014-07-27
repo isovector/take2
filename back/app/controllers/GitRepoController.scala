@@ -31,20 +31,26 @@ object GitRepoController extends Controller {
         def getName(file: File) = file.getAbsolutePath.substring(pathLength)
 
         import Json._
-        Ok(
-            fileObj.isDirectory match {
-                case true => toJson(fileObj.listFiles.filter(!_.isHidden).map(
+        (fileObj.exists match {
+            case true => Some(fileObj.isDirectory)
+            case false => None
+        }) match {
+            case Some(true) => 
+                Ok(toJson(fileObj.listFiles.filter(!_.isHidden).map(
                 file => toJson(Map(
                     "name" -> toJson(getName(file)),
                     "isDir" -> toJson(file.isDirectory)
-                ))))
+                ))))).as("text/text")
 
-                case false => toJson(Map(
+            case Some(false) => 
+                Ok(toJson(Map(
                     "name" -> toJson(getName(fileObj)),
                     "contents" -> toJson(readFile(fileObj))
-                ))
-            }
-        ).as("text/text")
+                ))).as("text/text")
+
+            case None =>
+                NotFound
+        }
     }
 }
 
