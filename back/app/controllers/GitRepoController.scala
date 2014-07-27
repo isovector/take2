@@ -57,7 +57,7 @@ object GitRepoController extends Controller {
                         "name" -> toJson(file.getName),
                         "path" -> toJson(getPath(file)),
                         "isDir" -> toJson(file.isDirectory)
-                    ))))
+                    )))).toString
                 ))
 
             case Some(false) => 
@@ -66,7 +66,7 @@ object GitRepoController extends Controller {
                         "name" -> toJson(fileObj.getName),
                         "path" -> toJson(getPath(fileObj)),
                         "contents" -> toJson(readFile(fileObj))
-                    ))
+                    )).toString
                 ))
 
             case None =>
