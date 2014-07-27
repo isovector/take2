@@ -38,7 +38,7 @@ def main():
 
     current_file = make_tempfile(stdin.read())
 
-    diff = git.diff(new=current_file)
+    diff = git.create_diff(new=current_file)
     lines = git.apply_diff(diff=diff, start=opt.start, end=opt.end)
 
     delete_tempfile(current_file)

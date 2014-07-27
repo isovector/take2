@@ -3,8 +3,6 @@ from envoy import run as envoy_run
 from daemon.scm import SCMBase
 from daemon.utils import make_tempfile, cached_property, norm_path
 
-import os
-
 
 class Git(SCMBase):
     def _get_commit(self):
