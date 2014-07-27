@@ -16,8 +16,7 @@
 <frostbite-header />
 
 
-<body ng-controller="DirecCtrl">
-
+<body ng-controller="DirecCtrl" ng-init="setFilename('@filename')">
 
 <div class="list-group">
   <a href="{{item.filename}}" class="list-group-item"

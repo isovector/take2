@@ -12,7 +12,9 @@ var directories = angular.module('directories', ['ui.listview'])
 })
 
 .controller('DirecCtrl', ['$scope', function($scope) {
-  $scope.items = [
+    $scope.filename = "";
+
+    $scope.items = [
     {
       filename: "back",
       filesize: "45678",
@@ -29,4 +31,14 @@ var directories = angular.module('directories', ['ui.listview'])
       subdirecs: null,
       currentpath:"directory/"
     }]
+
+    $scope.setFilename = function(filename) {
+	console.log("filename = " + filename);
+	$scope.filename = filename;
+        $scope.getData();
+    }
+
+    $scope.getData = function() {
+	console.log("Getting data");
+    }
 }]);
