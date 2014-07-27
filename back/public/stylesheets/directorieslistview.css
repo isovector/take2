@@ -1,5 +1,76 @@
+* {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size:12px;
+
+}
+
 body {
-  color: #444;
-  width:800px;
-  padding:10px;
+    position: relative;
+    width: 100%;
+    display: block;
+    color: #444;
+    padding:10px;
+}
+
+body > *  {
+    margin: auto;
+    width: 800px;
+    display: block;
+    overflow: auto;
+}
+
+body > script {
+    display: none
+}
+
+#item {
+
+    background-color:#f6f6f6;
+    height:30px;
+    padding:3px;
+}
+
+#container {
+    width:100%;
+    text-align:center;
+}
+
+#left {
+    float:left;
+    text-align:left;
+    width:150px;
+    padding-left:5px;
+}
+
+#center {
+    margin:0 auto;
+    width:150px;
+    line-height:24px;
+    color:#888;
+}
+
+#users {
+    color:#888;
+    text-decoration: none;
+}
+
+#users:hover 
+{
+     color:#00A0C6; 
+     text-decoration:underline; 
+     cursor:pointer;  
+}
+
+#right {
+    float:right;
+    text-align:right;
+    width:150px;
+    line-height:24px;
+    padding-right:5px;
+    vertical-align:top;
+}
+
+#filename {
+    height:30px;
+    padding=3px
 }
