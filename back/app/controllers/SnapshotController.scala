@@ -40,7 +40,7 @@ object SnapshotController extends Controller {
             id: Option[Int] = None,
             timestamp: Int,
             file: String,
-            user: Int,
+            email: String,
             commit: String,
             lines: Seq[Int]
         )
@@ -49,7 +49,7 @@ object SnapshotController extends Controller {
             "id" -> optional(number),
             "timestamp" -> number,
             "file" -> text,
-            "user" -> number,
+            "email" -> text,
             "commit" -> text,
             "lines" -> seq(number)
         )(SnapshotFormData.apply)(SnapshotFormData.unapply)).bindFromRequest.get
@@ -58,7 +58,7 @@ object SnapshotController extends Controller {
           snapFormData.id,
           new DateTime(snapFormData.timestamp),
           snapFormData.file,
-          snapFormData.user,
+          User.getByEmail(snapFormData.email).get,
           snapFormData.commit,
           snapFormData.lines
         );
