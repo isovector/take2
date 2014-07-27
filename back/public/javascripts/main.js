@@ -1,4 +1,4 @@
-var frostbite = angular.module('frostbite', ['ngResource']);
+var frostbite = angular.module('frostbite', ['ngResource', 'ui.listview']);
 
 frostbite.factory('FileMetricsAPI', ['$resource', function($resource){
 		return $resource('api/metrics/all/:file', {}, {

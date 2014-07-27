@@ -5,14 +5,31 @@ Pink FFAE91
 Red CC3F2D*/
 
 header {
-	position: fixed;
 	width: 100%;
 	background-color: #496A99;
 	height: 45px;
+}
+
+.home-link {
+	color: #FFF;
+	font-size: 32px;
+}
+
+.home-link:hover {
+	color: #000;
+}
+
+.search-bar {
+	height: 30px;
+	margin-top: 7px;
 }
 
 .time-widget {
 	background-color: #919191;
 	width: 100%;
 	height: 100%;
+}
+
+article {
+	margin-top: 20px;
 }

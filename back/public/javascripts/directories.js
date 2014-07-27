@@ -1,7 +1,6 @@
 var ROOTURL = "http://0.0.0.0:9000/"
 
-var directories = angular.module('directories', ['ui.listview'])
-.filter('isDirectory', function() {
+frostbite.filter('isDirectory', function() {
     return function(input) {
         if (input.isDir) {
 	    return ROOTURL + "assets/images/directory.png"
@@ -12,9 +11,7 @@ var directories = angular.module('directories', ['ui.listview'])
 })
 .filter('breadcrumbsFilter', function() {
     return function(input, path) {
-    	console.log(path);
     	var index = _.findIndex(input, function(a) { return a == path});
-    	console.log(index);
     	var pathString = "";
     	for (var i = 0; i <= index; i++) {
     	 	pathString = pathString + "/" + input[i];
@@ -32,6 +29,8 @@ var directories = angular.module('directories', ['ui.listview'])
     $scope.setFilename = function(filename) {
 	console.log("filename = " + filename);
 	$scope.items = jQuery.parseJSON(filename);
+	$scope.pathArray = $scope.items[0].path.split("/");
+	$scope.pathArray.pop();
 	for (var i = 0; i < $scope.items.length; i++) {
             $scope.items[i].editedlast  = {"id":7, "time":new Date()};
         }
