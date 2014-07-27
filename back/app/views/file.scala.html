@@ -1,4 +1,4 @@
-@(file: String)
+@(filestuff: String)
 <!doctype html>
 <html ng-app="file">
 	<link href="@routes.Assets.at("stylesheets/css/bootstrap.min.css")" rel="stylesheet">
@@ -6,7 +6,7 @@
     <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
 	<script src="@routes.Assets.at("javascripts/angular-1.2.1/angular.js")" type="text/javascript"></script>
     <script src="@routes.Assets.at("javascripts/angular-1.2.1/angular-resource.js")" type="text/javascript"></script>
-
+    <script src="@routes.Assets.at("javascripts/file.js")" type="text/javascript"></script>
     <script src="@routes.Assets.at("javascripts/main.js")" type="text/javascript"></script>
     <!-- Include required JS files -->
     <script src="@routes.Assets.at("javascripts/syntax-highlighter/shCore.js")" type="text/javascript"></script>
@@ -22,17 +22,15 @@
     <link href="@routes.Assets.at("stylesheets/shThemeDefault.css")" rel="stylesheet">
  
     <!-- You also need to add some content to highlight, but that is covered elsewhere. -->
-    
+    <script type="text/javascript">
+                          
+    </script>
   <body>
-        <div ng-controller="FileCtrl">
+        <div ng-controller="FileCtrl" ng-init="setFileContents(@filestuff)">
           <div>
               <button ng-click="add_importance()">Chili</button>
                <pre id="file_brush" class="brush: js">
-                   var a = b;
-                   var a = function(){
-                       var c = 'yolo';
-                       c++;
-                   }
+
                </pre>
           </div>
         </div>

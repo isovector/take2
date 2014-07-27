@@ -1,35 +1,18 @@
-﻿
-
-var file = angular.module('file', [])
+﻿var file = angular.module('file', [])
 .controller('FileCtrl', ['$scope', '$http', '$q', function ($scope, $http, $q) {
     $scope.lines_highlighted = []
 
-    $scope.init = function () {
+    $scope.inity = function () {
         SyntaxHighlighter.all();
-        //$scope.get_file();
         $scope.create_test_data();
-        //$scope.get_file();
         $scope.highlight([2, 3, 4]); // call this elsewhere? or with corect parameters
 
     }
 
-    /*$scope.fetch_file = function() {
-        var d = $q.defer();
-        $http.get('repo/back/public/javascripts/file.js').success(function (data) {
-            $('#file_brush').html(data.contents);
-            d.resolve();
-            
-        })
-        return d.promise;
+    $scope.setFileContents = function (filestuff) {
+        console.log(filestuff);
+        $('#file_brush').html(filestuff.contents);
     }
-
-    $scope.get_file = function () {
-        
-        $http.get('repo/back/public/javascripts/file.js').success(function (data) {
-            $('#file_brush').html(data.contents);
-            SyntaxHighlighter.all();
-        })
-    }*/
 
     $scope.highlight = function (line_nums) {
         console.log("into highlight");
@@ -48,6 +31,7 @@ var file = angular.module('file', [])
             }
         }
     }
+
     $scope.add_importance = function () {
         console.log("intoimportance");
         var lines = $('.highlighted');
@@ -74,5 +58,5 @@ var file = angular.module('file', [])
         $scope.lines_highlighted.push(1);
     }
 
-    $scope.init();
+    $scope.inity();
 }]);
