@@ -5,12 +5,10 @@ import play.api.db.slick.Config.driver.simple._
 import java.sql.Timestamp
 
 object DateConversions {
-    val dateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-
     implicit def dateTimeSlick  =
-      MappedColumnType.base[DateTime, String](
-        dt => dateFormatter.print(dt.getMillis),
-        ts => dateFormatter.parseDateTime(ts)
+      MappedColumnType.base[DateTime, Long](
+        dt => dt.getMillis,
+        ts => new DateTime(ts)
     )
 
     implicit def durationSlick  =

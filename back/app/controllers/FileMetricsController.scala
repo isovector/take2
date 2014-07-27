@@ -10,11 +10,12 @@ import play.api.Play.current
 import com.github.nscala_time.time.Imports._
 
 import models._
+import utils.DateConversions._
 
 import play.api.db.slick.Config.driver.simple._
 
 object FileMetricsController extends Controller {
-    private var Table = TableQuery[SnapshotModel]
+    val Table = TableQuery[SnapshotModel]
 
     def concat(ll:List[List[Any]]): List[Any] = { 
         ll match { 
@@ -65,4 +66,21 @@ object FileMetricsController extends Controller {
             ))
         ).as("text/text")
     }
+
+    def getUsersInFile(file: String) = Action {
+        val recentStamp = DateTime.now - 5.minutes
+
+        val users = DB.withSession { implicit session =>
+        Table.where(_.file.like(file + "%")).where( x =>
+                x.timestamp < recentStamp
+            ).list
+        }.groupBy(_.user).toSeq.map {
+            case (k, v) => k
+        }
+
+        Ok(
+            Json.toJson(users)
+        ).as("text/text")
+    }
+
 }
