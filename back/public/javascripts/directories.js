@@ -11,6 +11,18 @@ var directories = angular.module('directories', ['ui.listview'])
     }
 })
 
+.filter('breadcrumbsFilter', function() {
+    return function(input, path) {
+    	console.log(path);
+    	var index = _.findIndex(input, function(a) { return a == path});
+    	console.log(index);
+    	var pathString = "";
+    	for (var i = 0; i <= index; i++) {
+    	 	pathString = pathString + "/" + input[i];
+    	};
+        return pathString;  
+    }
+})
 .controller('DirecCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.filename = "";
 
@@ -30,7 +42,19 @@ var directories = angular.module('directories', ['ui.listview'])
 	   console.log("RESPONSE");
 	   console.log(data);
 	   $scope.items = data;
+	   //Split our path, then pop the last element so we get the right level
+	   $scope.pathArray = data[0].path.split("/");
+	   $scope.pathArray.pop();
+	   console.log($scope.pathArray)
 	});
 	
     }
-}]);
+}])
+
+.directive('breadcrumbs', function() {
+	return {
+		restrict: 'A',
+		replace: true,
+		templateUrl: "/assets/directives/breadcrumbs.partial.html"
+	}
+});

@@ -1,13 +1,14 @@
 @(filename: String)
 <!doctype html>
 <html ng-app="directories">
-	<link href="@routes.Assets.at("stylesheets/directorieslistview.css")" rel="stylesheet">	
-	<link href="@routes.Assets.at("stylesheets/css/bootstrap.min.css")" rel="stylesheet">
-    <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
-	<script src="@routes.Assets.at("javascripts/angular-1.2.1/angular.js")" type="text/javascript"></script>
-    <script src="@routes.Assets.at("javascripts/main.js")" type="text/javascript"></script>
-	<script src="@routes.Assets.at("javascripts/listview.js")" type="text/javascript"></script>
-	<script src="@routes.Assets.at("javascripts/directories.js")" type="text/javascript"></script>
+  <link href="@routes.Assets.at("stylesheets/directorieslistview.css")" rel="stylesheet">	
+  <link href="@routes.Assets.at("stylesheets/css/bootstrap.min.css")" rel="stylesheet">
+  <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
+  <script src="@routes.Assets.at("javascripts/angular-1.2.1/angular.js")" type="text/javascript"></script>
+  <script src="@routes.Assets.at("javascripts/lodash.min.js")" type="text/javascript"></script>
+  <script src="@routes.Assets.at("javascripts/main.js")" type="text/javascript"></script>
+  <script src="@routes.Assets.at("javascripts/listview.js")" type="text/javascript"></script>
+  <script src="@routes.Assets.at("javascripts/directories.js")" type="text/javascript"></script>
 
     <head>
         <title>"YOLO"</title>
@@ -17,17 +18,22 @@
 
 
 <body ng-controller="DirecCtrl" ng-init="setFilename('@filename')">
+  <article>
+    <div class="container">
+      <div breadcrumbs></div>
 
-<div class="list-group">
-  <a href="/directory/{{item.path}}" class="list-group-item"
-      ng-repeat="item in items" class="item" style="height:36px;padding:3px;">
-	<p style="text-align:left;">
-        <img ng-src="{{item | isDirectory }}" alt="" width="30" height="30">
-        {{item.name}}
-        <span style="float:right;vertical-align:middle;line-height:30px;">{{item.editedlast | date:'short'}}</span>
-	</p>
-  </a>
-</div>
+      <div class="list-group">
+        <a href="/directory/{{item.path}}" class="list-group-item"
+            ng-repeat="item in items" class="item" style="height:36px;padding:3px;">
+      	<p style="text-align:left;">
+              <img ng-src="{{item | isDirectory }}" alt="" width="30" height="30">
+              {{item.name}}
+              <span style="float:right;vertical-align:middle;line-height:30px;">{{item.editedlast | date:'short'}}</span>
+      	</p>
+        </a>
+      </div>
+    </div>
+  </article>
 
 </body>
 

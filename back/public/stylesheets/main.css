@@ -10,3 +10,9 @@ header {
 	background-color: #496A99;
 	height: 45px;
 }
+
+.time-widget {
+	background-color: #919191;
+	width: 100%;
+	height: 100%;
+}
