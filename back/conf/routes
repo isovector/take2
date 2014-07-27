@@ -18,7 +18,7 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 GET	/directory		    controllers.DirectoryController.directory(filename = "")
 GET 	/directory/		    controllers.DirectoryController.directory(filename = "")
-GET 	/directory/:filename	    controllers.DirectoryController.directory(filename : String)
+GET 	/directory/$filename<.+>	    controllers.DirectoryController.directory(filename : String)
 
 GET 	/file			    controllers.Application.file
 
