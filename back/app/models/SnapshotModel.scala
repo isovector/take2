@@ -16,7 +16,7 @@ case class Snapshot(
         var id: Option[Int] = None,
         timestamp: DateTime,
         file: String,
-        user: Int,
+        user: User,
         commit: String,
         lines: Seq[Int]) {
     private val Table = TableQuery[SnapshotModel]
@@ -36,6 +36,7 @@ case class Snapshot(
 object Snapshot {
     implicit val implicitSnapshotWrites = new Writes[Snapshot] {
         def writes(snap: Snapshot): JsValue = {
+            import User._
             Json.obj(
                 "id" -> snap.id.get,
                 "timestamp" -> snap.timestamp,
@@ -59,7 +60,7 @@ class SnapshotModel(tag: Tag) extends Table[Snapshot](tag, "Snapshot") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def timestamp = column[DateTime]("timestamp")
     def file = column[String]("file")
-    def user = column[Int]("user")
+    def user = column[User]("user")
     def commit = column[String]("commit")
     def lines = column[Seq[Int]]("lines")
     val snapshot = Snapshot.apply _

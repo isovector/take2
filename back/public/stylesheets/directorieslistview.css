@@ -4,7 +4,7 @@
 
 }
 
-body {
+/*body {
     position: relative;
     width: 100%;
     display: block;
@@ -21,7 +21,7 @@ body > *  {
 
 body > script {
     display: none
-}
+}*/
 
 #item {
 

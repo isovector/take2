@@ -10,6 +10,18 @@ var directories = angular.module('directories', ['ui.listview'])
 	}	    
     }
 })
+.filter('breadcrumbsFilter', function() {
+    return function(input, path) {
+    	console.log(path);
+    	var index = _.findIndex(input, function(a) { return a == path});
+    	console.log(index);
+    	var pathString = "";
+    	for (var i = 0; i <= index; i++) {
+    	 	pathString = pathString + "/" + input[i];
+    	};
+        return pathString;  
+    }
+})
 .controller('DirecCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.filename = "";
 
@@ -54,4 +66,12 @@ var directories = angular.module('directories', ['ui.listview'])
 	    }
 	}
     }
-}]);
+}])
+
+.directive('breadcrumbs', function() {
+	return {
+		restrict: 'A',
+		replace: true,
+		templateUrl: "/assets/directives/breadcrumbs.partial.html"
+	}
+});

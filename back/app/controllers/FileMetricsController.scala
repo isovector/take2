@@ -25,17 +25,6 @@ object FileMetricsController extends Controller {
     }
 
     def listAll(file: String) = Action {
-        val snap = new Snapshot(
-            None, 
-            DateTime.now, 
-            "test",
-            2,
-            "recent",
-            List(2, 6)
-        )
-
-        snap.insert()
-
         val users = DB.withSession { implicit session =>
             Table.where(_.file === file).list
         }.groupBy(_.user)
@@ -61,10 +50,9 @@ object FileMetricsController extends Controller {
                 "file" -> toJson(file),
                 "commit" -> toJson("unimplemented"),
                 "userData" -> toJson(totalLinesByUsers.toSeq.map {
-                    case (uid, snaps) => toJson(Map(
-                        "name" -> toJson("unimplemented"),
-                        "id" -> toJson(uid),
-                        "timeSpent" -> toJson(users(uid).length),
+                    case (user, snaps) => toJson(Map(
+                        "user" -> toJson(user),
+                        "timeSpent" -> toJson(users(user).length),
                         "timeSpentByLine" -> toJson(snaps.toSeq.map {
                             case (line, count) => Map(
                                 "line" -> toJson(line.asInstanceOf[Int]),
