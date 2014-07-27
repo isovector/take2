@@ -20,6 +20,9 @@ def delete_tempfile(path):
     except:
         pass
 
+def norm_path(path):
+    return path.replace('\\', '/')
+
 
 class cached_property(object):
     """ Taken from Django
