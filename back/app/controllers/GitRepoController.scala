@@ -28,7 +28,7 @@ object GitRepoController extends Controller {
 
         var fileObj = new File(absPath)
 
-        def getName(file: File) = file.getAbsolutePath.substring(pathLength)
+        def getPath(file: File) = file.getAbsolutePath.substring(pathLength)
 
         import Json._
         (fileObj.exists match {
@@ -38,13 +38,15 @@ object GitRepoController extends Controller {
             case Some(true) => 
                 Ok(toJson(fileObj.listFiles.filter(!_.isHidden).map(
                 file => toJson(Map(
-                    "name" -> toJson(getName(file)),
+                    "name" -> toJson(file.getName),
+                    "path" -> toJson(getPath(file)),
                     "isDir" -> toJson(file.isDirectory)
                 ))))).as("text/text")
 
             case Some(false) => 
                 Ok(toJson(Map(
-                    "name" -> toJson(getName(fileObj)),
+                    "name" -> toJson(fileObj.getName),
+                    "path" -> toJson(getPath(fileObj)),
                     "contents" -> toJson(readFile(fileObj))
                 ))).as("text/text")
 
