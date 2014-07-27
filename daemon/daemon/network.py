@@ -10,4 +10,4 @@ class Connection(object):
 
     def post(self, payload, path):
         """ Sends a payload to the connection's URL with a payload """
-        return post(urljoin(self.__url, path), params=payload)
+        return post(urljoin(self.__url, path), data=payload)

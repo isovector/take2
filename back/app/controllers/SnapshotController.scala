@@ -54,6 +54,11 @@ object SnapshotController extends Controller {
             "lines" -> seq(number)
         )(SnapshotFormData.apply)(SnapshotFormData.unapply)).bindFromRequest.get
 
+        User.getByEmail(snapFormData.email) match {
+            case None => User(None, "Anonymous User", snapFormData.email, DateTime.now).insert()
+            case _ => // do nothing
+        }
+
         val snap = new Snapshot(
           snapFormData.id,
           new DateTime(snapFormData.timestamp),

@@ -39,7 +39,7 @@ def main():
 
     try:
         conn.post(path = "/api/snapshot", payload = {
-            "timestamp": time(),
+            "timestamp": int(time()),
             "file": git.relative_file_path,
             "email": git.email,
             "commit": git.commit,

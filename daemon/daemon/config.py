@@ -1,3 +1,3 @@
 REPOSITORY_PATHS = {
-    "C:/dev/rb-vm-dev/src/ReviewBot/" : "http://localhost:8080",
+    "/home/bootstrap/Projects/take2/" : "http://localhost:9000",
 }
