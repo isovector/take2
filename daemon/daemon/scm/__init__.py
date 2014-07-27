@@ -13,6 +13,18 @@ class SCMBase(object):
         self.__file_path = file_path
         self.__repo_path = repo_path
 
+        original_path = getcwd()
+        chdir(dirname(self.__file_path))
+
+        self.email = self._get_email()
+        self.commit = self._get_commit_cwd()
+        self.original_file = self._get_original_file()
+
+        chdir(original_path)
+
+        if self.email == "":
+            raise Exception('Snapshot not sent: No email has been provided')
+
 
     def diff(self, new, old=None):
         """ Returns the diff between the new and old file """
@@ -51,37 +63,11 @@ class SCMBase(object):
         """ Returns the filepath relative to the repository """
         return relpath(self.__file_path, self.__repo_path)
 
-    @cached_property
-    def email(self):
-        """ Retrieve commit information given a path to a file in the repo """
-        original_path = getcwd()
-        chdir(dirname(self.__file_path))
-
-        email = self._get_email()
-
-        chdir(original_path)
-
-        if email == "":
-            raise Exception('Snapshot not sent: No email has been provided')
-
-        return email
-
     @abstractmethod
     def _get_email(self):
         r = envoy_run('git config user.email' % (
             self.commit,
             self.relative_file_path))
-
-    @cached_property
-    def commit(self):
-        """ Retrieve commit information given a path to a file in the repo """
-        original_path = getcwd()
-        chdir(dirname(self.__file_path))
-
-        commit_id = self._get_commit_cwd()
-
-        chdir(original_path)
-        return commit_id
 
     @abstractmethod
     def _get_commit_cwd(self):
@@ -90,21 +76,6 @@ class SCMBase(object):
         the current directory.
         """
         return
-
-    @cached_property
-    def original_file(self):
-        """
-        Returns the path to a temporary file containing the contents of the
-        specified file at the base commit. The same path should be returned
-        every time.
-        """
-        original_path = getcwd()
-        chdir(dirname(self.__file_path))
-
-        path = self._get_original_file()
-
-        chdir(original_path)
-        return path
 
     @abstractmethod
     def _get_original_file(self):

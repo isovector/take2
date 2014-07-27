@@ -8,6 +8,11 @@ from daemon.network import Connection
 from daemon.scm.git import Git
 from daemon.utils import make_tempfile, delete_tempfile
 
+OPTIONS = {
+    'filename': str,
+    'start': int,
+    'end': int,
+}
 
 def main():
     parser = ArgumentParser(
@@ -15,9 +20,9 @@ def main():
         usage='%(prog)s [<args>]',
         add_help=False)
 
-    parser.add_argument('--filename',  type=str)
-    parser.add_argument('--start',  type=int)
-    parser.add_argument('--end',  type=int)
+    for k, v in OPTIONS.iteritems():
+        parser.add_argument('--' + k, type=v)
+
     opt = parser.parse_args()
 
     repo_path, server_url = repo_url(opt.filename)
@@ -25,7 +30,11 @@ def main():
     if server_url is None:
         return
 
-    git = Git(opt.filename, repo_path)
+    try:
+        git = Git(opt.filename, repo_path)
+    except Exception as e:
+        stderr.write(str(e))
+        return
 
     current_file = make_tempfile(stdin.read())
 
@@ -47,6 +56,7 @@ def main():
         })
     except Exception as e:
         stderr.write(str(e))
+        return
 
 def repo_url(path):
     """
