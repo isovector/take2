@@ -68,4 +68,4 @@ def repo_url(path):
         if path.startswith(k):
             return k, v
 
-    return None
+    return None, None

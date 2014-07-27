@@ -35,6 +35,7 @@ var directories = angular.module('directories', ['ui.listview'])
 	for (var i = 0; i < $scope.items.length; i++) {
             $scope.items[i].editedlast  = {"id":7, "time":new Date()};
         }
+	console.log($scope.items);
         $scope.getUsers();
 	//$scope.getDirectories();
     }
@@ -58,17 +59,24 @@ var directories = angular.module('directories', ['ui.listview'])
 	console.log("Getting users");
 	for (var i = 0; i < $scope.items.length; i++) {
             // TODO: switch to actual number of users
-            var numUsers = Math.floor((Math.random() * 5));
-	    $scope.items[i].users = [{name:"Jeff", email:"ja6lee@uwaterloo.ca"}, {name:"Steve", email:"cool@cool.com"}];
-            if (numUsers >= 3) {
-		$scope.items[i].currentUsers = $scope.items[i].users[0].name + " and " + (numUsers - 1) + " Others";
-	    } else if (numUsers == 2){
-		$scope.items[i].currentUsers = $scope.items[i].users[0].name + " and " + $scope.items[i].users[1].name;
-	    } else if (numUsers == 1) {
-		$scope.items[i].currentUsers = $scope.items[i].users[0].name;
-            } else {
-		$scope.items[i].currentUsers = "";
-	    }
+	    (function(i) {
+	        $http.get("/api/users/" + $scope.items[i].path).success(function(data) {
+		    console.log("data: " + data);
+		    console.log("I: " + i);
+                    console.log($scope.items[i]);
+		    $scope.items[i].users = data;
+                    var numUsers = $scope.items[i].users.length;
+                    if (numUsers >= 3) {
+		        $scope.items[i].currentUsers = $scope.items[i].users[0].name + " and " + (numUsers - 1) + " Others";
+	            } else if (numUsers == 2){
+		        $scope.items[i].currentUsers = $scope.items[i].users[0].name + " and " + $scope.items[i].users[1].name;
+	            } else if (numUsers == 1) {
+		        $scope.items[i].currentUsers = $scope.items[i].users[0].name;
+                    } else {
+		        $scope.items[i].currentUsers = "";
+	            }
+	    });
+            }(i));
 	}
     }
 }])
