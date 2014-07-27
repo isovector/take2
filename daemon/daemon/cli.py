@@ -1,8 +1,10 @@
 from argparse import ArgumentParser
-from sys import stdin
+from sys import stdin, stderr
+from time import time
 
 from daemon import DAEMON_MAIN
 from daemon.config import REPOSITORY_PATHS
+from daemon.network import Connection
 from daemon.scm.git import Git
 from daemon.utils import make_tempfile, delete_tempfile
 
@@ -18,25 +20,33 @@ def main():
     parser.add_argument('--end',  type=int)
     opt = parser.parse_args()
 
-    repo_path, server_urls = repo_url(opt.filename)
+    repo_path, server_url = repo_url(opt.filename)
 
-    if server_urls is None:
+    if server_url is None:
         return
 
     git = Git(opt.filename, repo_path)
-    commit_id = git.commit
 
     current_file = make_tempfile(stdin.read())
-
-    print current_file
 
     diff = git.diff(new=current_file)
     lines = git.apply_diff(diff=diff, start=opt.start, end=opt.end)
 
-    #delete_tempfile(current_file)
-    #delete_tempfile(git.original_file)
+    delete_tempfile(current_file)
+    delete_tempfile(git.original_file)
 
-    print lines
+    conn = Connection(server_url)
+
+    try:
+        conn.post(path = "/api/snapshot", payload = {
+            "timestamp": time(),
+            "file": git.relative_file_path,
+            "email": git.email,
+            "commit": git.commit,
+            "lines": lines,
+        })
+    except Exception as e:
+        stderr.write(str(e))
 
 def repo_url(path):
     """

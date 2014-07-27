@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from envoy import run as envoy_run
 from os import chdir, getcwd
-from os.path import dirname
+from os.path import dirname, relpath
 
 from daemon.utils import cached_property
 
@@ -10,51 +10,9 @@ NEW_LINE="%c'\012'"
 class SCMBase(object):
     __metaclass__ = ABCMeta
     def __init__(self, file_path, repo_path):
-        self.file_path = file_path
-        self._repo_path = repo_path
+        self.__file_path = file_path
+        self.__repo_path = repo_path
 
-    @cached_property
-    def commit(self):
-        """ Retrieve commit information given a path to a file in the repo """
-        original_path = getcwd()
-        chdir(dirname(self.file_path))
-
-        commit_id = self._get_commit_cwd()
-
-        chdir(original_path)
-        return commit_id
-
-    @abstractmethod
-    def _get_commit_cwd(self):
-        """
-        Retrieve commit id of the most recent commit pushed to remote from
-        the current directory.
-        """
-        return
-
-    @cached_property
-    def original_file(self):
-        """
-        Returns the path to a temporary file containing the contents of the
-        specified file at the base commit. The same path should be returned
-        every time.
-        """
-        original_path = getcwd()
-        chdir(dirname(self.file_path))
-
-        path = self._get_original_file()
-
-        chdir(original_path)
-        return path
-
-    @abstractmethod
-    def _get_original_file(self):
-        """
-        Returns the path to a temporary file containing the contents of the
-        specified file at the base commit. The same path should be returned
-        every time.
-        """
-        return
 
     def diff(self, new, old=None):
         """ Returns the diff between the new and old file """
@@ -87,3 +45,72 @@ class SCMBase(object):
                 break
 
         return lines
+
+    @cached_property
+    def relative_file_path(self):
+        """ Returns the filepath relative to the repository """
+        return relpath(self.__file_path, self.__repo_path)
+
+    @cached_property
+    def email(self):
+        """ Retrieve commit information given a path to a file in the repo """
+        original_path = getcwd()
+        chdir(dirname(self.__file_path))
+
+        email = self._get_email()
+
+        chdir(original_path)
+
+        if email == "":
+            raise Exception('Snapshot not sent: No email has been provided')
+
+        return email
+
+    @abstractmethod
+    def _get_email(self):
+        r = envoy_run('git config user.email' % (
+            self.commit,
+            self.relative_file_path))
+
+    @cached_property
+    def commit(self):
+        """ Retrieve commit information given a path to a file in the repo """
+        original_path = getcwd()
+        chdir(dirname(self.__file_path))
+
+        commit_id = self._get_commit_cwd()
+
+        chdir(original_path)
+        return commit_id
+
+    @abstractmethod
+    def _get_commit_cwd(self):
+        """
+        Retrieve commit id of the most recent commit pushed to remote from
+        the current directory.
+        """
+        return
+
+    @cached_property
+    def original_file(self):
+        """
+        Returns the path to a temporary file containing the contents of the
+        specified file at the base commit. The same path should be returned
+        every time.
+        """
+        original_path = getcwd()
+        chdir(dirname(self.__file_path))
+
+        path = self._get_original_file()
+
+        chdir(original_path)
+        return path
+
+    @abstractmethod
+    def _get_original_file(self):
+        """
+        Returns the path to a temporary file containing the contents of the
+        specified file at the base commit. The same path should be returned
+        every time.
+        """
+        return
