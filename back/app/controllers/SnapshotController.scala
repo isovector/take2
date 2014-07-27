@@ -56,7 +56,10 @@ object SnapshotController extends Controller {
 
         User.getByEmail(snapFormData.email) match {
             case None => User(None, "Anonymous User", snapFormData.email, DateTime.now).insert()
-            case _ => // do nothing
+            case Some(user) => {
+                user.lastActivity = new DateTime(snapFormData.timestamp)
+                user.save()
+            }
         }
 
         val snap = new Snapshot(

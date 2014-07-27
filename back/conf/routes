@@ -17,6 +17,8 @@ GET     /manage-repo/update         controllers.GitRepoController.update
 GET 	/directory		    controllers.GitRepoController.retrieveFileByPath(file = "")
 GET     /directory/                 controllers.GitRepoController.retrieveFileByPath(file = "")
 GET     /directory/*file            controllers.GitRepoController.retrieveFileByPath(file)
+
+GET     /api/users/*file            controllers.FileMetricsController.getUsersInFile(file)
 GET     /api/metrics/all/*file      controllers.FileMetricsController.listAll(file)
 
 # Map static resources from the /public folder to the /assets URL path

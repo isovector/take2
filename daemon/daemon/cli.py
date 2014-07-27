@@ -43,7 +43,7 @@ def main():
             "file": git.relative_file_path,
             "email": git.email,
             "commit": git.commit,
-            "lines": lines,
+            "lines[]": lines,
         })
     except Exception as e:
         stderr.write(str(e))

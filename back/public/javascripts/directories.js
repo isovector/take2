@@ -30,8 +30,12 @@ var directories = angular.module('directories', ['ui.listview'])
 
     $scope.setFilename = function(filename) {
 	console.log("filename = " + filename);
-	$scope.filename = filename;
-        $scope.getDirectories();
+	$scope.items = jQuery.parseJSON(filename);
+	for (var i = 0; i < $scope.items.length; i++) {
+            $scope.items[i].editedlast = new Date();
+        }
+        $scope.getUsers();
+	//$scope.getDirectories();
     }
 
     $scope.getDirectories = function() {
