@@ -28,7 +28,7 @@
 	</div>
 
 	<div id="right"><a id="users" href="/users/{{item.path}}">{{item.currentUsers}}</a></div>
-        <div id="center">{{item.editedlast | date:'short'}}</div>
+        <div id="center" title="Last viewed by {{item.users[0].name}}">{{item.editedlast.time | date:'short'}}</div>
 	</div>
   </li>
 </ul>

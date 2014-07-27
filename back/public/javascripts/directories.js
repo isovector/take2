@@ -22,6 +22,7 @@ var directories = angular.module('directories', ['ui.listview'])
         return pathString;  
     }
 })
+
 .controller('DirecCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.filename = "";
 
@@ -32,7 +33,7 @@ var directories = angular.module('directories', ['ui.listview'])
 	console.log("filename = " + filename);
 	$scope.items = jQuery.parseJSON(filename);
 	for (var i = 0; i < $scope.items.length; i++) {
-            $scope.items[i].editedlast = new Date();
+            $scope.items[i].editedlast  = {"id":7, "time":new Date()};
         }
         $scope.getUsers();
 	//$scope.getDirectories();
@@ -47,7 +48,7 @@ var directories = angular.module('directories', ['ui.listview'])
 	     $scope.items = data;
 	     //TODO: switch to real date.. or just remove
 	     for (var i = 0; i < $scope.items.length; i++) {
-                 $scope.items[i].editedlast = new Date();
+                 $scope.items[i].editedlast = {"id":7, "time":new Date()};
              }
              $scope.getUsers();
 	});	
