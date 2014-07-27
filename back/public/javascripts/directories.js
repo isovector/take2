@@ -35,10 +35,11 @@ var directories = angular.module('directories', ['ui.listview'])
     $scope.setFilename = function(filename) {
 	console.log("filename = " + filename);
 	$scope.filename = filename;
-        $scope.getData();
+        $scope.getDirectories();
     }
 
-    $scope.getData = function() {
+    $scope.getDirectories = function() {
 	console.log("Getting data");
+	$http.get('repo/' + $scope.filename
     }
 }]);
