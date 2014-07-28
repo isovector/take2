@@ -65,9 +65,8 @@ body > script {
     float:right;
     text-align:right;
     width:150px;
-    line-height:24px;
     padding-right:5px;
-    vertical-align:top;
+    vertical-align:center;
 }
 
 #filename {
