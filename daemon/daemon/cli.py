@@ -6,6 +6,7 @@ from daemon import DAEMON_MAIN
 from daemon.config import REPOSITORY_PATHS
 from daemon.network import Connection
 from daemon.scm.git import Git
+from daemon.scm.diff import create_diff, convert_line_numbers
 from daemon.utils import make_tempfile, delete_tempfile
 
 OPTIONS = {
@@ -38,8 +39,8 @@ def main():
 
     current_file = make_tempfile(stdin.read())
 
-    diff = git.create_diff(new=current_file)
-    lines = git.apply_diff(diff=diff, start=opt.start, end=opt.end)
+    diff = create_diff(new=current_file, old=git.original_file)
+    lines = convert_line_numbers(diff=diff, start=opt.start, end=opt.end)
 
     delete_tempfile(current_file)
     delete_tempfile(git.original_file)
