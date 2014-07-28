@@ -36,3 +36,22 @@ frostbite.directive('timeSpent', function() {
 		templateUrl: "/assets/directives/timeSpent.partial.html"
 	}
 });
+
+frostbite.filter('breadcrumbsFilter', function() {
+    return function(input, index) {
+    	var pathString = "";
+    	for (var i = 0; i <= index; i++) {
+    	 	pathString = pathString + "/" + input[i];
+    	};
+        return pathString;  
+    }
+})
+
+
+frostbite.directive('breadcrumbs', function() {
+	return {
+		restrict: 'A',
+		replace: true,
+		templateUrl: "/assets/directives/breadcrumbs.partial.html"
+	}
+});

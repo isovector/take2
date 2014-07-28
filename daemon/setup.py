@@ -21,9 +21,14 @@ setup(
             DAEMON_MAIN + ' = daemon.cli:main',
         }
     },
-    packages=find_packages(),
+    packages=find_packages(exclude="test"),
     include_package_data=True,
     install_requires=[
         'Envoy>=0.0.2',
         'requests>=2.3.0',
-    ],)
+    ],
+    test_suite='unittest2.collector',
+    tests_require=[
+        'unittest2>=0.5.1',
+    ],
+)

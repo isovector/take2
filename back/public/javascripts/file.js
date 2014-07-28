@@ -1,5 +1,4 @@
-﻿var file = angular.module('file', [])
-.controller('FileCtrl', ['$scope', '$http', '$q', function ($scope, $http, $q) {
+﻿frostbite.controller('FileCtrl', ['$scope', '$http', '$q', function ($scope, $http, $q) {
     $scope.lines_highlighted = []
 
     $scope.inity = function () {
@@ -11,6 +10,7 @@
 
     $scope.setFileContents = function (filestuff) {
         console.log(filestuff);
+        $scope.pathArray = filestuff.path.split("/");
         $('#file_brush').html(filestuff.contents);
     }
 

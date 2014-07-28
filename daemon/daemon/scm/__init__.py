@@ -26,17 +26,16 @@ class SCMBase(object):
         if self.email == "":
             raise Exception('Snapshot not sent: No email has been provided')
 
-
-    def diff(self, new, old=None):
+    def create_diff(self, new, old=None):
         """ Returns the diff between the new and old file """
         old = old or self.original_file
         r = envoy_run(("diff "
-            "--unchanged-line-format=\"%s\" "
+            "--unchanged-line-format=\"-%s\" "
             "--old-line-format=\"<%s\" "
             "--new-line-format=\">%s\" "
             "%s %s") % (NL, NL, NL, norm_path(new), norm_path(old))
         )
-        return r.std_out.replace('%c', '\n').split("\n")
+        return r.std_out.replace('%c', '\n').rstrip("\n").split("\n")
 
     # get line numbers in second arg to diff, given a range in first arg
     def apply_diff(self, diff, start, end):
