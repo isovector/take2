@@ -13,6 +13,7 @@
   <script src="@routes.Assets.at("javascripts/lodash.min.js")" type="text/javascript"></script>
   <script src="@routes.Assets.at("javascripts/main.js")" type="text/javascript"></script>
   <script src="@routes.Assets.at("javascripts/directories.js")" type="text/javascript"></script>
+  <script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/md5.js"></script>
 
 <div frostbite-header></div>
 
@@ -31,7 +32,8 @@
         <a id="filename" href="/directory/{{item.path}}">{{item.name}}</a>
 	</div>
 
-	<div id="right"><a id="users" href="/users/{{item.path}}">{{item.currentUsers}}</a></div>
+	<!--<div id="right"><a id="users" href="/users/{{item.path}}">{{item.currentUsers}}</a></div>-->
+	<div id="right"><img ng-repeat="user in item.users" ng-src={{user.picture}} width="24" height="24" ng-alt="http://localhost:9000/assets/images/Lana.jpg"></div>
         <div id="center" title="Last viewed by {{item.users[0].name}}">{{item.editedlast.time | date:'short'}}</div>
 	</div>
   </li>
