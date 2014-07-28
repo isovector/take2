@@ -9,16 +9,6 @@ frostbite.filter('isDirectory', function() {
 	}	    
     }
 })
-.filter('breadcrumbsFilter', function() {
-    return function(input, path) {
-    	var index = _.findIndex(input, function(a) { return a == path});
-    	var pathString = "";
-    	for (var i = 0; i <= index; i++) {
-    	 	pathString = pathString + "/" + input[i];
-    	};
-        return pathString;  
-    }
-})
 
 .controller('DirecCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.filename = "";
@@ -79,11 +69,3 @@ frostbite.filter('isDirectory', function() {
 	}
     }
 }])
-
-.directive('breadcrumbs', function() {
-	return {
-		restrict: 'A',
-		replace: true,
-		templateUrl: "/assets/directives/breadcrumbs.partial.html"
-	}
-});

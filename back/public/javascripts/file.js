@@ -14,6 +14,7 @@
 
     $scope.setFileContents = function (filestuff) {
         console.log(filestuff);
+        $scope.pathArray = filestuff.path.split("/");
         $('#file_brush').html(filestuff.contents);
         $scope.path = filestuff.path;
         console.log(filestuff.path);
