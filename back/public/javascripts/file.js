@@ -1,5 +1,4 @@
-﻿var file = angular.module('file', [])
-.controller('FileCtrl', ['$scope', '$http', '$q', function ($scope, $http, $q) {
+﻿frostbite.controller('FileCtrl', ['$scope', '$http', '$q', function ($scope, $http, $q) {
     $scope.lines_highlighted = []
 
     $scope.inity = function () {
