@@ -26,8 +26,10 @@
  
     <!-- You also need to add some content to highlight, but that is covered elsewhere. -->
     <div frostbite-header></div>
-  <body>
-        <div ng-controller="FileCtrl" ng-init="setFileContents(@filestuff)">
+  <body ng-controller="FileCtrl" ng-init="setFileContents(@filestuff)">
+        <div breadcrumbs></div>
+
+        <div>
           <div>
               <button ng-click="add_importance()">Chili</button>
                <pre id="file_brush" class="brush: js">
