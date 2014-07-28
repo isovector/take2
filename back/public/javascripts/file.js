@@ -1,16 +1,24 @@
 ﻿frostbite.controller('FileCtrl', ['$scope', '$http', '$q', function ($scope, $http, $q) {
     $scope.lines_highlighted = []
-
+    $scope.path = ""
     $scope.inity = function () {
         SyntaxHighlighter.all();
+        
+
+    }
+
+    $scope.init_data = function () {
         $scope.create_test_data();
         $scope.highlight([2, 3, 4]); // call this elsewhere? or with corect parameters
-
     }
 
     $scope.setFileContents = function (filestuff) {
         console.log(filestuff);
         $('#file_brush').html(filestuff.contents);
+        $scope.path = filestuff.path;
+        console.log(filestuff.path);
+        console.log($scope.path);
+        $scope.init_data();
     }
 
     $scope.highlight = function (line_nums) {
@@ -51,7 +59,9 @@
         }
     }
     $scope.create_test_data = function () {
-
+        $http.get("/api/metrics/all/" + $scope.path).success(function(data) {
+            console.log(data);
+        })
         $scope.lines_highlighted.push(2);
         $scope.lines_highlighted.push(6);
         $scope.lines_highlighted.push(1);
