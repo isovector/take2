@@ -5,9 +5,8 @@ endif
 python << endpython
 import vim
 
-global gBuffersOpen, gTimer, gIsActive, gIdleCount, IS_IDLE_COUNT, RECORD_DURATION
+global gTimer, gIsActive, gIdleCount, IS_IDLE_COUNT, RECORD_DURATION
 
-gBuffersOpen = 0
 gTimer = None
 gIsActive = False
 gIdleCount = 0
@@ -86,34 +85,6 @@ def scheduleNextTimer():
     gTimer = Timer(RECORD_DURATION, timerThread)
     gTimer.start()
 
-
-def openBuffer():
-    """
-    Called when vim opens a new buffer. Keep track of it so we know when
-    all buffers are closed. If this is the first buffer being opened, start
-    our metric collection thread.
-    """
-    global gBuffersOpen, gTimer
-
-    gBuffersOpen += 1
-    if not gTimer:
-        # start the initial timer
-        scheduleNextTimer()
-
-
-def closeBuffer():
-    """
-    Called when vim closes a new buffer. If this is the last buffer being
-    closed, destroy our metric collection thread so we can exit vim.
-    """
-    global gBuffersOpen, gTimer
-
-    gBuffersOpen -= 1
-    if gBuffersOpen == 0:
-        # interrupt our sleep
-        gTimer.cancel()
-        gTimer = None
-
 def isActive():
     """
     Check whether or not there has been input lately.
@@ -139,26 +110,15 @@ endpython
 
 augroup plugin-take2
   autocmd!
-  autocmd BufWinEnter * call s:on_EnterWin()
-  autocmd BufWinLeave * call s:on_CloseWin()
   autocmd CursorMoved *  call s:on_Activity()
   autocmd CursorMovedI * call s:on_Activity()
-  "  autocmd FocusGained * call s:on_Activity()
+  autocmd FocusGained * call s:on_Activity()
+
   autocmd FocusLost * call s:on_Idle()
+  autocmd VimEnter * call s:on_Enter()
+  autocmd VimLeave * call s:on_Exit()
 augroup END
 
-
-function! s:on_EnterWin()
-    python << endpython
-openBuffer()
-endpython
-endfunction
-
-function! s:on_CloseWin()
-    python << endpython
-closeBuffer()
-endpython
-endfunction
 
 function! s:on_Activity()
     python << endpython
@@ -169,6 +129,19 @@ endfunction
 function! s:on_Idle()
     python << endpython
 setIdle()
+endpython
+endfunction
+
+function! s:on_Enter()
+    python << endpython
+scheduleNextTimer()
+endpython
+endfunction
+
+function! s:on_Exit()
+    python << endpython
+gTimer.cancel()
+gTimer = None
 endpython
 endfunction
 
