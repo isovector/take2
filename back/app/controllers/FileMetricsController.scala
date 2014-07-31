@@ -11,6 +11,7 @@ import com.github.nscala_time.time.Imports._
 
 import models._
 import utils._
+import utils.JSON._
 import utils.DateConversions._
 
 import play.api.db.slick.Config.driver.simple._
@@ -97,6 +98,25 @@ object FileMetricsController extends Controller {
 
         Ok(
             Json.toJson(files)
+        ).as("text/text")
+    }
+
+    def getMostPopularFiles(since: String) = Action {
+        val timestamp = new DateTime(since.toLong)
+
+        val files = DB.withSession { implicit session =>
+            Table.where( x =>
+                x.timestamp > timestamp
+            ).list
+        }.groupBy(_.file).toSeq.map {
+            case (k, v) => k -> v.length 
+        }.sortBy(-_._2).take(10)
+
+        Ok(
+            files.mapJs(
+                "file" -> (_._1),
+                "snapshots" -> (_._2)
+            )
         ).as("text/text")
     }
 }
