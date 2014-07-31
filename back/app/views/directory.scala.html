@@ -33,7 +33,7 @@
 	</div>
 
 	<!--<div id="right"><a id="users" href="/users/{{item.path}}">{{item.currentUsers}}</a></div>-->
-	<div id="right"><img ng-repeat="user in item.users" ng-src={{user.picture}} width="24" height="24" ng-alt="http://localhost:9000/assets/images/Lana.jpg"></div>
+	<div id="right"><img rel="popover" ng-repeat="user in item.users" ng-src={{user.picture}} width="24" height="24" ng-alt="http://localhost:9000/assets/images/Lana.jpg"></div>
         <div id="center" title="Last viewed by {{item.users[0].name}}">{{item.editedlast.time | date:'short'}}</div>
 	</div>
   </li>

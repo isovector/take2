@@ -16,6 +16,8 @@ frostbite.filter('isDirectory', function() {
     $scope.items = []
     
 
+    $scope.popover({ title: 'LOOK a bird image', content:'<img src="https://si0.twimg.com/a/1339639284/images/three_circles/twitter-bird-white-on-blue.png" />'; html:true });
+
     $scope.setFilename = function(filename) {
 	console.log("filename = " + filename);
 	$scope.items = filename;
