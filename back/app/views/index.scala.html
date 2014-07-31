@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 
 <html ng-app="frostbite">
-    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
-    <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+	<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+	<link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
 
 	<script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
 	<script src="@routes.Assets.at("javascripts/angular-1.2.1/angular.js")" type="text/javascript"></script>
@@ -14,34 +14,34 @@
 	<link href="@routes.Assets.at("stylesheets/css/bootstrap.min.css")" rel="stylesheet">
 
 
-    <div frostbite-header></div>
+	<div frostbite-header></div>
 
 
-    <body>
-    	<article ng-controller="IndexController" class="container">
-    		<div class="row">
-    			<div class="col-md-8">
-    				<h1 >Explore the directory!</h1>
+	<body>
+		<article ng-controller="IndexController" class="container">
+			<div class="row">
+				<div class="col-md-8">
+					<h1 >Explore the directory!</h1>
 				</div>
 				<div>
 					<form action="/directory">
-					    <input class="btn btn-primary btn-lg" type="submit" value="Go to Directory">
+						<input class="btn btn-primary btn-lg" type="submit" value="Go to Directory">
 					</form>
 				</div>
-    		</div>
+			</div>
 
-    		<div class="row widget-holder">
-    			<div class="col-md-4">
-    				<div current-files open-files="openFiles"></div>
-    			</div>
-    			<div class="col-md-4">
-    				<div popular-files files="popularOneWeek" time-span="'week'"></div>
-    			</div>
-    			<div class="col-md-4">
-    				<div popular-files files="popularOneDay" time-span="'day'"></div>
-    			</div>
-    		</div>
+			<div class="row widget-holder">
+				<div class="col-md-4">
+					<div current-files open-files="openFiles"></div>
+				</div>
+				<div class="col-md-4">
+					<div popular-files files="popularOneWeek" time-span="'week'"></div>
+				</div>
+				<div class="col-md-4">
+					<div popular-files files="popularOneDay" time-span="'day'"></div>
+				</div>
+			</div>
 
-    	</article>
-    </body>
+		</article>
+	</body>
 </html>
