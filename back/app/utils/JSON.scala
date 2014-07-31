@@ -3,6 +3,9 @@ package utils
 import play.api.data._
 import play.api.libs.json._
 
+import com.github.nscala_time.time.Imports._
+import utils.DateConversions
+
 object JSON {
     import Json._
 
@@ -10,9 +13,12 @@ object JSON {
         case seq: Seq[Any] => toJson(seq.map(JSON(_)))
         case map: Map[String, Any] => toJson(map.map{ case (k, v) => k -> JSON(v)})
 
+        case bool: Boolean => toJson(bool)
         case int: Int => toJson(int)
         case long: Long => toJson(long)
         case str: String => toJson(str)
+
+        case date: DateTime => toJson(date)
 
         case js: JsValue => js
         case bad => toJson(Todo.needsImplementation + m.toString)

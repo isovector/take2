@@ -83,8 +83,6 @@ object SnapshotController extends Controller {
                 case None => {
                     Logger.info("needs update!")
                     GitRepoController.update()
-                    Commit(None, snapFormData.commit, Todo.unimplemented).insert()
-    
                 }
                 case _ => // do nothing
             }
