@@ -2,13 +2,17 @@ name := "back"
 
 version := "1.0-SNAPSHOT"
 
+resolvers += "jgit-repository" at "http://download.eclipse.org/jgit/maven"
+
 libraryDependencies ++= Seq(
   jdbc,
   anorm,
   cache,
   "com.typesafe.play" %% "play-slick" % "0.6.0.1",
   "org.xerial" % "sqlite-jdbc" % "3.7.2",
-  "com.github.nscala-time" %% "nscala-time" % "1.0.0"
+  "com.github.nscala-time" %% "nscala-time" % "1.0.0",
+  "org.eclipse.jgit" % "org.eclipse.jgit" % "2.0.0.201206130900-r",
+  "org.gitective" % "gitective-core" % "0.9.9"
 )     
 
 play.Project.playScalaSettings

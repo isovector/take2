@@ -58,11 +58,7 @@ class RepoManagementActor extends Actor {
     }
 
     def update = { 
-        Process(Seq(
-            "git", 
-            "pull", 
-            "--all"
-        ), new java.io.File(RepoModel.local)).!!
+        GitModel.update
     }
 }
 
