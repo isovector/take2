@@ -34,7 +34,7 @@ frostbite.filter('isDirectory', function() {
 	for (var i = 0; i < $scope.items.length; i++) {
         // TODO: switch to actual number of users
 	    (function(i) {
-	        $http.get("/api/users/" + $scope.items[i].path).success(function(data) {
+	        $http.get("/api/currently/viewing/" + $scope.items[i].path).success(function(data) {
 				$scope.items[i].users = data;
 				var numUsers = $scope.items[i].users.length;
 				for (var j = 0; j < numUsers; j++) {

@@ -57,54 +57,59 @@ object SnapshotController extends Controller {
             "lines" -> seq(number)
         )(SnapshotFormData.apply)(SnapshotFormData.unapply)).bindFromRequest.get
 
-        // Build a user if one doesn't exist
-        User.getByEmail(snapFormData.email) match {
-            case None => 
-                User(
-                    None, 
-                    snapFormData.name, 
-                    snapFormData.email, 
-                    new DateTime(snapFormData.timestamp)
-                ).insert()
-            case Some(user) => {
-                user.lastActivity = new DateTime(snapFormData.timestamp)
-                user.save()
-            }
-        }
-
-        // Build a commit if one doesn't exist
-        Commit.getByHash(snapFormData.commit) match {
-            // TODO(sandy): make this come from the git controller
-            // to figure out what the parent is
-            case None => {
-                Logger.info("needs update!")
-                GitRepoController.update()
-                Commit(None, snapFormData.commit, Todo.unimplemented).insert()
-
-            }
-            case _ => // do nothing
-        }
-
-        val snap = new Snapshot(
-          snapFormData.id,
-          new DateTime(snapFormData.timestamp),
-          snapFormData.file,
-          User.getByEmail(snapFormData.email).get,
-          snapFormData.commit,
-          snapFormData.lines
-        );
-
-        if (snap.id.isEmpty) {
-            snap.insert()
+        if (!RepoModel.getFile(snapFormData.file).exists) {
+            // is there a nicer way of doing this?
+            NotFound
         } else {
-            DB.withSession { implicit session =>
-                Table.filter(_.id === snap.id.get).update(snap)
+            // Build a user if one doesn't exist
+            User.getByEmail(snapFormData.email) match {
+                    case None => 
+                    User(
+                        None, 
+                        snapFormData.name, 
+                        snapFormData.email, 
+                        new DateTime(snapFormData.timestamp)
+                    ).insert()
+                case Some(user) => {
+                    user.lastActivity = new DateTime(snapFormData.timestamp)
+                    user.save()
+                }
             }
-        }
 
-        Ok(
-            Json.toJson(snap)
-        ).as("text/text")
+            // Build a commit if one doesn't exist
+            Commit.getByHash(snapFormData.commit) match {
+                // TODO(sandy): make this come from the git controller
+                // to figure out what the parent is
+                case None => {
+                    Logger.info("needs update!")
+                    GitRepoController.update()
+                    Commit(None, snapFormData.commit, Todo.unimplemented).insert()
+    
+                }
+                case _ => // do nothing
+            }
+
+            val snap = new Snapshot(
+              snapFormData.id,
+              new DateTime(snapFormData.timestamp),
+              snapFormData.file,
+              User.getByEmail(snapFormData.email).get,
+              snapFormData.commit,
+              snapFormData.lines
+            );
+
+            if (snap.id.isEmpty) {
+                snap.insert()
+            } else {
+                DB.withSession { implicit session =>
+                    Table.filter(_.id === snap.id.get).update(snap)
+                }
+            }
+
+            Ok(
+                Json.toJson(snap)
+            ).as("text/text")
+        }
     }
 }
 

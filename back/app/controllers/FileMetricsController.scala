@@ -18,6 +18,8 @@ import play.api.db.slick.Config.driver.simple._
 object FileMetricsController extends Controller {
     val Table = TableQuery[SnapshotModel]
 
+    private val recentDuration = 5.minutes;
+
     def concat(ll:List[List[Any]]): List[Any] = { 
         ll match { 
             case List(Nil) => Nil; 
@@ -67,10 +69,10 @@ object FileMetricsController extends Controller {
     }
 
     def getUsersInFile(file: String) = Action {
-        val recentStamp = DateTime.now - 5.minutes
+        val recentStamp = DateTime.now - recentDuration
 
         val users = DB.withSession { implicit session =>
-        Table.where(_.file.like(file + "%")).where( x =>
+            Table.where(_.file.like(file + "%")).where( x =>
                 x.timestamp > recentStamp
             ).list
         }.groupBy(_.user).toSeq.map {
@@ -82,4 +84,19 @@ object FileMetricsController extends Controller {
         ).as("text/text")
     }
 
+    def getCurrentlyOpenFiles = Action {
+        val recentStamp = DateTime.now - recentDuration
+
+        val files = DB.withSession { implicit session =>
+            Table.where( x =>
+                x.timestamp > recentStamp
+            ).list
+        }.groupBy(_.file).toSeq.map {
+            case (k, v) => k
+        }
+
+        Ok(
+            Json.toJson(files)
+        ).as("text/text")
+    }
 }
