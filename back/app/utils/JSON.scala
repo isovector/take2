@@ -15,7 +15,7 @@ object JSON {
         case str: String => toJson(str)
 
         case js: JsValue => js
-        case bad => toJson("unserialized: " + m.toString)
+        case bad => toJson(Todo.needsImplementation + m.toString)
     }
 
     // given a map of names to functions, create a JSON object
@@ -49,6 +49,10 @@ case class RichJsonSeq[T](underlying: Seq[T]) {
 case class RichJsonAny[T](underlying: T) {
     def asJs(maps: Tuple2[String, T => Any]*): JsValue = {
         Json.toJson(JSON.asObj(underlying)(maps: _*))
+    }
+
+    def toJs(implicit m: reflect.Manifest[T]): JsValue = {
+        JSON(underlying)
     }
 }
 

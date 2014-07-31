@@ -9,6 +9,7 @@ import play.api.db.slick.DB
 import play.api.Play.current
 import com.github.nscala_time.time.Imports._
 
+import utils._
 import models._
 
 import play.api.db.slick.Config.driver.simple._
@@ -56,6 +57,7 @@ object SnapshotController extends Controller {
             "lines" -> seq(number)
         )(SnapshotFormData.apply)(SnapshotFormData.unapply)).bindFromRequest.get
 
+        // Build a user if one doesn't exist
         User.getByEmail(snapFormData.email) match {
             case None => 
                 User(
@@ -68,6 +70,19 @@ object SnapshotController extends Controller {
                 user.lastActivity = new DateTime(snapFormData.timestamp)
                 user.save()
             }
+        }
+
+        // Build a commit if one doesn't exist
+        Commit.getByHash(snapFormData.commit) match {
+            // TODO(sandy): make this come from the git controller
+            // to figure out what the parent is
+            case None => {
+                Logger.info("needs update!")
+                GitRepoController.update()
+                Commit(None, snapFormData.commit, Todo.unimplemented).insert()
+
+            }
+            case _ => // do nothing
         }
 
         val snap = new Snapshot(

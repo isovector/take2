@@ -10,6 +10,7 @@ import play.api.Play.current
 import com.github.nscala_time.time.Imports._
 
 import models._
+import utils._
 import utils.DateConversions._
 
 import play.api.db.slick.Config.driver.simple._
@@ -43,13 +44,11 @@ object FileMetricsController extends Controller {
                 }
         }
 
-        Logger.info(totalLinesByUsers.mkString)
-
         import Json._
         Ok(
             Json.toJson(Map(
                 "file" -> toJson(file),
-                "commit" -> toJson("unimplemented"),
+                "commit" -> toJson(Todo.unimplemented),
                 "userData" -> toJson(totalLinesByUsers.toSeq.map {
                     case (user, snaps) => toJson(Map(
                         "user" -> toJson(user),

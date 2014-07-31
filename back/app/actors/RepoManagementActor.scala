@@ -18,7 +18,7 @@ class RepoManagementActor extends Actor {
     val log = Logging(context.system, this)
     def receive = {
         case RepoManagement.Initialize => sender ! initialize
-        case RepoManagement.Update => sender ! update
+        case RepoManagement.Update => update
         case _ => throw new UnsupportedOperationException
     }
 

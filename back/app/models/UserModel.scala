@@ -10,6 +10,7 @@ import play.api.Play.current
 import play.api.db.slick.Config.driver.simple._
 import com.github.nscala_time.time.Imports._
 
+import utils._
 import utils.DateConversions._
 
 case class User(
@@ -62,7 +63,7 @@ object User {
                 "id" -> user.id.get,
                 "name" -> user.name,
                 "email" -> user.email,
-                "picture" -> "unimplemented",
+                "picture" -> Todo.unimplemented,
                 "lastActivity" -> user.lastActivity
             )
         }

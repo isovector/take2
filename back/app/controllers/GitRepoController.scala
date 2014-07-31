@@ -82,11 +82,8 @@ object GitRepoController extends Controller {
         }
     }
 
-    def update = Action.async {
-        (repoActor ? RepoManagement.Update).mapTo[String].map {
-            response =>
-            Ok(response)
-        }
+    def update(): Unit = {
+        repoActor ! RepoManagement.Update
     }
 }
 
