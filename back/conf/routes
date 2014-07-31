@@ -17,6 +17,7 @@ GET     /directory/*file            controllers.GitRepoController.retrieveFileBy
 
 GET     /api/currently/viewing/*file controllers.FileMetricsController.getUsersInFile(file)
 GET     /api/currently/open         controllers.FileMetricsController.getCurrentlyOpenFiles
+
 GET     /api/metrics/all/*file      controllers.FileMetricsController.listAll(file)
 GET     /api/metrics/popular/:since controllers.FileMetricsController.getMostPopularFiles(since)
 
