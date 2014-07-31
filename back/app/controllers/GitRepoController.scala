@@ -57,7 +57,10 @@ object GitRepoController extends Controller {
                     fileObj.listFiles.filter(!_.isHidden).mapJs(
                         "name" -> (_.getName), 
                         "path" -> (getPath(_)),
-                        "isDir" -> (_.isDirectory)
+                        "isDir" -> (_.isDirectory),
+                        "lastUpdated" -> (x => RepoFile.getByFile(x.getName).getOrElse(
+                            RepoFile("","", new com.github.nscala_time.time.Imports.DateTime(0))
+                        ).lastUpdated)
                     ).toString
                 ))
 
