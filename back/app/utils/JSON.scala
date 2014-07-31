@@ -1,0 +1,54 @@
+package utils
+
+import play.api.data._
+import play.api.libs.json._
+
+object JSON {
+    import Json._
+
+    def apply[T](obj: T)(implicit m: reflect.Manifest[T]): JsValue = obj match {
+        case seq: Seq[Any] => toJson(seq.map(JSON(_)))
+        case map: Map[String, Any] => toJson(map.map{ case (k, v) => k -> JSON(v)})
+
+        case int: Int => toJson(int)
+        case long: Long => toJson(long)
+        case str: String => toJson(str)
+
+        case js: JsValue => js
+        case bad => toJson("unserialized: " + m.toString)
+    }
+
+    // given a map of names to functions, create a JSON object
+    // by calling the functions on src
+    def asObj[T](src: T)(maps: Tuple2[String, T => Any]*): JsValue = {
+        toJson(Map(maps.map {
+            case(k, v) => k -> JSON(v(src))
+        }: _*))
+    }
+
+
+    // add mapJs and asjs functions to everything
+    implicit def implSeqToRich[T](underlying: Seq[T]): RichJsonSeq[T] = 
+        new RichJsonSeq(underlying)
+
+    implicit def implArrayToRich[T](underlying: Array[T]): RichJsonSeq[T] = 
+        new RichJsonSeq(underlying.toSeq)
+
+    implicit def implAnyToRich[T](underlying: T): RichJsonAny[T] = 
+        new RichJsonAny(underlying)
+}
+
+case class RichJsonSeq[T](underlying: Seq[T]) {
+    def mapJs(maps: Tuple2[String, T => Any]*): JsValue = {
+        Json.toJson(underlying.map { item =>
+            JSON.asObj(item)(maps: _*)
+        })
+    }
+}
+
+case class RichJsonAny[T](underlying: T) {
+    def asJs(maps: Tuple2[String, T => Any]*): JsValue = {
+        Json.toJson(JSON.asObj(underlying)(maps: _*))
+    }
+}
+

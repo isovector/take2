@@ -11,6 +11,7 @@ import play.api.libs.concurrent.Akka
 
 import models._
 import actors._
+import utils._
 import java.io.File
 import akka.actor.Props
 import akka.pattern.ask
@@ -18,6 +19,8 @@ import akka.util.Timeout
 import scala.concurrent.duration._
 
 import play.api.db.slick.Config.driver.simple._
+
+import utils.JSON._
 
 object GitRepoController extends Controller {
     implicit val implFutureTimeout = Timeout(600 seconds)
@@ -45,28 +48,26 @@ object GitRepoController extends Controller {
 
         def getPath(file: File) = file.getPath.substring(pathLength)
 
-        import Json._
         (fileObj.exists match {
             case true => Some(fileObj.isDirectory)
             case false => None
         }) match {
             case Some(true) => 
                 Ok(views.html.directory(
-                    toJson(fileObj.listFiles.filter(!_.isHidden).map(
-                    file => toJson(Map(
-                        "name" -> toJson(file.getName),
-                        "path" -> toJson(getPath(file)),
-                        "isDir" -> toJson(file.isDirectory)
-                    )))).toString
+                    fileObj.listFiles.filter(!_.isHidden).mapJs(
+                        "name" -> (_.getName), 
+                        "path" -> (getPath(_)),
+                        "isDir" -> (_.isDirectory)
+                    ).toString
                 ))
 
             case Some(false) => 
                 Ok(views.html.file(
-                    toJson(Map(
-                        "name" -> toJson(fileObj.getName),
-                        "path" -> toJson(getPath(fileObj)),
-                        "contents" -> toJson(readFile(fileObj))
-                    )).toString
+                    fileObj.asJs(
+                        "name" -> (_.getName),
+                        "path" -> (getPath(_)),
+                        "contents" -> (readFile(_))
+                    ).toString
                 ))
 
             case None =>
