@@ -84,7 +84,6 @@ object RepoController extends Controller {
             files.filter(!_.isHidden).to[Seq].mapJs(
                 "name" -> (_.getName),
                 "path" -> (getPath(_)),
-                "isDir" -> (_.isDirectory)
             ).toString
         )
     }
