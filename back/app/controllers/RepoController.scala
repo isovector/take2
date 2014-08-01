@@ -1,5 +1,9 @@
 package controllers
 
+import java.io.File
+import org.apache.commons.io.filefilter.RegexFileFilter
+import org.apache.commons.io.FileUtils.listFiles
+import org.joda.time._
 import play.api._
 import play.api.libs.json._
 import play.api.mvc._
@@ -9,20 +13,14 @@ import play.api.db.slick.Config.driver.simple._
 import play.api.db.slick.DB
 import play.api.Play.current
 import play.api.libs.concurrent.Akka
-import play.Logger
+import scala.collection.JavaConversions._
+import scala.concurrent.duration._
 
 import models._
 import utils._
-import java.io.File
-import scala.concurrent.duration._
-import org.joda.time._
-import org.apache.commons.io.filefilter.RegexFileFilter
-import org.apache.commons.io.FileUtils.listFiles
-import scala.collection.JavaConversions._
-import java.net.URI
-
 
 import utils.JSON._
+
 
 object RepoController extends Controller {
     def readFile(file: File) = {
@@ -39,11 +37,6 @@ object RepoController extends Controller {
 
     def retrieveFileByPath(filepath: String) = Action {
         var absPath = RepoModel.local + File.separator + filepath
-
-        Logger.info(absPath)
-        Logger.info(RepoModel.local)
-        Logger.info(filepath)
-
         var fileObj = new File(absPath)
 
         (fileObj.exists match {
