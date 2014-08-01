@@ -8,15 +8,19 @@ import play.api.data.Forms._
 import play.api.db.slick.DB
 import play.api.Play.current
 import play.api.libs.concurrent.Akka
+import play.Logger
 
 import models._
 import actors._
 import utils._
-import java.io.File
 import akka.actor.Props
 import akka.pattern.ask
 import akka.util.Timeout
+import java.io.File
+import org.apache.commons.io.filefilter.RegexFileFilter
+import org.apache.commons.io.FileUtils.listFiles
 import scala.concurrent.duration._
+import scala.collection.JavaConversions._
 
 import play.api.db.slick.Config.driver.simple._
 
@@ -26,7 +30,7 @@ object GitRepoController extends Controller {
     implicit val implFutureTimeout = Timeout(600 seconds)
 
     val repoActor = Akka.system.actorOf(
-        Props[RepoManagementActor], 
+        Props[RepoManagementActor],
         name = "repoMgr"
     )
 
@@ -52,10 +56,10 @@ object GitRepoController extends Controller {
             case true => Some(fileObj.isDirectory)
             case false => None
         }) match {
-            case Some(true) => 
+            case Some(true) =>
                 Ok(views.html.directory(
                     fileObj.listFiles.filter(!_.isHidden).mapJs(
-                        "name" -> (_.getName), 
+                        "name" -> (_.getName),
                         "path" -> (getPath(_)),
                         "isDir" -> (_.isDirectory),
                         "lastUpdated" -> (x => RepoFile.getByFile(x.getName).getOrElse(
@@ -64,7 +68,7 @@ object GitRepoController extends Controller {
                     ).toString
                 ))
 
-            case Some(false) => 
+            case Some(false) =>
                 Ok(views.html.file(
                     fileObj.asJs(
                         "name" -> (_.getName),
@@ -76,6 +80,21 @@ object GitRepoController extends Controller {
             case None =>
                 NotFound
         }
+    }
+
+    def retrieveFileByRegex(regex: String) = Action {
+        var dir = new File(RepoModel.local)
+        var files = listFiles(
+            dir,
+            new RegexFileFilter(regex),
+            new RegexFileFilter(".*"))
+        Ok(
+            files.filter(!_.isHidden).mapJs(
+                "name" -> (f.getName),
+                "path" -> (f.getPath()),
+                "isDir" -> (f.isDirectory)
+            ).toString
+        )
     }
 
     def initialize = Action.async {
