@@ -8,20 +8,18 @@ import play.api.data.Forms._
 import play.api.db.slick.DB
 import play.api.Play.current
 import play.api.libs.concurrent.Akka
-import play.Logger
 
 import models._
 import actors._
 import utils._
+import java.io.File
 import akka.actor.Props
 import akka.pattern.ask
 import akka.util.Timeout
-import java.io.File
 import org.apache.commons.io.filefilter.RegexFileFilter
 import org.apache.commons.io.FileUtils.listFiles
 import scala.concurrent.duration._
 import scala.collection.JavaConversions._
-import java.net.URI
 
 import play.api.db.slick.Config.driver.simple._
 
@@ -52,11 +50,6 @@ object GitRepoController extends Controller {
 
     def retrieveFileByPath(filepath: String) = Action {
         var absPath = RepoModel.local + File.separator + filepath
-
-        Logger.info(absPath)
-        Logger.info(RepoModel.local)
-        Logger.info(filepath)
-
         var fileObj = new File(absPath)
 
         (fileObj.exists match {
