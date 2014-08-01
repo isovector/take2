@@ -19,6 +19,7 @@ import org.joda.time._
 import org.apache.commons.io.filefilter.RegexFileFilter
 import org.apache.commons.io.FileUtils.listFiles
 import scala.collection.JavaConversions._
+import java.net.URI
 
 
 import utils.JSON._
@@ -31,13 +32,19 @@ object RepoController extends Controller {
         lines
     }
 
+    def getPath(file: File) = {
+        var pathLength = (RepoModel.local + File.separator).length
+        file.getPath.substring(pathLength)
+    }
+
     def retrieveFileByPath(filepath: String) = Action {
         var absPath = RepoModel.local + File.separator + filepath
-        var pathLength = (RepoModel.local + File.separator).length
+
+        Logger.info(absPath)
+        Logger.info(RepoModel.local)
+        Logger.info(filepath)
 
         var fileObj = new File(absPath)
-
-        def getPath(file: File) = file.getPath.substring(pathLength)
 
         (fileObj.exists match {
             case true => Some(fileObj.isDirectory)
@@ -76,16 +83,15 @@ object RepoController extends Controller {
         Ok("cool")
 
     def retrieveFileByRegex(regex: String) = Action {
-        var dir = new File(RepoModel.local)
         var files = listFiles(
-            dir,
+            new File(RepoModel.local),
             new RegexFileFilter(regex),
             new RegexFileFilter(".*"))
         Ok(
-            files.filter(!_.isHidden).mapJs(
-                "name" -> (f.getName),
-                "path" -> (f.getPath()),
-                "isDir" -> (f.isDirectory)
+            files.filter(!_.isHidden).to[Seq].mapJs(
+                "name" -> (_.getName),
+                "path" -> (getPath(_)),
+                "isDir" -> (_.isDirectory)
             ).toString
         )
     }
