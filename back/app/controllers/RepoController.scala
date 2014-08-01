@@ -5,17 +5,21 @@ import play.api.libs.json._
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
+import play.api.db.slick.Config.driver.simple._
 import play.api.db.slick.DB
 import play.api.Play.current
 import play.api.libs.concurrent.Akka
+import play.Logger
 
 import models._
 import utils._
 import java.io.File
 import scala.concurrent.duration._
 import org.joda.time._
+import org.apache.commons.io.filefilter.RegexFileFilter
+import org.apache.commons.io.FileUtils.listFiles
+import scala.collection.JavaConversions._
 
-import play.api.db.slick.Config.driver.simple._
 
 import utils.JSON._
 
@@ -39,10 +43,10 @@ object RepoController extends Controller {
             case true => Some(fileObj.isDirectory)
             case false => None
         }) match {
-            case Some(true) => 
+            case Some(true) =>
                 Ok(views.html.directory(
                     fileObj.listFiles.filter(!_.isHidden).mapJs(
-                        "name" -> (_.getName), 
+                        "name" -> (_.getName),
                         "path" -> (getPath(_)),
                         "isDir" -> (_.isDirectory),
                         "lastUpdated" -> (x =>
@@ -53,7 +57,7 @@ object RepoController extends Controller {
                     ).toString
                 ))
 
-            case Some(false) => 
+            case Some(false) =>
                 Ok(views.html.file(
                     fileObj.asJs(
                         "name" -> (_.getName),
@@ -70,6 +74,20 @@ object RepoController extends Controller {
     def initialize = Action {
         RepoModel.initialize
         Ok("cool")
+
+    def retrieveFileByRegex(regex: String) = Action {
+        var dir = new File(RepoModel.local)
+        var files = listFiles(
+            dir,
+            new RegexFileFilter(regex),
+            new RegexFileFilter(".*"))
+        Ok(
+            files.filter(!_.isHidden).mapJs(
+                "name" -> (f.getName),
+                "path" -> (f.getPath()),
+                "isDir" -> (f.isDirectory)
+            ).toString
+        )
     }
 }
 
