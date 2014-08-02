@@ -1,5 +1,6 @@
 package models
 
+import play.api._
 import play.api.db.slick.Config.driver.simple._
 import play.api.db.slick.DB
 import play.api.libs.json._
@@ -32,14 +33,50 @@ case class RepoFile(
             Table.filter(_.file === file).update(this)
         }
     }
+
+    def touch(commitId: String, timestamp: DateTime) = {
+        if (lastUpdated < timestamp) {
+            lastCommit = commitId
+            lastUpdated = timestamp
+            save()
+        }
+    }
 }
 
 object RepoFile {
     private val Table = TableQuery[RepoFileModel]
 
+    def getAll: Map[String, RepoFile] = {
+        Map(DB.withSession { implicit session =>
+            Table.list
+        }.map { record =>
+            record.file -> (record: RepoFile)
+        }: _*)
+    }
+
     def getByFile(file: String): Option[RepoFile] = {
         DB.withSession { implicit session =>
             Table.filter(_.file === file).firstOption
+        }
+    }
+
+    def touchFiles(filenames: Seq[String], commitId: String, timestamp: DateTime) = {
+        filenames.map { filename =>
+            getByFile(filename) match {
+                case None => {
+                    Logger.info("adding " + filename)
+                    RepoFile(
+                        filename,
+                        commitId,
+                        timestamp
+                    ).insert()
+                }
+
+                case Some(file) => {
+                    Logger.info("touching " + filename)
+                    file.touch(commitId, timestamp)
+                }
+            }
         }
     }
 }

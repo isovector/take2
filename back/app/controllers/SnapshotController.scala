@@ -78,11 +78,9 @@ object SnapshotController extends Controller {
 
             // Build a commit if one doesn't exist
             Commit.getByHash(snapFormData.commit) match {
-                // TODO(sandy): make this come from the git controller
-                // to figure out what the parent is
                 case None => {
                     Logger.info("needs update!")
-                    GitRepoController.update()
+                    RepoModel.update
                 }
                 case _ => // do nothing
             }

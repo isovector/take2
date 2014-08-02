@@ -14,51 +14,13 @@ object RepoManagement {
     case object Update
 }
 
+// TODO(sandy): is there any reason for this to exist?
 class RepoManagementActor extends Actor {
     val log = Logging(context.system, this)
     def receive = {
-        case RepoManagement.Initialize => sender ! initialize
-        case RepoManagement.Update => update
+        case RepoManagement.Initialize => sender ! RepoModel.initialize
+        case RepoManagement.Update => RepoModel.update
         case _ => throw new UnsupportedOperationException
-    }
-
-    def initialize = { 
-        val cmd = Process(Seq(
-            "git", 
-            "clone", 
-            "-v",
-            RepoModel.remote, 
-            RepoModel.local
-        ))
-
-        var lines = Stream[String]();
-        var count = 0;
-        val pio = new ProcessIO(
-            _ => (),
-            stdout => 
-                Source.fromInputStream(stdout).getLines.foreach (
-                    _ => count = count + 1
-                ),
-            stderr => 
-                Source.fromInputStream(stderr).getLines.foreach (
-                    _ => count = count + 1
-                )
-        )
-
-        // okay so this doesn't work great, but you know, whatever
-        val proc = cmd.run(pio)
-        Thread.sleep(5000)
-
-        if (count < 2) {
-            proc.destroy
-            "error: no keys"
-        } else {
-            "success"
-        }
-    }
-
-    def update = { 
-        GitModel.update
     }
 }
 

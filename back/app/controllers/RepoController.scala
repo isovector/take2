@@ -17,12 +17,13 @@ import akka.actor.Props
 import akka.pattern.ask
 import akka.util.Timeout
 import scala.concurrent.duration._
+import org.joda.time._
 
 import play.api.db.slick.Config.driver.simple._
 
 import utils.JSON._
 
-object GitRepoController extends Controller {
+object RepoController extends Controller {
     implicit val implFutureTimeout = Timeout(600 seconds)
 
     val repoActor = Akka.system.actorOf(
@@ -58,9 +59,11 @@ object GitRepoController extends Controller {
                         "name" -> (_.getName), 
                         "path" -> (getPath(_)),
                         "isDir" -> (_.isDirectory),
-                        "lastUpdated" -> (x => RepoFile.getByFile(x.getName).getOrElse(
-                            RepoFile("","", new com.github.nscala_time.time.Imports.DateTime(0))
-                        ).lastUpdated)
+                        "lastUpdated" -> (x =>
+                            RepoFile.getByFile(x.getName) match {
+                                case Some(file) => file.lastUpdated
+                                case None => new DateTime(0)
+                            })
                     ).toString
                 ))
 
@@ -83,10 +86,6 @@ object GitRepoController extends Controller {
             response =>
             Ok(response)
         }
-    }
-
-    def update(): Unit = {
-        repoActor ! RepoManagement.Update
     }
 }
 
