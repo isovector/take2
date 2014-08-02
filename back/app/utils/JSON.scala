@@ -21,7 +21,7 @@ object JSON {
         case date: DateTime => toJson(date)
 
         case js: JsValue => js
-        case bad => toJson(Todo.needsImplementation + m.toString)
+        case bad => throw new Exception(m.toString) 
     }
 
     // given a map of names to functions, create a JSON object
