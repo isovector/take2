@@ -10,12 +10,8 @@ import play.api.Play.current
 import play.api.libs.concurrent.Akka
 
 import models._
-import actors._
 import utils._
 import java.io.File
-import akka.actor.Props
-import akka.pattern.ask
-import akka.util.Timeout
 import scala.concurrent.duration._
 import org.joda.time._
 
@@ -24,16 +20,6 @@ import play.api.db.slick.Config.driver.simple._
 import utils.JSON._
 
 object RepoController extends Controller {
-    implicit val implFutureTimeout = Timeout(600 seconds)
-
-    val repoActor = Akka.system.actorOf(
-        Props[RepoManagementActor], 
-        name = "repoMgr"
-    )
-
-    implicit val system = Akka.system.dispatcher
-
-
     def readFile(file: File) = {
         val source = scala.io.Source.fromFile(file.getAbsolutePath)
         val lines = source.getLines.mkString("\n")
@@ -81,11 +67,9 @@ object RepoController extends Controller {
         }
     }
 
-    def initialize = Action.async {
-        (repoActor ? RepoManagement.Initialize).mapTo[String].map {
-            response =>
-            Ok(response)
-        }
+    def initialize = Action {
+        RepoModel.initialize
+        Ok("cool")
     }
 }
 

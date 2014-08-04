@@ -43,6 +43,7 @@ object SnapshotController extends Controller {
             file: String,
             name: String,
             email: String,
+            branch: String,
             commit: String,
             lines: Seq[Int]
         )
@@ -53,6 +54,7 @@ object SnapshotController extends Controller {
             "file" -> text,
             "name" -> text,
             "email" -> text,
+            "branch" -> text,
             "commit" -> text,
             "lines" -> seq(number)
         )(SnapshotFormData.apply)(SnapshotFormData.unapply)).bindFromRequest.get
@@ -63,11 +65,11 @@ object SnapshotController extends Controller {
         } else {
             // Build a user if one doesn't exist
             User.getByEmail(snapFormData.email) match {
-                    case None => 
+                    case None =>
                     User(
-                        None, 
-                        snapFormData.name, 
-                        snapFormData.email, 
+                        None,
+                        snapFormData.name,
+                        snapFormData.email,
                         new DateTime(snapFormData.timestamp)
                     ).insert()
                 case Some(user) => {
@@ -79,8 +81,8 @@ object SnapshotController extends Controller {
             // Build a commit if one doesn't exist
             Commit.getByHash(snapFormData.commit) match {
                 case None => {
-                    Logger.info("needs update!")
-                    RepoModel.update
+                    Logger.info(snapFormData.branch + ": needs update!")
+                    RepoModel.update(snapFormData.branch)
                 }
                 case _ => // do nothing
             }

@@ -16,6 +16,7 @@ class SCMBase(object):
 
         self.name = self._get_name()
         self.email = self._get_email()
+        self.branch = self._get_branch()
         self.commit = self._get_commit()
         self.original_file = self._get_original_file()
 
@@ -37,6 +38,11 @@ class SCMBase(object):
     @abstractmethod
     def _get_email(self):
         """ Gets the email associated with the SCM """
+        return
+
+    @abstractmethod
+    def _get_branch(self):
+        """ Gets the current branch of the SCM """
         return
 
     @abstractmethod

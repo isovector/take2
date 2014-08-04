@@ -36,6 +36,7 @@ case class RepoFile(
 
     def touch(commitId: String, timestamp: DateTime) = {
         if (lastUpdated < timestamp) {
+            Logger.info("touching " + file)
             lastCommit = commitId
             lastUpdated = timestamp
             save()
@@ -60,7 +61,7 @@ object RepoFile {
         }
     }
 
-    def touchFiles(filenames: Seq[String], commitId: String, timestamp: DateTime) = {
+    def touchFiles(filenames: Seq[String], branch: String, commitId: String, timestamp: DateTime) = {
         filenames.map { filename =>
             getByFile(filename) match {
                 case None => {
@@ -73,8 +74,11 @@ object RepoFile {
                 }
 
                 case Some(file) => {
-                    Logger.info("touching " + filename)
-                    file.touch(commitId, timestamp)
+                    // HACK(sandy): only update file timestamps for master
+                    Todo.hack
+                    if (branch == RepoModel.defaultBranch) {
+                        file.touch(commitId, timestamp)
+                    }
                 }
             }
         }

@@ -11,6 +11,7 @@ import play.api.db.slick.Config.driver.simple._
 
 case class Commit(
         var id: Option[Int] = None,
+        branch: String,
         hash: String,
         parent: String) {
     private val Table = TableQuery[CommitModel]
@@ -49,10 +50,11 @@ object Commit {
 
 class CommitModel(tag: Tag) extends Table[Commit](tag, "Commit") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
+    def branch = column[String]("branch")
     def hash = column[String]("name")
     def parent = column[String]("email")
 
     val commit = Commit.apply _
-    def * = (id.?, hash, parent) <> (commit.tupled, Commit.unapply _)
+    def * = (id.?, branch, hash, parent) <> (commit.tupled, Commit.unapply _)
 }
 

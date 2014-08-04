@@ -16,21 +16,27 @@ import org.gitective.core._
 import com.github.nscala_time.time.Imports._
 
 object GitModel extends SourceRepositoryModel {
-    val repo = new FileRepository(RepoModel.local + File.separator + ".git")
-    val git = new Git(repo)
+    private val repo = new FileRepository(RepoModel.local + File.separator + ".git")
+    private val git = new Git(repo)
+
+    val defaultBranch = "master"
 
     def initialize = {
-        // TODO(sandy): figure out how to make this compile
-        //git.clone.setURI(RepoModel.remote).setDirectory(RepoModel.local).call
+        Git.cloneRepository.setURI(RepoModel.remote).setDirectory(RepoModel.getFile("")).call
+        update("master")
     }
 
-    def update = {
-        // TODO(sandy): this can crash with CheckoutConflictException for some reason
+    def update(branch: String) = {
+        setBranch(branch)
+
         git.pull.call
-        git.log.all.call.filter(x => Commit.getByHash(x.getName).isEmpty).map { commit =>
+        git.log.add(
+            repo.resolve("HEAD")
+        ).call.filter(x => Commit.getByHash(x.getName).isEmpty).map { commit =>
             Logger.info("committing " + commit.getName)
             Commit(
-                None, 
+                None,
+                branch,
                 commit.getName,
                 commit.getParentCount match {
                     case 0 => ""
@@ -39,14 +45,40 @@ object GitModel extends SourceRepositoryModel {
             ).insert()
 
             commit.getParentCount match {
-                case 0 => addInitialCommitRecords(commit)
-                case _ => updateFileCommitRecords(commit)
+                case 0 => addInitialCommitRecords(commit, branch)
+                case _ => updateFileCommitRecords(commit, branch)
             }
         }
     }
 
-    private def updateFileCommitRecords(commit: RevCommit) = {
-        val parent = commit.getParent(0) 
+    private def setBranch(branch: String) = {
+        import org.eclipse.jgit.api.CreateBranchCommand.SetupUpstreamMode
+        import org.eclipse.jgit.api.errors._
+
+        try {
+            git.checkout.setName(branch).call
+        } catch {
+            case _: DetachedHeadException | _: RefNotFoundException =>
+                git.checkout
+                    .setCreateBranch(true)
+                    .setName(branch)
+                    .setUpstreamMode(SetupUpstreamMode.TRACK)
+                    .setStartPoint("origin/" + branch)
+                    .call
+
+                // TODO(sandy): there is probably a better way to do this
+                // but it works so YOLO
+                val config = repo.getConfig
+                config.setString("branch", branch, "remote", "origin")
+                config.setString("branch", branch, "merge", "refs/heads/" + branch)
+                config.save
+
+                git.checkout.setName(branch).call
+        }
+    }
+
+    private def updateFileCommitRecords(commit: RevCommit, branch: String) = {
+        val parent = commit.getParent(0)
         val df = new DiffFormatter(DisabledOutputStream.INSTANCE)
         df.setRepository(repo)
         df.setDiffComparator(RawTextComparator.DEFAULT)
@@ -58,12 +90,13 @@ object GitModel extends SourceRepositoryModel {
             df.scan(parent.getTree, commit.getTree).map { diff =>
                 diff.getNewPath
             },
-            commit.getName, 
+            branch,
+            commit.getName,
             timestamp
         )
     }
 
-    private def addInitialCommitRecords(commit: RevCommit) = {
+    private def addInitialCommitRecords(commit: RevCommit, branch: String) = {
         val walk = new TreeWalk(repo)
         walk.addTree(commit.getTree)
         walk.setRecursive(true)
@@ -77,6 +110,7 @@ object GitModel extends SourceRepositoryModel {
 
         RepoFile.touchFiles(
             files,
+            branch,
             commit.getName,
             timestamp
         )
