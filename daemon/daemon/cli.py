@@ -53,6 +53,7 @@ def main():
             "file": git.relative_file_path,
             "name": git.name,
             "email": git.email,
+            "branch": git.branch,
             "commit": git.commit,
             "lines[]": lines,
         })

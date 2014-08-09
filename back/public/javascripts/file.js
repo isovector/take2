@@ -1,9 +1,10 @@
 ﻿frostbite.controller('FileCtrl', ['$scope', '$http', '$q', function ($scope, $http, $q) {
     $scope.lines = []
     $scope.path = ""
+    $scope.showFile = true;
+
     $scope.inity = function () {
         SyntaxHighlighter.all();
-
     }
 
     $scope.init_data = function () {
@@ -13,7 +14,10 @@
 
     $scope.setFileContents = function (filestuff) {
         console.log(filestuff);
+        //Get our path for breadcrumbs
         $scope.pathArray = filestuff.path.split("/");
+
+        //Insert the code content into the page
         $('#file_brush').html(filestuff.contents);
         $scope.path = filestuff.path;
         console.log(filestuff.path);
