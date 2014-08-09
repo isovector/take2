@@ -10,13 +10,34 @@ frostbite.filter('isDirectory', function() {
     }
 })
 
+.directive('customPopover', function () {
+	return {
+		link: function (scope, el, attrs) {
+			console.log(attrs.popoverHtml);
+		
+			var jsonObj = jQuery.parseJSON(attrs.popoverHtml);
+			var name = jsonObj.name;
+			var imageString = jsonObj.picture;
+			var image = '<img src="' + imageString + '" width="60px" height="60px">';
+			var htmlContent = '<p>' + name + image + '</p>';
+
+			$(el).popover({
+				trigger: 'hover',
+				html: true,
+				delay: { show: 500, hide: 100 },
+				content: htmlContent,
+				placement: 'auto',
+			});
+		}
+	};
+})
 .controller('DirecCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.filename = "";
 
     $scope.items = []
     
 
-    $scope.popover({ title: 'LOOK a bird image', content:'<img src="https://si0.twimg.com/a/1339639284/images/three_circles/twitter-bird-white-on-blue.png" />'; html:true });
+    //$scope.popover({ title: 'LOOK a bird image', content:'<img src="https://si0.twimg.com/a/1339639284/images/three_circles/twitter-bird-white-on-blue.png" />'; html:true });
 
     $scope.setFilename = function(filename) {
 	console.log("filename = " + filename);
@@ -27,7 +48,7 @@ frostbite.filter('isDirectory', function() {
             $scope.items[i].editedlast  = {"id":7, "time":new Date()};
         }
 	console.log($scope.items);
-        $scope.getUsers();
+    $scope.getUsers();
 	//$scope.getDirectories();
     }
 
@@ -67,4 +88,7 @@ frostbite.filter('isDirectory', function() {
         }(i));
 	}
     }
+
+	
 }])
+
