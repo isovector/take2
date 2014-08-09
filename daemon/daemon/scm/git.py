@@ -29,3 +29,8 @@ class Git(SCMBase):
     def _get_email(self):
         r = envoy_run('git config user.email')
         return r.std_out.strip()
+
+    def _get_branch(self):
+        r = envoy_run('git rev-parse --abbrev-ref HEAD')
+        return r.std_out.strip()
+

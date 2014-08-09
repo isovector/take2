@@ -1,4 +1,4 @@
-var frostbite = angular.module('frostbite', ['ngResource', 'ui.listview']);
+var frostbite = angular.module('frostbite', ['ngResource', 'ui.listview', 'ui.bootstrap']);
 
 /**********************
 
