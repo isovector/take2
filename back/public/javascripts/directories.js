@@ -14,7 +14,7 @@ frostbite.filter('isDirectory', function() {
 	return {
 		link: function (scope, el, attrs) {
 			console.log(attrs.popoverHtml);
-		
+			console.log("HELLO");
 			var jsonObj = jQuery.parseJSON(attrs.popoverHtml);
 			var name = jsonObj.name;
 			var imageString = jsonObj.picture;
@@ -52,43 +52,40 @@ frostbite.filter('isDirectory', function() {
 	//$scope.getDirectories();
     }
 
-    $scope.getUsers = function() {
+$scope.getUsers = function() {
 	console.log("Getting users");
 	for (var i = 0; i < $scope.items.length; i++) {
-        // TODO: switch to actual number of users
-	    (function(i) {
-	        $http.get("/api/currently/viewing/" + $scope.items[i].path).success(function(data) {
+		//TODO: switch back
+		if (i == 0) {
+			$scope.items[0].users = [];
+			$scope.items[0].users.push ({ "name":"Jeff Lee", "picture":"http://www.gravatar.com/avatar/12"});
+			
+		}/*
+		(function(i) {
+			$http.get("/api/currently/viewing/" + $scope.items[i].path).success(function(data) {
 				$scope.items[i].users = data;
 				var numUsers = $scope.items[i].users.length;
 				for (var j = 0; j < numUsers; j++) {
-					//(function(i,j) {
-						var emailLowerCase = $scope.items[i].users[j].email.toLowerCase();
-						//var emailLowerCase = "";
-						console.log(emailLowerCase);
-						var hashEmail = CryptoJS.MD5( emailLowerCase );  
-						console.log("EMAIL: " + hashEmail);
-						$scope.items[i].users[j].picture = "http://www.gravatar.com/avatar/" + hashEmail;
-						/*$http.get("http://www.gravatar.com/" + hashEmail + ".json").success(function(data) {
-							console.log(data);
-						}).error(function(data, status, headers, config) {
-							console.log(status);	
-						});*/
-					//}(i,j));
+					var emailLowerCase = $scope.items[i].users[j].email.toLowerCase();
+					console.log(emailLowerCase);
+					var hashEmail = CryptoJS.MD5( emailLowerCase );  
+					console.log("EMAIL: " + hashEmail);
+					$scope.items[i].users[j].picture = "http://www.gravatar.com/avatar/" + hashEmail;
 				}
 				if (numUsers >= 3) {
 					$scope.items[i].currentUsers = $scope.items[i].users[0].name + " and " + (numUsers - 1) + " Others";
-	            } else if (numUsers == 2){
+				} else if (numUsers == 2){
 					$scope.items[i].currentUsers = $scope.items[i].users[0].name + " and " + $scope.items[i].users[1].name;
-	            } else if (numUsers == 1) {
+				} else if (numUsers == 1) {
 					$scope.items[i].currentUsers = $scope.items[i].users[0].name;
-                } else {
+				} else {
 					$scope.items[i].currentUsers = "";
-	            }
-			});
-        }(i));
+				}
+				});
+			}(i));*/
+		}
 	}
-    }
 
-	
+
 }])
 
