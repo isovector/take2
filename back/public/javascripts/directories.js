@@ -18,15 +18,15 @@ frostbite.filter('isDirectory', function() {
 			var jsonObj = jQuery.parseJSON(attrs.popoverHtml);
 			var name = jsonObj.name;
 			var imageString = jsonObj.picture;
-			var image = '<img src="' + imageString + '" width="60px" height="60px">';
-			var htmlContent = '<p>' + name + image + '</p>';
-
+			var image = '<img src="' + imageString + '" style="float:left;margin-right:5px;margin-bottom:10px;">';
+			var htmlContent = '<p style="">' + image + name + '</p>';
 			$(el).popover({
 				trigger: 'hover',
 				html: true,
 				delay: { show: 500, hide: 100 },
 				content: htmlContent,
-				placement: 'auto',
+				placement: 'bottom',
+				template: '<div style="width:200px" class="popover" role="tooltip"><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
 			});
 		}
 	};
