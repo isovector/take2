@@ -74,6 +74,7 @@ object RepoController extends Controller {
     def initialize = Action {
         RepoModel.initialize
         Ok("cool")
+    }
 
     def retrieveFileByRegex(regex: String) = Action {
         var files = listFiles(
@@ -83,7 +84,7 @@ object RepoController extends Controller {
         Ok(
             files.filter(!_.isHidden).to[Seq].mapJs(
                 "name" -> (_.getName),
-                "path" -> (getPath(_)),
+                "path" -> (getPath(_))
             ).toString
         )
     }
