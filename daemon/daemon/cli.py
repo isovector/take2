@@ -15,6 +15,7 @@ OPTIONS = {
     'end': int,
 }
 
+
 def main():
     parser = ArgumentParser(
         prog=DAEMON_MAIN,
@@ -48,7 +49,7 @@ def main():
     conn = Connection(server_url)
 
     try:
-        conn.post(path = "/api/snapshot", payload = {
+        conn.post(path="/api/snapshot", payload={
             "timestamp": int(time() * 1000),
             "file": git.relative_file_path,
             "name": git.name,

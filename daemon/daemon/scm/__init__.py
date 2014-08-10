@@ -2,11 +2,12 @@ from abc import ABCMeta, abstractmethod
 from os import chdir, getcwd
 from os.path import dirname, relpath
 
-from daemon.utils import cached_property, norm_path
+from daemon.utils import cached_property
 
 
 class SCMBase(object):
     __metaclass__ = ABCMeta
+
     def __init__(self, file_path, repo_path):
         self.__file_path = file_path
         self.__repo_path = repo_path

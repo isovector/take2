@@ -1,7 +1,7 @@
 from envoy import run as envoy_run
 
 from daemon.scm import SCMBase
-from daemon.utils import make_tempfile, cached_property, norm_path
+from daemon.utils import make_tempfile, norm_path
 
 
 class Git(SCMBase):
@@ -33,4 +33,3 @@ class Git(SCMBase):
     def _get_branch(self):
         r = envoy_run('git rev-parse --abbrev-ref HEAD')
         return r.std_out.strip()
-

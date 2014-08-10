@@ -1,4 +1,5 @@
-import sys
+from os import chdir
+from os.path import dirname
 
 try:
     from setuptools import setup, find_packages
@@ -9,6 +10,11 @@ except ImportError:
     from setuptools import setup, find_packages
 
 from daemon import get_package_version, DAEMON_MAIN
+
+root_dir = dirname(__file__)
+
+if root_dir != "":
+    chdir(root_dir)
 
 setup(
     name='daemon',
@@ -30,5 +36,6 @@ setup(
     test_suite='unittest2.collector',
     tests_require=[
         'unittest2>=0.5.1',
+        'pep8>=1.5.7',
     ],
 )
