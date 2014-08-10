@@ -11,9 +11,11 @@ DELETE  /api/snapshot/:id           controllers.SnapshotController.delete(id: In
 
 GET     /manage-repo/initialize     controllers.RepoController.initialize
 
-GET 	/directory                  controllers.RepoController.retrieveFileByPath(file = "")
+GET     /directory                  controllers.RepoController.retrieveFileByPath(file = "")
 GET     /directory/                 controllers.RepoController.retrieveFileByPath(file = "")
 GET     /directory/*file            controllers.RepoController.retrieveFileByPath(file)
+
+GET     /api/search/directory/*file controllers.RepoController.retrieveFileByRegex(file)
 
 GET     /api/currently/viewing/*file controllers.FileMetricsController.getUsersInFile(file)
 GET     /api/currently/open         controllers.FileMetricsController.getCurrentlyOpenFiles
@@ -23,5 +25,3 @@ GET     /api/metrics/popular/:since controllers.FileMetricsController.getMostPop
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
-
-
