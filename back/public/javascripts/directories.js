@@ -39,7 +39,6 @@ frostbite.filter('isDirectory', function() {
 		$scope.pathArray = $scope.items[0].path.split("/");
 		$scope.pathArray.pop();
 		// TODO: put in real edited last info
-		console.log($scope.items);
 		for (var i = 0; i < $scope.items.length; i++) {
             //$scope.items[i].editedlast  = {"id":7, "time":new Date()};
 			$scope.items[i].editedLast = {"id":7, "time":new Date($scope.items[i].lastUpdated)};
@@ -48,7 +47,6 @@ frostbite.filter('isDirectory', function() {
     }
 
 	$scope.getUsers = function() {
-		console.log("Getting users");
 		for (var i = 0; i < $scope.items.length; i++) {
 			//TODO: switch back
 			if (i == 0) {
