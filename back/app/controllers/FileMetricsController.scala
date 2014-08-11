@@ -21,11 +21,11 @@ object FileMetricsController extends Controller {
 
     private val recentDuration = 5.minutes;
 
-    def concat(ll:List[List[Any]]): List[Any] = { 
-        ll match { 
-            case List(Nil) => Nil; 
-            case (x::xs) => x ::: concat(xs); 
-            case Nil => Nil 
+    def concat(ll:List[List[Any]]): List[Any] = {
+        ll match {
+            case List(Nil) => Nil;
+            case (x::xs) => x ::: concat(xs);
+            case Nil => Nil
         }
     }
 
@@ -43,7 +43,7 @@ object FileMetricsController extends Controller {
         }.map {
             case (user, lists) =>
                 user -> concat(lists).groupBy(line => line).map {
-                    x => x._1 -> x._2.length 
+                    x => x._1 -> x._2.length
                 }
         }
 
@@ -109,7 +109,7 @@ object FileMetricsController extends Controller {
                 x.timestamp > timestamp
             ).list
         }.groupBy(_.file).toSeq.map {
-            case (k, v) => k -> v.length 
+            case (k, v) => k -> v.length
         }.sortBy(-_._2).take(10)
 
         Ok(

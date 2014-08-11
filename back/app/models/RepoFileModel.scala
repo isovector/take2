@@ -25,7 +25,7 @@ case class RepoFile(
 
         DB.withSession { implicit session =>
             Table += this
-	    }
+        }
     }
 
     def save() = {

@@ -1,5 +1,3 @@
-from os import getcwd
-from os.path import join
 from unittest2 import TestCase
 
 from daemon.scm.diff import create_diff, convert_line_numbers
@@ -29,11 +27,11 @@ class DiffTest(TestCase):
         a = make_tempfile("a\nb\nc\n")
         b = make_tempfile("a\nc\n")
         self.assertEqual(create_diff(new=a, old=b), ['-', '<', '-'])
-        delete_tempfile(a);
-        delete_tempfile(b);
+        delete_tempfile(a)
+        delete_tempfile(b)
 
         a = make_tempfile("a\nc\n")
         b = make_tempfile("a\nb\nc\n")
         self.assertEqual(create_diff(new=a, old=b), ['-', '>', '-'])
-        delete_tempfile(a);
-        delete_tempfile(b);
+        delete_tempfile(a)
+        delete_tempfile(b)
