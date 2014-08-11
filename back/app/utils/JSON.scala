@@ -4,7 +4,6 @@ import play.api.data._
 import play.api.libs.json._
 
 import com.github.nscala_time.time.Imports._
-import utils.DateConversions
 
 object JSON {
     import Json._
@@ -21,7 +20,7 @@ object JSON {
         case date: DateTime => toJson(date)
 
         case js: JsValue => js
-        case bad => throw new Exception(m.toString) 
+        case bad => throw new Exception(m.toString)
     }
 
     // given a map of names to functions, create a JSON object
@@ -34,13 +33,13 @@ object JSON {
 
 
     // add mapJs and asjs functions to everything
-    implicit def implSeqToRich[T](underlying: Seq[T]): RichJsonSeq[T] = 
+    implicit def implSeqToRich[T](underlying: Seq[T]): RichJsonSeq[T] =
         new RichJsonSeq(underlying)
 
-    implicit def implArrayToRich[T](underlying: Array[T]): RichJsonSeq[T] = 
+    implicit def implArrayToRich[T](underlying: Array[T]): RichJsonSeq[T] =
         new RichJsonSeq(underlying.toSeq)
 
-    implicit def implAnyToRich[T](underlying: T): RichJsonAny[T] = 
+    implicit def implAnyToRich[T](underlying: T): RichJsonAny[T] =
         new RichJsonAny(underlying)
 }
 

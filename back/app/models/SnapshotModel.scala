@@ -29,7 +29,7 @@ case class Snapshot(
 
         DB.withSession { implicit session =>
             id = Some((Table returning Table.map(_.id)) += this)
-	    }
+        }
     }
 }
 
