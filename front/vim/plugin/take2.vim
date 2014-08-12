@@ -33,7 +33,7 @@ def send_to_daemon(filename, buffer, window_range):
     from subprocess import Popen, PIPE
     from os import getpid
 
-    cmd = "accio --start=%d --end=%d --filename=%s &" % (
+    cmd = "accio send --start=%d --end=%d --filename=%s &" % (
         window_range[0],
         window_range[1],
         filename
