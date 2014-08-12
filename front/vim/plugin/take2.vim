@@ -5,10 +5,11 @@ endif
 python << endpython
 import vim
 
-global gTimer, gIsActive, gIdleCount, IS_IDLE_COUNT, RECORD_DURATION
+global gTimer, gIsActive, gUpdatesToSend, gIdleCount, IS_IDLE_COUNT, RECORD_DURATION
 
 gTimer = None
 gIsActive = False
+gUpdatesToSend = 0
 gIdleCount = 0
 
 RECORD_DURATION = 5.0
@@ -21,20 +22,17 @@ def get_window_range():
     cursor = vim.current.window.cursor
     localCursor = int(vim.eval("winline()"))
     topOfWindow = cursor[0] - localCursor + 1
-    return (topOfWindow, topOfWindow + vim.current.window.height) 
+    return (topOfWindow, topOfWindow + vim.current.window.height)
 
 
-def send_to_daemon(filename, window_range):
+def send_to_daemon(filename, buffer, window_range):
     """
-    Send all data to the daemon, piping the current buffer's content into 
+    Send all data to the daemon, piping the current buffer's content into
     stdin.
     """
     from subprocess import Popen, PIPE
     from os import getpid
 
-    # Transform the buffer into a string. The final \n is appended because
-    # it exists in the file, but not in the buffer.
-    buffer = "\n".join(vim.current.buffer[:]) + "\n"
     cmd = "accio --start=%d --end=%d --filename=%s &" % (
         window_range[0],
         window_range[1],
@@ -43,22 +41,36 @@ def send_to_daemon(filename, window_range):
 
     pipe = Popen(
         cmd,
-        shell = True, 
+        shell = True,
         stdin = PIPE,
         stdout = PIPE,
         stderr = PIPE
     )
-    pipe.communicate(input = buffer);
+
+    pipe.communicate(input = buffer)
 
 
 def collect_metrics():
     """
     Collect metrics and send it to the daemon.
     """
-    send_to_daemon(
-        vim.current.buffer.name,
-        get_window_range()
-    )
+    from threading  import Thread
+
+    global gUpdatesToSend
+    if gUpdatesToSend > 0:
+        t = Thread(
+            target = send_to_daemon,
+            args = (
+                vim.current.buffer.name,
+                "\n".join(vim.current.buffer[:]) + "\n",
+                get_window_range()
+            )
+        )
+
+        t.daemon = True
+        t.start()
+
+        gUpdatesToSend -= 1
 
 
 
@@ -75,9 +87,9 @@ def scheduleNextTimer():
         """
         Helper function to reschedule the timer
         """
-        global gIdleCount
+        global gIdleCount, gUpdatesToSend
         if isActive():
-            collect_metrics()
+            gUpdatesToSend += 1
         gIdleCount += 1
         scheduleNextTimer()
 
@@ -98,13 +110,15 @@ def setActive():
     """
     global gIdleCount
     gIdleCount = 0
+    collect_metrics()
 
 def setIdle():
     """
     Called by vim to inform us we lost focus.
     """
-    global gIdleCount, IS_IDLE_COUNT
+    global gIdleCount, gUpdatesToSend, IS_IDLE_COUNT
     gIdleCount = IS_IDLE_COUNT
+    gUpdatesToSend = 0
 
 endpython
 
