@@ -4,6 +4,7 @@ import java.io.File
 import play.api._
 import scala.collection.JavaConversions._
 import org.eclipse.jgit._
+import org.eclipse.jgit.lib.Constants
 import org.eclipse.jgit.revwalk._
 import org.eclipse.jgit.treewalk._
 import org.eclipse.jgit.diff._
@@ -15,15 +16,15 @@ import org.gitective.core._
 
 import com.github.nscala_time.time.Imports._
 
-object GitModel extends SourceRepositoryModel {
-    private val repo = new FileRepository(RepoModel.local + File.separator + ".git")
+trait GitModel extends SourceRepositoryModel {
+    private val repo = new FileRepository(local + File.separator + ".git")
     private val git = new Git(repo)
     private val revwalk = new RevWalk(repo)
 
     val defaultBranch = "master"
 
     def initialize = {
-        Git.cloneRepository.setURI(RepoModel.remote).setDirectory(RepoModel.getFile("")).call
+        Git.cloneRepository.setURI(remote).setDirectory(getFile("")).call
         update("master")
     }
 
@@ -51,6 +52,8 @@ object GitModel extends SourceRepositoryModel {
             }
         }
     }
+
+    def lastCommit = repo.resolve(Constants.HEAD).toString
 
     def getFilePathsInCommit(hash: String): Seq[String] =
             getFilePathsInCommit(revwalk.parseCommit(repo.resolve(hash)))

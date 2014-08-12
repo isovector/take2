@@ -82,6 +82,7 @@ object SnapshotController extends Controller {
               new DateTime(snapFormData.timestamp),
               snapFormData.file,
               User.getByEmail(snapFormData.email).get,
+              snapFormData.branch,
               snapFormData.commit,
               snapFormData.lines.map(_ -> 1).toMap
             );
