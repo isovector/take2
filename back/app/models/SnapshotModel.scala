@@ -38,17 +38,13 @@ case class Snapshot(
 object Snapshot {
     private val Table = TableQuery[SnapshotModel]
 
-    def getTotalSnapsByUser(file: String): Map[User, Map[Int, Int]] = {
-        val users = DB.withSession { implicit session =>
-            Table
-            .where(_.commit === RepoModel.lastCommit)
-            .where(_.file === file)
-            .list
-        }.groupBy(_.user)
+    def lineviews[T](grouping: Snapshot => T)(dataset: Seq[Snapshot])
+            : Map[T, Map[Int, Int]] = {
+        val byKey = dataset.groupBy(grouping)
 
-        // Count lines by user
-        users.toSeq.map { case (user, snaps) =>
-            user -> snaps.flatMap { snap =>
+        // Count lines by key
+        byKey.toSeq.map { case (key, snaps) =>
+            key -> snaps.flatMap { snap =>
                 snap.lines.flatMap { case(line, times) =>
                     // create a length-n array of line numbers
                     Seq.fill(times)(line)
@@ -58,6 +54,7 @@ object Snapshot {
             }
         }.toMap
     }
+
 
     implicit def implicitMapColumnMapper = MappedColumnType.base[Map[Int, Int], String](
         si =>

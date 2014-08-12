@@ -21,19 +21,26 @@ object FileMetricsController extends Controller {
 
     private val recentDuration = 5.minutes;
 
-    def listAll(file: String) = Action {
+    def getFileLineViews(file: String) = Action {
         import Json._
-        import User._
 
-        val totalLinesByUsers = Snapshot.getTotalSnapsByUser(file)
+        val lines = Snapshot.lineviews(_.user) {
+            DB.withSession { implicit session =>
+                Table
+                .where(_.commit === RepoModel.lastCommit)
+                .where(_.file === file)
+                .list
+            }
+        }
+
         Ok(
             Json.toJson(Map(
                 "file" -> toJson(file),
                 "commit" -> toJson(Todo.unimplemented),
-                "userData" -> toJson(totalLinesByUsers.toSeq.map {
+                "userData" -> toJson(lines.toSeq.map {
                     case (user, snaps) => toJson(Map(
                         "user" -> toJson(user),
-                        "timeSpent" -> toJson(totalLinesByUsers(user).size),
+                        "timeSpent" -> toJson(lines(user).size),
                         "timeSpentByLine" -> toJson(snaps.toSeq.map {
                             case (line, count) => Map(
                                 "line" -> toJson(line.asInstanceOf[Int]),

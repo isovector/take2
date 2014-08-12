@@ -91,6 +91,7 @@ object RepoFile {
             .where(x => x.timestamp > since)
             .list
         }.groupBy(_.file).toSeq.map {
+            // Only count number of snapshots
             case (k, v) => k -> v.length
         }.toMap
     }
