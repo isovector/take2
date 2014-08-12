@@ -69,7 +69,7 @@ object User {
         }
     }
 
-    implicit val implicitUserColumnMapper = MappedColumnType.base[User, Int](
+    implicit def implicitUserColumnMapper = MappedColumnType.base[User, Int](
         u => u.id.get,
         i => User.getById(i).get
     )

@@ -83,6 +83,20 @@ object RepoFile {
             }
         }
     }
+
+    def getFilesOpenedSince(since: DateTime): Map[String, Int] = {
+        Map(
+            DB.withSession { implicit session =>
+                TableQuery[SnapshotModel]
+                .where(x =>
+                    x.timestamp > since
+                )
+                .list
+            }.groupBy(_.file).toSeq.map {
+                case (k, v) => k -> v.length
+            }: _*
+        )
+    }
 }
 
 class RepoFileModel(tag: Tag) extends Table[RepoFile](tag, "RepoFile") {

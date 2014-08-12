@@ -35,8 +35,7 @@ object RepoController extends Controller {
     }
 
     def retrieveFileByPath(filepath: String) = Action {
-        var absPath = RepoModel.local + File.separator + filepath
-        var fileObj = new File(absPath)
+        var fileObj = RepoModel.getFile(filepath)
 
         (fileObj.exists match {
             case true => Some(fileObj.isDirectory)
