@@ -87,9 +87,8 @@ object RepoFile {
     def getFilesOpenedSince(since: DateTime): Map[String, Int] = {
         DB.withSession { implicit session =>
             TableQuery[SnapshotModel]
-            .where(x =>
-                x.timestamp > since
-            )
+            .where(_.commit === RepoModel.lastCommit)
+            .where(x => x.timestamp > since)
             .list
         }.groupBy(_.file).toSeq.map {
             case (k, v) => k -> v.length

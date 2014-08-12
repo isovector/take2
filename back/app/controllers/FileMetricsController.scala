@@ -52,9 +52,11 @@ object FileMetricsController extends Controller {
 
         // TODO(sandy): it would be nice to get this using getFilesOpenedSince
         val users = DB.withSession { implicit session =>
-            Table.where(_.file.like(prefix + "%")).where( x =>
-                x.timestamp > since
-            ).list
+            Table
+            .where(_.commit === RepoModel.lastCommit)
+            .where(_.file.like(prefix + "%"))
+            .where(x => x.timestamp > since)
+            .list
         }.groupBy(_.user).toSeq.map {
             case (k, v) => k
         }
@@ -65,7 +67,8 @@ object FileMetricsController extends Controller {
     }
 
     def getCurrentlyOpenFiles = Action {
-        val files = RepoFile.getFilesOpenedSince(DateTime.now - recentDuration)
+        val files =
+            RepoFile.getFilesOpenedSince(DateTime.now - recentDuration)
             .toSeq.map {
                 case (k, v) => k
             }
@@ -76,8 +79,11 @@ object FileMetricsController extends Controller {
     }
 
     def getMostPopularFiles(since: String) = Action {
-        val files = RepoFile.getFilesOpenedSince(new DateTime(since.toLong))
-            .toSeq.sortBy(-_._2).take(10)
+        val files =
+            RepoFile.getFilesOpenedSince(new DateTime(since.toLong))
+            .toSeq
+            .sortBy(-_._2) // sort by descending viewsigs
+            .take(10)
 
         Ok(
             files.mapJs(

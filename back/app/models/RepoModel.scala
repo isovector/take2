@@ -10,27 +10,21 @@ import models._
 import utils._
 
 trait SourceRepositoryModel {
-    def initialize: Unit
-    def update(branch: String): Unit
-    def getFilePath(localPath: String) =
-        RepoModel.local + File.separator + localPath
-    def getFile(localPath: String) = new File(getFilePath(localPath))
-    def getFilePathsInCommit(hash: String): Seq[String]
-}
-
-object RepoModel {
     val remote = "git@github.com:Paamayim/take2.git"
     val local = "repo"
+    val defaultBranch: String
 
-    private val impl = GitModel
+    // Prototype methods
+    def lastCommit: String
+    def initialize: Unit
+    def update(branch: String): Unit
+    def getFilePathsInCommit(hash: String): Seq[String]
 
-    // Forward methods to implementation
-    val defaultBranch = impl.defaultBranch
-    def initialize = impl.initialize
-    def update = impl.update _
-    def getFile = impl.getFile _
-    def getFilePath = impl.getFilePath _
-    def getFilePathsInCommit(hash: String) = impl.getFilePathsInCommit(hash)
+    // Implemented methods
+    def getFilePath(localPath: String) =
+        local + File.separator + localPath
+    def getFile(localPath: String) = new File(getFilePath(localPath))
+
 
     def fastforward(srcCommit: String, dstCommit: String) = {
         val Table = TableQuery[SnapshotModel]
@@ -65,10 +59,13 @@ object RepoModel {
                 new DateTime(0), // TODO(sandy): get the right time for this
                 filepath,
                 User.getById(1).get, // TODO(sandy): figure out a proper user for this
+                defaultBranch,       // TODO(sandy): is this a meaningful branch?
                 dstCommit,
                 newlines.toMap
             ).insert()
         }
     }
 }
+
+object RepoModel extends GitModel
 

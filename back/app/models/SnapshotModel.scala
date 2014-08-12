@@ -18,6 +18,7 @@ case class Snapshot(
         timestamp: DateTime,
         file: String,
         user: User,
+        branch: String,
         commit: String,
         lines: Map[Int, Int]) {
     private val Table = TableQuery[SnapshotModel]
@@ -39,7 +40,10 @@ object Snapshot {
 
     def getTotalSnapsByUser(file: String): Map[User, Map[Int, Int]] = {
         val users = DB.withSession { implicit session =>
-            Table.where(_.file === file).list
+            Table
+            .where(_.commit === RepoModel.lastCommit)
+            .where(_.file === file)
+            .list
         }.groupBy(_.user)
 
         // Count lines by user
@@ -79,9 +83,10 @@ class SnapshotModel(tag: Tag) extends Table[Snapshot](tag, "Snapshot") {
     def timestamp = column[DateTime]("timestamp")
     def file = column[String]("file")
     def user = column[User]("user")
+    def branch = column[String]("branch")
     def commit = column[String]("commit")
-    def lines = column[Map[Int, Int]]("lines.2", O.DBType("TEXT"))
+    def lines = column[Map[Int, Int]]("lines", O.DBType("TEXT"))
     val snapshot = Snapshot.apply _
-    def * = (id.?, timestamp, file, user, commit, lines) <> (snapshot.tupled, Snapshot.unapply _)
+    def * = (id.?, timestamp, file, user, branch, commit, lines) <> (snapshot.tupled, Snapshot.unapply _)
 }
 
