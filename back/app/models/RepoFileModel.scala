@@ -25,7 +25,7 @@ case class RepoFile(
 
         DB.withSession { implicit session =>
             Table += this
-	    }
+        }
     }
 
     def save() = {
@@ -82,6 +82,20 @@ object RepoFile {
                 }
             }
         }
+    }
+
+    def getFilesOpenedSince(since: DateTime): Map[String, Int] = {
+        Map(
+            DB.withSession { implicit session =>
+                TableQuery[SnapshotModel]
+                .where(x =>
+                    x.timestamp > since
+                )
+                .list
+            }.groupBy(_.file).toSeq.map {
+                case (k, v) => k -> v.length
+            }: _*
+        )
     }
 }
 

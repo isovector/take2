@@ -20,6 +20,7 @@ def delete_tempfile(path):
     except:
         pass
 
+
 def norm_path(path):
     return path.replace('\\', '/')
 

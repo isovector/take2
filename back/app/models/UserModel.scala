@@ -28,13 +28,13 @@ case class User(
 
         DB.withSession { implicit session =>
             id = Some((Table returning Table.map(_.id)) += this)
-	    }
+        }
     }
 
     def save() = {
         id match {
             case Some(_) => // do nothing
-            case None => throw new NullPointerException 
+            case None => throw new NullPointerException
         }
 
         DB.withSession { implicit session =>
@@ -69,7 +69,7 @@ object User {
         }
     }
 
-    implicit val implicitUserColumnMapper = MappedColumnType.base[User, Int](
+    implicit def implicitUserColumnMapper = MappedColumnType.base[User, Int](
         u => u.id.get,
         i => User.getById(i).get
     )

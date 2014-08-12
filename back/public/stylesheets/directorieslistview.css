@@ -23,15 +23,6 @@ body > script {
     display: none
 }*/
 
-.popover-inner {
-	background-color: #FF0000;
-}
-
-.popover.bottom .popover-arrow {
-	border-right: 5px solid #FF0000;
-
-}
-
 #item {
 
     background-color:#f6f6f6;
