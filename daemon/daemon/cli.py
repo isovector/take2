@@ -1,75 +1,25 @@
-from argparse import ArgumentParser
-from sys import stdin, stderr
-from time import time
+from daemon.parser import build_parser
+from daemon.commands.translate import translate
+from daemon.commands.send import send
 
-from daemon import DAEMON_MAIN
-from daemon.config import REPOSITORY_PATHS
-from daemon.network import Connection
-from daemon.scm.git import Git
-from daemon.scm.diff import create_diff, convert_line_numbers
-from daemon.utils import make_tempfile, delete_tempfile
 
 OPTIONS = {
-    'filename': str,
-    'start': int,
-    'end': int,
+    'command': str,
+}
+
+
+COMMANDS = {
+    'translate': translate,
+    'send': send,
 }
 
 
 def main():
-    parser = ArgumentParser(
-        prog=DAEMON_MAIN,
-        usage='%(prog)s [<args>]',
-        add_help=False)
+    parser = build_parser(OPTIONS)
 
-    for k, v in OPTIONS.iteritems():
-        parser.add_argument('--' + k, type=v)
+    (opt, args) = parser.parse_known_args()
 
-    opt = parser.parse_args()
-
-    repo_path, server_url = repo_url(opt.filename)
-
-    if server_url is None:
+    if opt.command not in COMMANDS:
         return
 
-    try:
-        git = Git(opt.filename, repo_path)
-    except Exception as e:
-        stderr.write(str(e))
-        return
-
-    current_file = make_tempfile(stdin.read())
-
-    diff = create_diff(new=current_file, old=git.original_file)
-    lines = convert_line_numbers(diff=diff, start=opt.start, end=opt.end)
-
-    delete_tempfile(current_file)
-    delete_tempfile(git.original_file)
-
-    conn = Connection(server_url)
-
-    try:
-        conn.post(path="/api/snapshot", payload={
-            "timestamp": int(time() * 1000),
-            "file": git.relative_file_path,
-            "name": git.name,
-            "email": git.email,
-            "branch": git.branch,
-            "commit": git.commit,
-            "lines[]": lines,
-        })
-    except Exception as e:
-        stderr.write(str(e))
-        return
-
-
-def repo_url(path):
-    """
-    Returns the list of server urls associated with a file path. If the path
-    is not in a supported repository, None is returned.
-    """
-    for k, v in REPOSITORY_PATHS.iteritems():
-        if path.startswith(k):
-            return k, v
-
-    return None, None
+    return COMMANDS[opt.command](args)

@@ -1,5 +1,6 @@
 from os import unlink, write, close
-from tempfile import mkstemp
+from shutil import rmtree
+from tempfile import mkstemp, mkdtemp
 
 
 def make_tempfile(content=None):
@@ -21,8 +22,21 @@ def delete_tempfile(path):
         pass
 
 
+def delete_tempfolder(path):
+    """Deletes a temporary folder """
+    try:
+        rmtree(path)
+    except:
+        pass
+
+
 def norm_path(path):
     return path.replace('\\', '/')
+
+
+def make_tempdir():
+    """Creates a temporary folder directory and returns the path."""
+    return mkdtemp()
 
 
 class cached_property(object):
