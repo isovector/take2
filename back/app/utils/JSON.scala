@@ -26,9 +26,9 @@ object JSON {
     // given a map of names to functions, create a JSON object
     // by calling the functions on src
     def asObj[T](src: T)(maps: Tuple2[String, T => Any]*): JsValue = {
-        toJson(Map(maps.map {
+        toJson(maps.map {
             case(k, v) => k -> JSON(v(src))
-        }: _*))
+        }.toMap)
     }
 
 

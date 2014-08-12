@@ -19,7 +19,7 @@ case class Snapshot(
         file: String,
         user: User,
         commit: String,
-        lines: Seq[Int]) {
+        lines: Map[Int, Int]) {
     private val Table = TableQuery[SnapshotModel]
     def insert() = {
         // Ensure this Event hasn't already been put into the database
@@ -43,38 +43,31 @@ object Snapshot {
         }.groupBy(_.user)
 
         // Count lines by user
-        Map((
-            users.toSeq.map { case (user, snaps) =>
-                user -> snaps.flatMap { snap =>
-                    snap.lines
-                }.groupBy(line => line).map {
-                    x => x._1 -> x._2.length
+        users.toSeq.map { case (user, snaps) =>
+            user -> snaps.flatMap { snap =>
+                snap.lines.flatMap { case(line, times) =>
+                    // create a length-n array of line numbers
+                    Seq.fill(times)(line)
                 }
-            }): _*
-        )
+            }.groupBy(line => line).map {
+                x => x._1 -> x._2.length
+            }
+        }.toMap
     }
 
+    implicit def implicitMapColumnMapper = MappedColumnType.base[Map[Int, Int], String](
+        si =>
+            si.toSeq.map{ case (k, v) =>
+                k.toString + ":" + v.toString
+            }.mkString(","),
 
-    // Implicits for automatic serialization
-    implicit val implicitSnapshotWrites = new Writes[Snapshot] {
-        def writes(snap: Snapshot): JsValue = {
-            import User._
-            Json.obj(
-                "id" -> snap.id.get,
-                "timestamp" -> snap.timestamp,
-                "file" -> snap.file,
-                "user" -> snap.user,
-                "commit" -> snap.commit,
-                "lines" -> snap.lines
-            )
-        }
-    }
-
-    implicit def implicitSeqColumnMapper = MappedColumnType.base[Seq[Int], String](
-        si => si.map(_.toString).mkString(","),
         s => s match {
-            case "" => Seq()
-            case s => s.split(",").map(_.toInt)
+            case "" => Map()
+            case s =>
+                s.split(",").map { pair =>
+                    val tuple = pair.split(":").map(_.toInt)
+                    tuple(0) -> tuple(1)
+                }.toMap
         }
     )
 }
@@ -87,7 +80,7 @@ class SnapshotModel(tag: Tag) extends Table[Snapshot](tag, "Snapshot") {
     def file = column[String]("file")
     def user = column[User]("user")
     def commit = column[String]("commit")
-    def lines = column[Seq[Int]]("lines", O.DBType("TEXT"))
+    def lines = column[Map[Int, Int]]("lines.2", O.DBType("TEXT"))
     val snapshot = Snapshot.apply _
     def * = (id.?, timestamp, file, user, commit, lines) <> (snapshot.tupled, Snapshot.unapply _)
 }

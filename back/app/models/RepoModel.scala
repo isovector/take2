@@ -66,7 +66,7 @@ object RepoModel {
                 filepath,
                 User.getById(1).get, // TODO(sandy): figure out a proper user for this
                 dstCommit,
-                newlines.toSeq.map(_._1) // TODO(sandy): make this use counts also
+                newlines.toMap
             ).insert()
         }
     }
