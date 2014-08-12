@@ -1,5 +1,6 @@
 package models
 
+import play.api.Logger
 import play.api.db.slick.Config.driver.simple._
 import play.api.db.slick.DB
 import play.api.libs.json._
@@ -34,6 +35,27 @@ case class Snapshot(
 }
 
 object Snapshot {
+    private val Table = TableQuery[SnapshotModel]
+
+    def getTotalSnapsByUser(file: String): Map[User, Map[Int, Int]] = {
+        val users = DB.withSession { implicit session =>
+            Table.where(_.file === file).list
+        }.groupBy(_.user)
+
+        // Count lines by user
+        Map((
+            users.toSeq.map { case (user, snaps) =>
+                user -> snaps.flatMap { snap =>
+                    snap.lines
+                }.groupBy(line => line).map {
+                    x => x._1 -> x._2.length
+                }
+            }): _*
+        )
+    }
+
+
+    // Implicits for automatic serialization
     implicit val implicitSnapshotWrites = new Writes[Snapshot] {
         def writes(snap: Snapshot): JsValue = {
             import User._
@@ -48,7 +70,7 @@ object Snapshot {
         }
     }
 
-    implicit val implicitSeqColumnMapper = MappedColumnType.base[Seq[Int], String](
+    implicit def implicitSeqColumnMapper = MappedColumnType.base[Seq[Int], String](
         si => si.map(_.toString).mkString(","),
         s => s match {
             case "" => Seq()
@@ -65,7 +87,7 @@ class SnapshotModel(tag: Tag) extends Table[Snapshot](tag, "Snapshot") {
     def file = column[String]("file")
     def user = column[User]("user")
     def commit = column[String]("commit")
-    def lines = column[Seq[Int]]("lines")
+    def lines = column[Seq[Int]]("lines", O.DBType("TEXT"))
     val snapshot = Snapshot.apply _
     def * = (id.?, timestamp, file, user, commit, lines) <> (snapshot.tupled, Snapshot.unapply _)
 }
