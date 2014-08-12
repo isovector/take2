@@ -33,3 +33,14 @@ header {
 article {
 	margin-top: 20px;
 }
+
+.pie-legend li span {
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.pie-legend {
+    list-style: none;    
+}
