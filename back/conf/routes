@@ -5,7 +5,6 @@
 # Home page
 GET     /                           controllers.Application.index
 
-GET     /api/snapshot               controllers.SnapshotController.list
 POST    /api/snapshot               controllers.SnapshotController.create
 DELETE  /api/snapshot/:id           controllers.SnapshotController.delete(id: Int)
 

@@ -48,11 +48,11 @@ object RepoFile {
     private val Table = TableQuery[RepoFileModel]
 
     def getAll: Map[String, RepoFile] = {
-        Map(DB.withSession { implicit session =>
+        DB.withSession { implicit session =>
             Table.list
         }.map { record =>
             record.file -> (record: RepoFile)
-        }: _*)
+        }.toMap
     }
 
     def getByFile(file: String): Option[RepoFile] = {
@@ -85,17 +85,15 @@ object RepoFile {
     }
 
     def getFilesOpenedSince(since: DateTime): Map[String, Int] = {
-        Map(
-            DB.withSession { implicit session =>
-                TableQuery[SnapshotModel]
-                .where(x =>
-                    x.timestamp > since
-                )
-                .list
-            }.groupBy(_.file).toSeq.map {
-                case (k, v) => k -> v.length
-            }: _*
-        )
+        DB.withSession { implicit session =>
+            TableQuery[SnapshotModel]
+            .where(x =>
+                x.timestamp > since
+            )
+            .list
+        }.groupBy(_.file).toSeq.map {
+            case (k, v) => k -> v.length
+        }.toMap
     }
 }
 
