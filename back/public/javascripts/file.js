@@ -68,6 +68,10 @@
         $("#legend").html(legend);
 
         // Popup styling
+        console.log($(".popover").css("left"))
+        if ($(".popover").css("left").substring(0,1) == "-") {
+            console.log("farout"); $(".popover").css("left", "0px");
+        }
         $(".popover").css("margin-left", "-30px");
         $(".popover-title").html("Users - Line " + lineNum);
         $(".arrow").css("display", "none");
