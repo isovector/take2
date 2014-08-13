@@ -58,8 +58,8 @@ def send(args):
 
     lines = convert_line_numbers(
         create_diff(
-            new_content=stdin.read(),
-            old_content=git.get_file_content(rel_filename, commit)),
+            old_content=stdin.read(),
+            new_content=git.get_file_content(rel_filename, commit)),
         lines=range(opt.start, opt.end + 1))
     lines = [x for x in lines if x is not None]
 

@@ -33,7 +33,7 @@ class SendTest(TestCase):
 
         self.assertNotEqual(result.std_out, '')
         payload = loads(result.std_out)
-        self.assertEqual(payload['lines[]'], [2, 5, 6])
+        self.assertEqual(payload['lines[]'], [2, 4])
 
         delete_tempfolder(folder)
         delete_tempfolder(remote)
