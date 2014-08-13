@@ -2,6 +2,7 @@
 <!doctype html>
 <html ng-app="frostbite">
 	<link href="@routes.Assets.at("stylesheets/css/bootstrap.min.css")" rel="stylesheet">
+    <link href="@routes.Assets.at("stylesheets/css/bootstrap-switch.min.css")" rel="stylesheet">
 	<link href="@routes.Assets.at("stylesheets/main.css")" rel="stylesheet">
 
     <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
@@ -9,6 +10,7 @@
 	<script src="@routes.Assets.at("javascripts/angular-1.2.1/angular-resource.js")" type="text/javascript"></script>
     
     <script src="@routes.Assets.at("javascripts/bootstrap.min.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.at("javascripts/bootstrap-switch.min.js")" type="text/javascript"></script>
 	<script src="@routes.Assets.at("javascripts/ui-bootstrap-tpls-0.11.0.min.js")" type="text/javascript"></script>
     <script src="@routes.Assets.at("javascripts/listview.js")" type="text/javascript"></script>
 
@@ -30,14 +32,16 @@
 	<link href="@routes.Assets.at("stylesheets/shCore.css")" rel="stylesheet">
 	<link href="@routes.Assets.at("stylesheets/shThemeDefault.css")" rel="stylesheet">
 
+    
+
 	<!-- You also need to add some content to highlight, but that is covered elsewhere. -->
 	<div frostbite-header></div>
 	<body ng-controller="FileCtrl" ng-init="setFileContents(@filestuff)">
 		<article class="container">
 			<div breadcrumbs></div>
-
+            
 			<div class="row widget-holder">
-
+                <input type="checkbox" data-on-text="File" data-off-text="User" data-size="normal" labelText="VIEW" name="my-checkbox" checked>
 			</div>
 
 			<div class="file-viewer" ng-show="showFile">
