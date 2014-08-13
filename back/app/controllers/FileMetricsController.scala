@@ -56,11 +56,13 @@ object FileMetricsController extends Controller {
                 x.timestamp > since
             ).list
         }.groupBy(_.user).toSeq.map {
-            case (k, v) => k
+            case (k, v) => k -> v.map(_.file).distinct
         }
-
         Ok(
-            Json.toJson(users)
+			users.mapJs(
+                "user" -> (_._1.toJs),
+                "files" -> (_._2)
+			)
         ).as("text/text")
     }
 
