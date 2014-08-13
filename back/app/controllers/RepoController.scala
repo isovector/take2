@@ -48,9 +48,10 @@ object RepoController extends Controller {
                         "path" -> (getPath(_)),
                         "isDir" -> (_.isDirectory),
                         "lastUpdated" -> (x =>
-                            RepoFile.getByFile(x.getName) match {
+                            RepoFile.getByFile(getPath(x)) match {
                                 case Some(file) => file.lastUpdated
-                                case None => new DateTime(0)
+                                case None =>
+									new DateTime(0)
                             })
                     ).toString
                 ))

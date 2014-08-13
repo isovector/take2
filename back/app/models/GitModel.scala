@@ -24,16 +24,16 @@ trait GitModel extends SourceRepositoryModel {
     val defaultBranch = "master"
 
     def initialize = {
-        Git.cloneRepository.setURI(remote).setDirectory(getFile("")).call
+        //Git.cloneRepository.setURI(remote).setDirectory(getFile("")).call
         update("master")
     }
 
     def update(branch: String) = {
-        setBranch(branch)
+        //setBranch(branch)
 
         val srcCommit = lastCommit
 
-        git.pull.call
+        //git.pull.call
         git.log.add(
             repo.resolve("HEAD")
         ).call.filter(x => Commit.getByHash(x.getName).isEmpty).map { commit =>
