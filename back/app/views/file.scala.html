@@ -30,9 +30,7 @@
 
 	<!-- Include *at least* the core style and default theme -->
 	<link href="@routes.Assets.at("stylesheets/shCore.css")" rel="stylesheet">
-	<link href="@routes.Assets.at("stylesheets/shThemeDefault.css")" rel="stylesheet">
-
-    
+	<link href="@routes.Assets.at("stylesheets/shThemeDefault.css")" rel="stylesheet">    
 
 	<!-- You also need to add some content to highlight, but that is covered elsewhere. -->
 	<div frostbite-header></div>
@@ -41,7 +39,8 @@
 			<div breadcrumbs></div>
             
 			<div class="row widget-holder">
-                <input type="checkbox" data-on-text="File" data-off-text="User" data-size="normal" labelText="VIEW" name="my-checkbox" checked>
+                <input type="checkbox" data-on-text="File" data-off-text="User" data-size="normal" name="my-checkbox" checked>
+                <input type="checkbox" data-on-text="Real" data-off-text="Data" data-size="normal" name="fake-data" checked>
 			</div>
 
 			<div class="file-viewer" ng-show="showFile">
@@ -50,6 +49,11 @@
 					</pre>
 				</div>
 			</div>
+            <div class="user-viewer"  style="display:none;">
+                <canvas id="userChart" width='500px' height="500px" style="width: 200px;display: block;margin-left: auto;margin-right: auto;"></canvas>
+                <br/>
+                <div id="user-legend" width="200px" height="200px" style="list-style: none;">Loading...</div>
+            </div>
 		</article>
 	</body>
 	<!-- Finally, to actually run the highlighter, you need to include this JS on your page -->

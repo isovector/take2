@@ -3,14 +3,69 @@
     $scope.lineItems = []
     $scope.path = ""
     $scope.showFile = true;
+    $scope.useFakeData = false;
+    $scope.userChartData = []
+
 
     $scope.init = function () {
         SyntaxHighlighter.all();
         $scope.popupGetter();
+
         $("[name='my-checkbox']").bootstrapSwitch();
         $('input[name="my-checkbox"]').bootstrapSwitch('onSwitchChange',(function () {
             console.log('kkkkk');
+            if ($(".file-viewer").css("display") == "none") {
+                $(".file-viewer").css("display", "block");
+                $(".user-viewer").css("display", "none");
+            }else{
+                $(".file-viewer").css("display", "none");
+                $(".user-viewer").css("display", "block");
+                $scope.makeUserChart();
+            }
         }));
+
+        $("[name='fake-data']").bootstrapSwitch();
+        $('input[name="fake-data"]').bootstrapSwitch('onSwitchChange', (function () {
+            
+            $scope.useFakeData = !$scope.useFakeData;
+            console.log($scope.useFakeData)
+            $scope.create_data();
+        }));
+    }
+
+    $scope.makeUserChart = function(){
+        var ctx = $("#userChart").get(0).getContext("2d");
+
+        // TODO - Change this to finding "number" for extensibility
+        //var lineSelected = $("[aria-describedby^='popover']");
+
+        //lineSelected.css("background-color", "#ffffff")
+
+        //var lineNum = parseInt(lineSelected.attr('class').split(/\s+/)[1].substring(6));
+
+        /*var data = _.find($scope.lineItems, function (lineItem) {
+            return lineItem.line == lineNum;
+        }).chartData;
+        console.log(data)*/
+
+        var options = {
+            legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%> <%=segments[i].value*5%>s<%}%></li><%}%></ul>",
+            segmentShowStroke: true,
+            animateRotate: true,
+            animationEasing: "easeOutQuart"
+        }
+        console.log($scope.userChartData.length);
+        var myNewChart = new Chart(ctx).Pie($scope.userChartData, options);
+        var legend = myNewChart.generateLegend();
+        $("#user-legend").html(legend);
+
+        // Popup styling
+        /*console.log($(".popover").css("left"))
+        if ($(".popover").css("left").substring(0, 1) == "-") {
+            console.log("farout"); $(".popover").css("left", "11px");
+        }
+        $(".popover-title").html("Users - Line " + lineNum);
+        $(".arrow").css("display", "none");*/
     }
 
     // Checking for popup on page - modify it with appropriate data when it does
@@ -68,9 +123,10 @@
         }).chartData;
         console.log(data)
         var options = {
-            legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%> <%=segments[i].value%><%}%></li><%}%></ul>",
+            legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%> <%=segments[i].value*5%>s<%}%></li><%}%></ul>",
             segmentShowStroke: true,
-            animateRotate: false
+            animateRotate: true,
+            animationEasing: "easeOutQuart"
         }
         var myNewChart = new Chart(ctx).Pie(data, options);
         var legend = myNewChart.generateLegend();
@@ -163,6 +219,28 @@
         return (c);
     }
 
+    $scope.add_user = function (userData, color) {
+        /*console.log(color)
+        var r = parseInt(color.substring(1, 2), 16);
+        var g = parseInt(color.substring(2, 4), 16);
+        var b = parseInt(color.substring(4, 6), 16);
+       
+        var rt = (r + (0.25 * (255 - r))).toString(16);
+        var gt = (g + (0.25 * (255 - g))).toString(16);
+        var bt = (b + (0.25 * (255 - b))).toString(16);
+        console.log(bt);
+        var highlightColor = '#' + rt.toString(10) + gt.toString(10) + bt.toString(10);*/
+
+        var chartItem = {
+            label: userData.user.name,
+            value: userData.timeSpent,
+            color: color,
+            highlight: color
+        }
+        $scope.userChartData.push(chartItem);
+        
+    }
+
     // Parse data and attach user data to lines of code
     $scope.add_lines = function (userData, index, length) {
         console.log("into add lines")
@@ -207,7 +285,7 @@
                     label: user.userName,
                     value: user.count,
                     color: user.color,
-                    highlight: "#5AD3D1"
+                    highlight: user.color
                 }
                 chartData.push(chartItem);
             })
@@ -218,6 +296,7 @@
 
         // Call the importance maker
         $scope.add_importance();
+        return userColor;
     }
     
     
@@ -225,18 +304,21 @@
     $scope.create_data = function () {
         $http.get("/api/metrics/all/" + $scope.path).success(function (data) {
             // Fake it til you make it
-            /*if (data.userData.length == 0) {
-                data = { "file": "back/app/controllers/SnapshotController.scala", "commit": "unimplemented", "userData": [{ "user": { "id": 1, "name": "Sandy Maguire", "email": "sandy@sandymaguire.me", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 2, "timeSpentByLine": [{ "line": 138, "count": 1 }, { "line": 88, "count": 2 }, { "line": 170, "count": 1 }, { "line": 120, "count": 2 }, { "line": 10, "count": 1 }, { "line": 56, "count": 2 }, { "line": 142, "count": 1 }, { "line": 174, "count": 1 }, { "line": 42, "count": 1 }, { "line": 24, "count": 1 }, { "line": 52, "count": 1 }, { "line": 14, "count": 1 }, { "line": 110, "count": 2 }, { "line": 20, "count": 1 }, { "line": 46, "count": 1 }, { "line": 152, "count": 1 }, { "line": 78, "count": 2 }, { "line": 164, "count": 1 }, { "line": 106, "count": 2 }, { "line": 84, "count": 2 }, { "line": 132, "count": 1 }, { "line": 116, "count": 2 }, { "line": 74, "count": 2 }, { "line": 6, "count": 1 }, { "line": 60, "count": 2 }, { "line": 102, "count": 2 }, { "line": 28, "count": 1 }, { "line": 38, "count": 1 }, { "line": 160, "count": 1 }, { "line": 70, "count": 2 }, { "line": 92, "count": 2 }, { "line": 156, "count": 1 }, { "line": 124, "count": 2 }, { "line": 96, "count": 2 }, { "line": 134, "count": 1 }, { "line": 128, "count": 1 }, { "line": 2, "count": 1 }, { "line": 166, "count": 1 }, { "line": 32, "count": 1 }, { "line": 34, "count": 1 }, { "line": 148, "count": 1 }, { "line": 64, "count": 2 }, { "line": 22, "count": 1 }, { "line": 44, "count": 1 }, { "line": 118, "count": 2 }, { "line": 12, "count": 1 }, { "line": 54, "count": 2 }, { "line": 144, "count": 1 }, { "line": 86, "count": 2 }, { "line": 172, "count": 1 }, { "line": 76, "count": 2 }, { "line": 98, "count": 2 }, { "line": 140, "count": 1 }, { "line": 66, "count": 2 }, { "line": 108, "count": 2 }, { "line": 130, "count": 1 }, { "line": 80, "count": 2 }, { "line": 162, "count": 1 }, { "line": 112, "count": 2 }, { "line": 48, "count": 1 }, { "line": 18, "count": 1 }, { "line": 150, "count": 1 }, { "line": 50, "count": 1 }, { "line": 16, "count": 1 }, { "line": 154, "count": 1 }, { "line": 72, "count": 2 }, { "line": 175, "count": 1 }, { "line": 104, "count": 2 }, { "line": 40, "count": 1 }, { "line": 26, "count": 1 }, { "line": 158, "count": 1 }, { "line": 114, "count": 2 }, { "line": 8, "count": 1 }, { "line": 58, "count": 2 }, { "line": 82, "count": 2 }, { "line": 36, "count": 1 }, { "line": 168, "count": 1 }, { "line": 146, "count": 1 }, { "line": 30, "count": 1 }, { "line": 4, "count": 1 }, { "line": 126, "count": 1 }, { "line": 136, "count": 1 }, { "line": 94, "count": 2 }, { "line": 68, "count": 2 }, { "line": 62, "count": 2 }, { "line": 90, "count": 2 }, { "line": 122, "count": 2 }, { "line": 100, "count": 2 }] }, { "user": { "id": 1, "name": "Yolo Swagins", "email": "yolo@swag.me", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 2, "timeSpentByLine": [{ "line": 138, "count": 1 }, { "line": 64, "count": 1 }] }] };
-                console.log(data);
-            }*/
+            if ($scope.useFakeData) {
+                data = { "file": "back/app/controllers/SnapshotController.scala", "commit": "unimplemented", "userData": [{ "user": { "id": 1, "name": "Adam Sils", "email": "silsadam@gmail.com", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 28, "timeSpentByLine": [{ "line": 40, "count": 1 }, { "line": 41, "count": 1 }, { "line": 42, "count": 1 }, { "line": 43, "count": 1 }, { "line": 44, "count": 1 }, { "line": 45, "count": 2 }, { "line": 46, "count": 1 }, { "line": 47, "count": 1 }, { "line": 48, "count": 2 }, { "line": 49, "count": 2 }, { "line": 50, "count": 2 }, { "line": 51, "count": 2 }, { "line": 52, "count": 2 }, { "line": 53, "count": 1 }, { "line": 54, "count": 1 }, { "line": 55, "count": 1 }, { "line": 56, "count": 1 }, { "line": 57, "count": 1 }, { "line": 58, "count": 1 }, { "line": 59, "count": 1 }, { "line": 60, "count": 1 }] }, { "user": { "id": 3, "name": "Sandy Maguire", "email": "sandy@sandymaguire.me", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 45, "timeSpentByLine": [{ "line": 30, "count": 1 }, { "line": 31, "count": 1 }, { "line": 32, "count": 1 }, { "line": 33, "count": 1 }, { "line": 34, "count": 1 }, { "line": 35, "count": 2 }, { "line": 36, "count": 1 }, { "line": 37, "count": 1 }, { "line": 38, "count": 2 }, { "line": 39, "count": 2 }, { "line": 40, "count": 2 }, { "line": 41, "count": 2 }, { "line": 42, "count": 2 }, { "line": 43, "count": 1 }, { "line": 44, "count": 1 }, { "line": 45, "count": 1 }, { "line": 6, "count": 1 }, { "line": 7, "count": 1 }, { "line": 8, "count": 1 }, { "line": 9, "count": 1 }, { "line": 10, "count": 1 }, { "line": 11, "count": 1 }, { "line": 12, "count": 1 }, { "line": 13, "count": 1 }, { "line": 14, "count": 1 }, { "line": 15, "count": 1 }, { "line": 16, "count": 1 }, { "line": 17, "count": 1 }, { "line": 18, "count": 1 }] }, { "user": { "id": 2, "name": "Yolo Swagins", "email": "yolo@swag.me", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 8, "timeSpentByLine": [{ "line": 20, "count": 2 }, { "line": 21, "count": 2 }, { "line": 22, "count": 2 }, { "line": 23, "count": 2 }, { "line": 43, "count": 1 }, { "line": 44, "count": 1 }, { "line": 45, "count": 1 }, { "line": 54, "count": 2 }, { "line": 55, "count": 2 }] }] }
+            }
             for (var i = 0; i < data.userData.length; i++) {
-                $scope.add_lines(data.userData[i], i, data.userData.length)
+                var curColor = $scope.add_lines(data.userData[i], i, data.userData.length);
+                $scope.add_user(data.userData[i], curColor);
             }
         }).error(function (data) {
-            data = { "file": "back/app/controllers/SnapshotController.scala", "commit": "unimplemented", "userData": [{ "user": { "id": 1, "name": "Sandy Maguire", "email": "sandy@sandymaguire.me", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 2, "timeSpentByLine": [{ "line": 138, "count": 1 }, { "line": 88, "count": 2 }, { "line": 170, "count": 1 }, { "line": 120, "count": 2 }, { "line": 10, "count": 1 }, { "line": 56, "count": 2 }, { "line": 142, "count": 1 }, { "line": 174, "count": 1 }, { "line": 42, "count": 1 }, { "line": 24, "count": 1 }, { "line": 52, "count": 1 }, { "line": 14, "count": 1 }, { "line": 110, "count": 2 }, { "line": 20, "count": 1 }, { "line": 46, "count": 1 }, { "line": 152, "count": 1 }, { "line": 78, "count": 2 }, { "line": 164, "count": 1 }, { "line": 106, "count": 2 }, { "line": 84, "count": 2 }, { "line": 132, "count": 1 }, { "line": 116, "count": 2 }, { "line": 74, "count": 2 }, { "line": 6, "count": 1 }, { "line": 60, "count": 2 }, { "line": 102, "count": 2 }, { "line": 28, "count": 1 }, { "line": 38, "count": 1 }, { "line": 160, "count": 1 }, { "line": 70, "count": 2 }, { "line": 92, "count": 2 }, { "line": 156, "count": 1 }, { "line": 124, "count": 2 }, { "line": 96, "count": 2 }, { "line": 134, "count": 1 }, { "line": 128, "count": 1 }, { "line": 2, "count": 1 }, { "line": 166, "count": 1 }, { "line": 32, "count": 1 }, { "line": 34, "count": 1 }, { "line": 148, "count": 1 }, { "line": 64, "count": 2 }, { "line": 22, "count": 1 }, { "line": 44, "count": 1 }, { "line": 118, "count": 2 }, { "line": 12, "count": 1 }, { "line": 54, "count": 2 }, { "line": 144, "count": 1 }, { "line": 86, "count": 2 }, { "line": 172, "count": 1 }, { "line": 76, "count": 2 }, { "line": 98, "count": 2 }, { "line": 140, "count": 1 }, { "line": 66, "count": 2 }, { "line": 108, "count": 2 }, { "line": 130, "count": 1 }, { "line": 80, "count": 2 }, { "line": 162, "count": 1 }, { "line": 112, "count": 2 }, { "line": 48, "count": 1 }, { "line": 18, "count": 1 }, { "line": 150, "count": 1 }, { "line": 50, "count": 1 }, { "line": 16, "count": 1 }, { "line": 154, "count": 1 }, { "line": 72, "count": 2 }, { "line": 175, "count": 1 }, { "line": 104, "count": 2 }, { "line": 40, "count": 1 }, { "line": 26, "count": 1 }, { "line": 158, "count": 1 }, { "line": 114, "count": 2 }, { "line": 8, "count": 1 }, { "line": 58, "count": 2 }, { "line": 82, "count": 2 }, { "line": 36, "count": 1 }, { "line": 168, "count": 1 }, { "line": 146, "count": 1 }, { "line": 30, "count": 1 }, { "line": 4, "count": 1 }, { "line": 126, "count": 1 }, { "line": 136, "count": 1 }, { "line": 94, "count": 2 }, { "line": 68, "count": 2 }, { "line": 62, "count": 2 }, { "line": 90, "count": 2 }, { "line": 122, "count": 2 }, { "line": 100, "count": 2 }] }, { "user": { "id": 1, "name": "Yolo Swagins", "email": "yolo@swag.me", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 2, "timeSpentByLine": [{ "line": 138, "count": 1 }, { "line": 64, "count": 1 }] }] };
-            /*for (var i = 0; i < data.userData.length; i++) {
-                $scope.add_lines(data.userData[i], i, data.userData.length)
-            }*/
+            if ($scope.useFakeData) {
+                data = { "file": "back/app/controllers/SnapshotController.scala", "commit": "unimplemented", "userData": [{ "user": { "id": 1, "name": "Adam Sils", "email": "silsadam@gmail.com", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 28, "timeSpentByLine": [{ "line": 40, "count": 1 }, { "line": 41, "count": 1 }, { "line": 42, "count": 1 }, { "line": 43, "count": 1 }, { "line": 44, "count": 1 }, { "line": 45, "count": 2 }, { "line": 46, "count": 1 }, { "line": 47, "count": 1 }, { "line": 48, "count": 2 }, { "line": 49, "count": 2 }, { "line": 50, "count": 2 }, { "line": 51, "count": 2 }, { "line": 52, "count": 2 }, { "line": 53, "count": 1 }, { "line": 54, "count": 1 }, { "line": 55, "count": 1 }, { "line": 56, "count": 1 }, { "line": 57, "count": 1 }, { "line": 58, "count": 1 }, { "line": 59, "count": 1 }, { "line": 60, "count": 1 }] }, { "user": { "id": 3, "name": "Sandy Maguire", "email": "sandy@sandymaguire.me", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 45, "timeSpentByLine": [{ "line": 30, "count": 1 }, { "line": 31, "count": 1 }, { "line": 32, "count": 1 }, { "line": 33, "count": 1 }, { "line": 34, "count": 1 }, { "line": 35, "count": 2 }, { "line": 36, "count": 1 }, { "line": 37, "count": 1 }, { "line": 38, "count": 2 }, { "line": 39, "count": 2 }, { "line": 40, "count": 2 }, { "line": 41, "count": 2 }, { "line": 42, "count": 2 }, { "line": 43, "count": 1 }, { "line": 44, "count": 1 }, { "line": 45, "count": 1 }, { "line": 6, "count": 1 }, { "line": 7, "count": 1 }, { "line": 8, "count": 1 }, { "line": 9, "count": 1 }, { "line": 10, "count": 1 }, { "line": 11, "count": 1 }, { "line": 12, "count": 1 }, { "line": 13, "count": 1 }, { "line": 14, "count": 1 }, { "line": 15, "count": 1 }, { "line": 16, "count": 1 }, { "line": 17, "count": 1 }, { "line": 18, "count": 1 }] }, { "user": { "id": 2, "name": "Yolo Swagins", "email": "yolo@swag.me", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 8, "timeSpentByLine": [{ "line": 20, "count": 2 }, { "line": 21, "count": 2 }, { "line": 22, "count": 2 }, { "line": 23, "count": 2 }, { "line": 43, "count": 1 }, { "line": 44, "count": 1 }, { "line": 45, "count": 1 }, { "line": 54, "count": 2 }, { "line": 55, "count": 2 }] }] }
+                for (var i = 0; i < data.userData.length; i++) {
+                    var curColor = $scope.add_lines(data.userData[i], i, data.userData.length)
+                    $scope.add_user(data.userData[i], curColor);
+                }
+            }
         });
 
         
