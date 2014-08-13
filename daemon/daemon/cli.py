@@ -22,4 +22,5 @@ def main():
     if opt.command not in COMMANDS:
         return
 
-    return COMMANDS[opt.command](args)
+    COMMANDS[opt.command](args)
+    return 0
