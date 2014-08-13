@@ -8,6 +8,9 @@
         SyntaxHighlighter.all();
         $scope.popupGetter();
         $("[name='my-checkbox']").bootstrapSwitch();
+        $('input[name="my-checkbox"]').bootstrapSwitch('onSwitchChange',(function () {
+            console.log('kkkkk');
+        }));
     }
 
     // Checking for popup on page - modify it with appropriate data when it does
@@ -66,7 +69,8 @@
         console.log(data)
         var options = {
             legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%> <%=segments[i].value%><%}%></li><%}%></ul>",
-            segmentShowStroke: true
+            segmentShowStroke: true,
+            animateRotate: false
         }
         var myNewChart = new Chart(ctx).Pie(data, options);
         var legend = myNewChart.generateLegend();
@@ -221,14 +225,21 @@
     $scope.create_data = function () {
         $http.get("/api/metrics/all/" + $scope.path).success(function (data) {
             // Fake it til you make it
-            if (data.userData.length == 0) {
+            /*if (data.userData.length == 0) {
                 data = { "file": "back/app/controllers/SnapshotController.scala", "commit": "unimplemented", "userData": [{ "user": { "id": 1, "name": "Sandy Maguire", "email": "sandy@sandymaguire.me", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 2, "timeSpentByLine": [{ "line": 138, "count": 1 }, { "line": 88, "count": 2 }, { "line": 170, "count": 1 }, { "line": 120, "count": 2 }, { "line": 10, "count": 1 }, { "line": 56, "count": 2 }, { "line": 142, "count": 1 }, { "line": 174, "count": 1 }, { "line": 42, "count": 1 }, { "line": 24, "count": 1 }, { "line": 52, "count": 1 }, { "line": 14, "count": 1 }, { "line": 110, "count": 2 }, { "line": 20, "count": 1 }, { "line": 46, "count": 1 }, { "line": 152, "count": 1 }, { "line": 78, "count": 2 }, { "line": 164, "count": 1 }, { "line": 106, "count": 2 }, { "line": 84, "count": 2 }, { "line": 132, "count": 1 }, { "line": 116, "count": 2 }, { "line": 74, "count": 2 }, { "line": 6, "count": 1 }, { "line": 60, "count": 2 }, { "line": 102, "count": 2 }, { "line": 28, "count": 1 }, { "line": 38, "count": 1 }, { "line": 160, "count": 1 }, { "line": 70, "count": 2 }, { "line": 92, "count": 2 }, { "line": 156, "count": 1 }, { "line": 124, "count": 2 }, { "line": 96, "count": 2 }, { "line": 134, "count": 1 }, { "line": 128, "count": 1 }, { "line": 2, "count": 1 }, { "line": 166, "count": 1 }, { "line": 32, "count": 1 }, { "line": 34, "count": 1 }, { "line": 148, "count": 1 }, { "line": 64, "count": 2 }, { "line": 22, "count": 1 }, { "line": 44, "count": 1 }, { "line": 118, "count": 2 }, { "line": 12, "count": 1 }, { "line": 54, "count": 2 }, { "line": 144, "count": 1 }, { "line": 86, "count": 2 }, { "line": 172, "count": 1 }, { "line": 76, "count": 2 }, { "line": 98, "count": 2 }, { "line": 140, "count": 1 }, { "line": 66, "count": 2 }, { "line": 108, "count": 2 }, { "line": 130, "count": 1 }, { "line": 80, "count": 2 }, { "line": 162, "count": 1 }, { "line": 112, "count": 2 }, { "line": 48, "count": 1 }, { "line": 18, "count": 1 }, { "line": 150, "count": 1 }, { "line": 50, "count": 1 }, { "line": 16, "count": 1 }, { "line": 154, "count": 1 }, { "line": 72, "count": 2 }, { "line": 175, "count": 1 }, { "line": 104, "count": 2 }, { "line": 40, "count": 1 }, { "line": 26, "count": 1 }, { "line": 158, "count": 1 }, { "line": 114, "count": 2 }, { "line": 8, "count": 1 }, { "line": 58, "count": 2 }, { "line": 82, "count": 2 }, { "line": 36, "count": 1 }, { "line": 168, "count": 1 }, { "line": 146, "count": 1 }, { "line": 30, "count": 1 }, { "line": 4, "count": 1 }, { "line": 126, "count": 1 }, { "line": 136, "count": 1 }, { "line": 94, "count": 2 }, { "line": 68, "count": 2 }, { "line": 62, "count": 2 }, { "line": 90, "count": 2 }, { "line": 122, "count": 2 }, { "line": 100, "count": 2 }] }, { "user": { "id": 1, "name": "Yolo Swagins", "email": "yolo@swag.me", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 2, "timeSpentByLine": [{ "line": 138, "count": 1 }, { "line": 64, "count": 1 }] }] };
                 console.log(data);
-            }
+            }*/
             for (var i = 0; i < data.userData.length; i++) {
                 $scope.add_lines(data.userData[i], i, data.userData.length)
             }
-        })
+        }).error(function (data) {
+            data = { "file": "back/app/controllers/SnapshotController.scala", "commit": "unimplemented", "userData": [{ "user": { "id": 1, "name": "Sandy Maguire", "email": "sandy@sandymaguire.me", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 2, "timeSpentByLine": [{ "line": 138, "count": 1 }, { "line": 88, "count": 2 }, { "line": 170, "count": 1 }, { "line": 120, "count": 2 }, { "line": 10, "count": 1 }, { "line": 56, "count": 2 }, { "line": 142, "count": 1 }, { "line": 174, "count": 1 }, { "line": 42, "count": 1 }, { "line": 24, "count": 1 }, { "line": 52, "count": 1 }, { "line": 14, "count": 1 }, { "line": 110, "count": 2 }, { "line": 20, "count": 1 }, { "line": 46, "count": 1 }, { "line": 152, "count": 1 }, { "line": 78, "count": 2 }, { "line": 164, "count": 1 }, { "line": 106, "count": 2 }, { "line": 84, "count": 2 }, { "line": 132, "count": 1 }, { "line": 116, "count": 2 }, { "line": 74, "count": 2 }, { "line": 6, "count": 1 }, { "line": 60, "count": 2 }, { "line": 102, "count": 2 }, { "line": 28, "count": 1 }, { "line": 38, "count": 1 }, { "line": 160, "count": 1 }, { "line": 70, "count": 2 }, { "line": 92, "count": 2 }, { "line": 156, "count": 1 }, { "line": 124, "count": 2 }, { "line": 96, "count": 2 }, { "line": 134, "count": 1 }, { "line": 128, "count": 1 }, { "line": 2, "count": 1 }, { "line": 166, "count": 1 }, { "line": 32, "count": 1 }, { "line": 34, "count": 1 }, { "line": 148, "count": 1 }, { "line": 64, "count": 2 }, { "line": 22, "count": 1 }, { "line": 44, "count": 1 }, { "line": 118, "count": 2 }, { "line": 12, "count": 1 }, { "line": 54, "count": 2 }, { "line": 144, "count": 1 }, { "line": 86, "count": 2 }, { "line": 172, "count": 1 }, { "line": 76, "count": 2 }, { "line": 98, "count": 2 }, { "line": 140, "count": 1 }, { "line": 66, "count": 2 }, { "line": 108, "count": 2 }, { "line": 130, "count": 1 }, { "line": 80, "count": 2 }, { "line": 162, "count": 1 }, { "line": 112, "count": 2 }, { "line": 48, "count": 1 }, { "line": 18, "count": 1 }, { "line": 150, "count": 1 }, { "line": 50, "count": 1 }, { "line": 16, "count": 1 }, { "line": 154, "count": 1 }, { "line": 72, "count": 2 }, { "line": 175, "count": 1 }, { "line": 104, "count": 2 }, { "line": 40, "count": 1 }, { "line": 26, "count": 1 }, { "line": 158, "count": 1 }, { "line": 114, "count": 2 }, { "line": 8, "count": 1 }, { "line": 58, "count": 2 }, { "line": 82, "count": 2 }, { "line": 36, "count": 1 }, { "line": 168, "count": 1 }, { "line": 146, "count": 1 }, { "line": 30, "count": 1 }, { "line": 4, "count": 1 }, { "line": 126, "count": 1 }, { "line": 136, "count": 1 }, { "line": 94, "count": 2 }, { "line": 68, "count": 2 }, { "line": 62, "count": 2 }, { "line": 90, "count": 2 }, { "line": 122, "count": 2 }, { "line": 100, "count": 2 }] }, { "user": { "id": 1, "name": "Yolo Swagins", "email": "yolo@swag.me", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 2, "timeSpentByLine": [{ "line": 138, "count": 1 }, { "line": 64, "count": 1 }] }] };
+            /*for (var i = 0; i < data.userData.length; i++) {
+                $scope.add_lines(data.userData[i], i, data.userData.length)
+            }*/
+        });
+
+        
     }
 
     $scope.init();
