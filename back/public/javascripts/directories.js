@@ -14,17 +14,24 @@ frostbite.filter('isDirectory', function() {
 	return {
 		link: function (scope, el, attrs) {
 			var jsonObj = jQuery.parseJSON(attrs.popoverHtml);
-			var name = jsonObj.name;
-			var imageString = jsonObj.picture;
+			var name = jsonObj.user.name;
+			var imageString = jsonObj.user.picture;
+			var files = jsonObj.files;
+			var fileString = "<b>Viewing: </b><div>";
+			for (var i = 0; i < files.length; i++) {
+				var filepath = files[i];
+				fileString += filepath.replace(/^.*[\\\/]/, '') + "\n";
+			}
+			fileString += "</div>";
 			var image = '<img src="' + imageString + '" style="float:left;margin-right:5px;margin-bottom:10px;">';
-			var htmlContent = '<p style="">' + image + name + '</p>';
+			var htmlContent = '<p style="">' + image + '<b>' + name + '</b>' + '<div>' + fileString +'</div>' + '</p>';
 			$(el).popover({
 				trigger: 'hover',
 				html: true,
 				delay: { show: 500, hide: 100 },
 				content: htmlContent,
 				placement: 'bottom',
-				template: '<div style="width:200px" class="popover" role="tooltip"><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+				template: '<div style="width:300px" class="popover" role="tooltip"><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
 			});
 		}
 	};
@@ -49,27 +56,31 @@ frostbite.filter('isDirectory', function() {
 	$scope.getUsers = function() {
 		for (var i = 0; i < $scope.items.length; i++) {
 			//TODO: switch back
-			if (i == 0) {
+			/*if (i == 0) {
 				$scope.items[0].users = [];
 				$scope.items[0].users.push ({ "name":"Jeff Lee", "picture":"http://www.gravatar.com/avatar/12"});
 			
-			}
+			}*/
 			(function(i) {
 				$http.get("/api/currently/viewing/" + $scope.items[i].path).success(function(data) {
 					$scope.items[i].users = data;
+					//TODO: uncomment if we want to see multiple users
+					/*
+					if ($scope.items[i].users.length == 1) {
+						$scope.items[0].users.push ({ "user":{"name":"Sandy Maguire", "email":"sandy.g.maguire@gmail.com"}, "files":["back/app/controllers/FileMetricsController.scala"]});
+
+					}*/
 					var numUsers = $scope.items[i].users.length;
 					for (var j = 0; j < numUsers; j++) {
-						var emailLowerCase = $scope.items[i].users[j].email.toLowerCase();
-						console.log(emailLowerCase);
+						var emailLowerCase = $scope.items[i].users[j].user.email.toLowerCase();
 						var hashEmail = CryptoJS.MD5( emailLowerCase );  
-						console.log("EMAIL: " + hashEmail);
-						$scope.items[i].users[j].picture = "http://www.gravatar.com/avatar/" + hashEmail;
+						$scope.items[i].users[j].user.picture = "http://www.gravatar.com/avatar/" + hashEmail;
 					}
 				});
 			}(i));
 		}
 
-		var userTimeout = $timeout($scope.getUsers,10000);
+		var userTimeout = $timeout($scope.getUsers,60000);
 	}
  
 }])
