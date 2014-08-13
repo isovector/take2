@@ -1,5 +1,11 @@
 var frostbite = angular.module('frostbite', ['ngResource', 'ui.listview', 'ui.bootstrap']);
 
+frostbite.filter('pathName', function() {
+	return function(input) {
+		return input.replace(/^.*[\\\/]/, '')
+	}
+})
+
 /**********************
 
 Factories
