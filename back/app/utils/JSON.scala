@@ -1,9 +1,10 @@
 package utils
-import models._
+
 import play.api.data._
 import play.api.libs.json._
 
 import com.github.nscala_time.time.Imports._
+import models._
 
 object JSON {
     import Json._
@@ -18,7 +19,8 @@ object JSON {
         case str: String => toJson(str)
 
         case date: DateTime => toJson(date)
-		case user: User => toJson(user)
+        case user: User => toJson(user)
+
         case js: JsValue => js
         case bad => throw new Exception(m.toString)
     }

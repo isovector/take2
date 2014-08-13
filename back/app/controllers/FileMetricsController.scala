@@ -68,10 +68,10 @@ object FileMetricsController extends Controller {
             case (k, v) => k -> v.map(_.file).distinct
         }
         Ok(
-			users.mapJs(
+            users.mapJs(
                 "user" -> (_._1.toJs),
                 "files" -> (_._2)
-			)
+            )
         ).as("text/text")
     }
 
