@@ -21,19 +21,26 @@ object FileMetricsController extends Controller {
 
     private val recentDuration = 5.minutes;
 
-    def listAll(file: String) = Action {
+    def getFileLineViews(file: String) = Action {
         import Json._
-        import User._
 
-        val totalLinesByUsers = Snapshot.getTotalSnapsByUser(file)
+        val lines = Snapshot.lineviews(_.user) {
+            DB.withSession { implicit session =>
+                Table
+                .where(_.commit === RepoModel.lastCommit)
+                .where(_.file === file)
+                .list
+            }
+        }
+
         Ok(
             Json.toJson(Map(
                 "file" -> toJson(file),
                 "commit" -> toJson(Todo.unimplemented),
-                "userData" -> toJson(totalLinesByUsers.toSeq.map {
+                "userData" -> toJson(lines.toSeq.map {
                     case (user, snaps) => toJson(Map(
                         "user" -> toJson(user),
-                        "timeSpent" -> toJson(totalLinesByUsers(user).size),
+                        "timeSpent" -> toJson(lines(user).size),
                         "timeSpentByLine" -> toJson(snaps.toSeq.map {
                             case (line, count) => Map(
                                 "line" -> toJson(line.asInstanceOf[Int]),
@@ -52,22 +59,25 @@ object FileMetricsController extends Controller {
 
         // TODO(sandy): it would be nice to get this using getFilesOpenedSince
         val users = DB.withSession { implicit session =>
-            Table.where(_.file.like(prefix + "%")).where( x =>
-                x.timestamp > since
-            ).list
+            Table
+            .where(_.commit === RepoModel.lastCommit)
+            .where(_.file.like(prefix + "%"))
+            .where(x => x.timestamp > since)
+            .list
         }.groupBy(_.user).toSeq.map {
             case (k, v) => k -> v.map(_.file).distinct
         }
         Ok(
-			users.mapJs(
+            users.mapJs(
                 "user" -> (_._1.toJs),
                 "files" -> (_._2)
-			)
+            )
         ).as("text/text")
     }
 
     def getCurrentlyOpenFiles = Action {
-        val files = RepoFile.getFilesOpenedSince(DateTime.now - recentDuration)
+        val files =
+            RepoFile.getFilesOpenedSince(DateTime.now - recentDuration)
             .toSeq.map {
                 case (k, v) => k
             }
@@ -78,8 +88,11 @@ object FileMetricsController extends Controller {
     }
 
     def getMostPopularFiles(since: String) = Action {
-        val files = RepoFile.getFilesOpenedSince(new DateTime(since.toLong))
-            .toSeq.sortBy(-_._2).take(10)
+        val files =
+            RepoFile.getFilesOpenedSince(new DateTime(since.toLong))
+            .toSeq
+            .sortBy(-_._2) // sort by descending viewsigs
+            .take(10)
 
         Ok(
             files.mapJs(

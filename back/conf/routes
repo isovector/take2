@@ -5,7 +5,6 @@
 # Home page
 GET     /                           controllers.Application.index
 
-GET     /api/snapshot               controllers.SnapshotController.list
 POST    /api/snapshot               controllers.SnapshotController.create
 DELETE  /api/snapshot/:id           controllers.SnapshotController.delete(id: Int)
 
@@ -20,7 +19,7 @@ GET     /api/search/directory/*file controllers.RepoController.retrieveFileByReg
 GET     /api/currently/viewing/*file controllers.FileMetricsController.getUsersInFile(file)
 GET     /api/currently/open         controllers.FileMetricsController.getCurrentlyOpenFiles
 
-GET     /api/metrics/all/*file      controllers.FileMetricsController.listAll(file)
+GET     /api/metrics/all/*file      controllers.FileMetricsController.getFileLineViews(file)
 GET     /api/metrics/popular/:since controllers.FileMetricsController.getMostPopularFiles(since)
 
 # Map static resources from the /public folder to the /assets URL path
