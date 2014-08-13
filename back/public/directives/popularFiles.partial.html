@@ -3,7 +3,7 @@
 		<span>These are the {{popularFiles.length}} most popular files in the past {{timeSpan}}</span>
 		<ul>
 			<li ng-repeat="file in popularFiles">
-				{{file}}
+			<a href="http://localhost:9000/directory/{{file.file}}">{{file.file | pathName }}</a>
 			</li>
 		</ul>
 	</div>

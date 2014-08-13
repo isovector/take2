@@ -17,16 +17,6 @@ import play.api.db.slick.Config.driver.simple._
 object SnapshotController extends Controller {
     private var Table = TableQuery[SnapshotModel]
 
-    def list = Action {
-        val snaps = DB.withSession { implicit session =>
-            Table.list
-        }
-
-        Ok(
-            Json.toJson(snaps)
-        ).as("text/text")
-    }
-
     def delete(id: Int) = Action {
         val drop = DB.withSession { implicit session =>
             Table.where(_.id === id).delete
@@ -59,8 +49,13 @@ object SnapshotController extends Controller {
             "lines" -> seq(number)
         )(SnapshotFormData.apply)(SnapshotFormData.unapply)).bindFromRequest.get
 
+        Logger.info("updating: " + snapFormData.file)
+        Logger.info("with commit " + snapFormData.commit)
+        Logger.info("but should have commit " + RepoModel.lastCommit)
+
         if (!RepoModel.getFile(snapFormData.file).exists) {
             // is there a nicer way of doing this?
+            Logger.info("doesn't exist")
             NotFound
         } else {
             // Build a user if one doesn't exist
@@ -92,8 +87,9 @@ object SnapshotController extends Controller {
               new DateTime(snapFormData.timestamp),
               snapFormData.file,
               User.getByEmail(snapFormData.email).get,
+              snapFormData.branch,
               snapFormData.commit,
-              snapFormData.lines
+              snapFormData.lines.map(_ -> 1).toMap
             );
 
             if (snap.id.isEmpty) {
@@ -104,9 +100,7 @@ object SnapshotController extends Controller {
                 }
             }
 
-            Ok(
-                Json.toJson(snap)
-            ).as("text/text")
+            Ok
         }
     }
 }
