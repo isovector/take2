@@ -1,26 +1,24 @@
-from envoy import run as envoy_run
-from daemon.utils import make_tempfile, delete_tempfile, norm_path
-
-NL = "%c'\012'"
+from difflib import ndiff
 
 
 def create_diff(new_content, old_content):
     """ Returns the diff between the new and old file """
-    new_file = make_tempfile(new_content)
-    old_file = make_tempfile(old_content)
+    diff = ndiff(
+        a=old_content.splitlines(),
+        b=new_content.splitlines(),
+        linejunk=None,
+        charjunk=None)
 
-    r = envoy_run(
-        ("diff "
-            "--unchanged-line-format=\"-%s\" "
-            "--old-line-format=\"<%s\" "
-            "--new-line-format=\">%s\" "
-            "%s %s") %
-        (NL, NL, NL, norm_path(old_file), norm_path(new_file))
-    )
+    delta = []
+    for line in diff:
+        if line.startswith('  '):
+            delta.append('-')
+        elif line.startswith('+ '):
+            delta.append('>')
+        elif line.startswith('- '):
+            delta.append('<')
 
-    delete_tempfile(new_file)
-    delete_tempfile(old_file)
-    return r.std_out.replace('%c', '\n').rstrip("\n").split("\n")
+    return delta
 
 
 def add_to_result(lines, result, old_line, new_line):
