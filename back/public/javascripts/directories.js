@@ -49,14 +49,15 @@ frostbite.filter('isDirectory', function() {
 	$scope.getUsers = function() {
 		for (var i = 0; i < $scope.items.length; i++) {
 			//TODO: switch back
-			if (i == 0) {
+			/*if (i == 0) {
 				$scope.items[0].users = [];
 				$scope.items[0].users.push ({ "name":"Jeff Lee", "picture":"http://www.gravatar.com/avatar/12"});
 			
-			}
+			}*/
 			(function(i) {
 				$http.get("/api/currently/viewing/" + $scope.items[i].path).success(function(data) {
 					$scope.items[i].users = data;
+					console.log($scope.items[i].users);
 					var numUsers = $scope.items[i].users.length;
 					for (var j = 0; j < numUsers; j++) {
 						var emailLowerCase = $scope.items[i].users[j].email.toLowerCase();
@@ -69,7 +70,7 @@ frostbite.filter('isDirectory', function() {
 			}(i));
 		}
 
-		var userTimeout = $timeout($scope.getUsers,10000);
+		var userTimeout = $timeout($scope.getUsers,60000);
 	}
  
 }])
