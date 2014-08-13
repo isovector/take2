@@ -45,22 +45,17 @@ frostbite.filter('isDirectory', function() {
 		$scope.items = filename;
 		$scope.pathArray = $scope.items[0].path.split("/");
 		$scope.pathArray.pop();
-		// TODO: put in real edited last info
 		for (var i = 0; i < $scope.items.length; i++) {
-            //$scope.items[i].editedlast  = {"id":7, "time":new Date()};
-			$scope.items[i].editedLast = {"id":7, "time":new Date($scope.items[i].lastUpdated)};
+			//TODO: add name
+			if ($scope.items[i].lastUpdated != 0) {
+				$scope.items[i].editedlast = {"id":7,  "time":new Date($scope.items[i].lastUpdated)};
+			} 
 		}
 		$scope.getUsers();
     }
 
 	$scope.getUsers = function() {
 		for (var i = 0; i < $scope.items.length; i++) {
-			//TODO: switch back
-			/*if (i == 0) {
-				$scope.items[0].users = [];
-				$scope.items[0].users.push ({ "name":"Jeff Lee", "picture":"http://www.gravatar.com/avatar/12"});
-			
-			}*/
 			(function(i) {
 				$http.get("/api/currently/viewing/" + $scope.items[i].path).success(function(data) {
 					$scope.items[i].users = data;

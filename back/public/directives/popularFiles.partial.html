@@ -4,6 +4,7 @@
 		<ul>
 			<li ng-repeat="file in popularFiles">
 			<a href="http://localhost:9000/directory/{{file.file}}">{{file.file | pathName }}</a>
+			<span style="float:right">{{file.snapshots | timeago}}</span>
 			</li>
 		</ul>
 	</div>

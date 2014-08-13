@@ -4,6 +4,9 @@ endif
 
 python << endpython
 import vim
+from os import unlink, write, close
+from shutil import rmtree
+from tempfile import mkstemp, mkdtemp
 
 global gTimer, gIsActive, gUpdatesToSend, gIdleCount, IS_IDLE_COUNT, RECORD_DURATION
 
@@ -14,6 +17,25 @@ gIdleCount = 0
 
 RECORD_DURATION = 5.0
 IS_IDLE_COUNT = 12
+
+def make_tempfile(content=None):
+    """ Creates a temporary file and returns the path. """
+    fd, tmpfile = mkstemp()
+
+    if content:
+        write(fd, content)
+
+    close(fd)
+    return tmpfile
+
+
+def delete_tempfile(path):
+    """ Deletes a temporary file """
+    try:
+        unlink(path)
+    except:
+        pass
+
 
 def get_window_range():
     """
@@ -33,10 +55,13 @@ def send_to_daemon(filename, buffer, window_range):
     from subprocess import Popen, PIPE
     from os import getpid
 
-    cmd = "accio send --start=%d --end=%d --filename=%s &" % (
+    tmp = make_tempfile(buffer)
+
+    cmd = "accio send --start=%d --end=%d --filename=%s --buffer=%s &" % (
         window_range[0],
         window_range[1],
-        filename
+        filename,
+        tmp
     )
 
     pipe = Popen(
@@ -48,6 +73,7 @@ def send_to_daemon(filename, buffer, window_range):
     )
 
     pipe.communicate(input = buffer)
+    delete_tempfile(tmp)
 
 
 def collect_metrics():
