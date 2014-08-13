@@ -29,11 +29,11 @@ trait GitModel extends SourceRepositoryModel {
     }
 
     def update(branch: String) = {
-        //setBranch(branch)
+        setBranch(branch)
 
-        val srcCommit = lastCommit
+        //val srcCommit = lastCommit
 
-        //git.pull.call
+        git.pull.call
         git.log.add(
             repo.resolve("HEAD")
         ).call.filter(x => Commit.getByHash(x.getName).isEmpty).map { commit =>
@@ -54,11 +54,11 @@ trait GitModel extends SourceRepositoryModel {
             }
         }
 
-        val dstCommit = lastCommit
+        //val dstCommit = lastCommit
 
-        if (srcCommit != dstCommit) {
-            fastforward(srcCommit, dstCommit)
-        }
+        //if (srcCommit != dstCommit) {
+        //    fastforward(srcCommit, dstCommit)
+        //}
     }
 
     def lastCommit = repo.resolve(Constants.HEAD).name
