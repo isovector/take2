@@ -12,6 +12,7 @@ OPTIONS = {
     '--new_commit': str,
     '--filename': str,
     '--repo_path': str,
+    '--buffer': str,
 }
 
 
@@ -25,7 +26,13 @@ def translate(args):
         stderr.write(str(e))
         return
 
-    line_counts = loads(sub('\s', '', stdin.read()))
+    if opt.buffer:
+        f = open(opt.buffer, "r")
+        inp = f.read()
+    else:
+        inp = stdin.read()
+
+    line_counts = loads(sub('\s', '', inp))
     line_counts = dict((int(k), v) for k, v in line_counts.iteritems())
 
     diff = create_diff(

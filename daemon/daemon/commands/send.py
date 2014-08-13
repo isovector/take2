@@ -17,6 +17,7 @@ OPTIONS = {
     '--start': int,
     '--end': int,
     '--debug': bool,
+    '--buffer': str,
 }
 
 
@@ -56,9 +57,15 @@ def send(args):
     rel_filename = git.relative_file_path(opt.filename)
     commit = git.get_last_pushed_commit()
 
+    if opt.buffer:
+        f = open(opt.buffer, "r")
+        wip = f.read()
+    else:
+        wip = stdin.read()
+
     lines = convert_line_numbers(
         create_diff(
-            old_content=stdin.read(),
+            old_content=wip,
             new_content=git.get_file_content(rel_filename, commit)),
         lines=range(opt.start, opt.end + 1))
     lines = [x for x in lines if x is not None]
