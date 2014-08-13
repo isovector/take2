@@ -1,8 +1,10 @@
 package models
 
+import play.api.Logger
 import play.api.Play.current
 import play.api.db.slick.DB
 import play.api.db.slick.Config.driver.simple._
+import java.io.ByteArrayInputStream
 import java.io.File
 import org.joda.time.DateTime
 
@@ -11,6 +13,7 @@ import utils._
 
 trait SourceRepositoryModel {
     val remote = "git@github.com:Paamayim/take2.git"
+    //val remote = "git@github.com:Paamayim/well-contributed.git"
     val local = "repo"
     val defaultBranch: String
 
@@ -27,31 +30,47 @@ trait SourceRepositoryModel {
 
 
     def fastforward(srcCommit: String, dstCommit: String) = {
+        import play.api.libs.json._
+
         val Table = TableQuery[SnapshotModel]
 
-        val touchedFiles = getFilePathsInCommit(srcCommit)
-        val linesPerFile = DB.withSession { implicit session =>
-            Table
-            .where(_.file inSet touchedFiles)
-            .where(_.commit === srcCommit)
-            .list
-        }.groupBy(_.file).map { case(file, snaps) =>
-            file -> snaps.flatMap { snap =>
-                snap.lines
-            }.groupBy(line => line).map {
-                x => x._1 -> x._2.length
+        val linesPerFile = Snapshot.lineviews(_.file){
+            DB.withSession { implicit session =>
+                Table
+                .where(_.commit === srcCommit)
+                .list
             }
+        }.toSeq.map { case (k, lines) =>
+            k ->
+                JsObject(
+                    lines.map { case (line, count) =>
+                        line.toString -> JsNumber(count)
+                    }.toSeq
+                )
         }
+
+        Logger.info("fast forwarding")
 
         linesPerFile.map { case(filepath, lines) =>
             import scala.sys.process._
-            filepath -> Seq(
+
+            val json = lines.toString
+            val is = new ByteArrayInputStream(json.getBytes("UTF-8"))
+
+            Logger.info("for file " + filepath)
+
+            val resultJson = (Seq(
                 "accio",
-                "--file=" + filepath,
-                "--lines=" + lines.toSeq.sortBy(_._1).mkString
-            ).!!.split("\n").map { x =>
-                // TODO(sandy): make this get the right line numbers
-                x.toInt -> 5
+                "translate",
+                "--old_commit", srcCommit,
+                "--new_commit", dstCommit,
+                "--filename", filepath,
+                "--repo_path", local
+            ) #< is).!!
+
+            val resultLines = Json.parse(resultJson).asInstanceOf[JsObject].value
+            filepath -> resultLines.toSeq.map { case (line, count) =>
+                line.toInt -> count.as[Int]
             }
         }.map { case(filepath, newlines) =>
             Snapshot(

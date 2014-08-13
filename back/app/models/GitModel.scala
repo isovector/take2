@@ -31,6 +31,8 @@ trait GitModel extends SourceRepositoryModel {
     def update(branch: String) = {
         setBranch(branch)
 
+        val srcCommit = lastCommit
+
         git.pull.call
         git.log.add(
             repo.resolve("HEAD")
@@ -51,9 +53,15 @@ trait GitModel extends SourceRepositoryModel {
                 case _ => updateFileCommitRecords(commit, branch)
             }
         }
+
+        val dstCommit = lastCommit
+
+        if (srcCommit != dstCommit) {
+            fastforward(srcCommit, dstCommit)
+        }
     }
 
-    def lastCommit = repo.resolve(Constants.HEAD).toString
+    def lastCommit = repo.resolve(Constants.HEAD).name
 
     def getFilePathsInCommit(hash: String): Seq[String] =
             getFilePathsInCommit(revwalk.parseCommit(repo.resolve(hash)))

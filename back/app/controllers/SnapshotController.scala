@@ -49,8 +49,13 @@ object SnapshotController extends Controller {
             "lines" -> seq(number)
         )(SnapshotFormData.apply)(SnapshotFormData.unapply)).bindFromRequest.get
 
+        Logger.info("updating: " + snapFormData.file)
+        Logger.info("with commit " + snapFormData.commit)
+        Logger.info("but should have commit " + RepoModel.lastCommit)
+
         if (!RepoModel.getFile(snapFormData.file).exists) {
             // is there a nicer way of doing this?
+            Logger.info("doesn't exist")
             NotFound
         } else {
             // Build a user if one doesn't exist
