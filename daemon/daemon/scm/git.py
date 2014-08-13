@@ -1,11 +1,11 @@
 from envoy import run as envoy_run
+from os.path import normpath
 
 from daemon.scm import SCMBase
-from daemon.utils import make_tempfile, norm_path
 
 
 class Git(SCMBase):
-    def _get_commit(self):
+    def _get_last_pushed_commit(self):
         r = envoy_run('git rev-list HEAD')
         commits = r.std_out.split('\n')
         for commit in commits:
@@ -15,12 +15,12 @@ class Git(SCMBase):
 
         return None
 
-    def _get_original_file(self):
+    def _get_file_content(self, file_path, commit):
         r = envoy_run('git show %s:"%s"' % (
-            self.commit,
-            norm_path(self.relative_file_path)))
+            commit,
+            normpath(file_path)))
 
-        return make_tempfile(r.std_out)
+        return r.std_out
 
     def _get_name(self):
         r = envoy_run('git config user.name')

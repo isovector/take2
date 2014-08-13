@@ -37,5 +37,6 @@ setup(
     tests_require=[
         'unittest2>=0.5.1',
         'pep8>=1.5.7',
+        'gitpython>=0.3.1',
     ],
 )
