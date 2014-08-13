@@ -4,6 +4,7 @@ import java.io.File
 import play.api._
 import scala.collection.JavaConversions._
 import org.eclipse.jgit._
+import org.eclipse.jgit.lib.Constants
 import org.eclipse.jgit.revwalk._
 import org.eclipse.jgit.treewalk._
 import org.eclipse.jgit.diff._
@@ -15,19 +16,22 @@ import org.gitective.core._
 
 import com.github.nscala_time.time.Imports._
 
-object GitModel extends SourceRepositoryModel {
-    private val repo = new FileRepository(RepoModel.local + File.separator + ".git")
+trait GitModel extends SourceRepositoryModel {
+    private val repo = new FileRepository(local + File.separator + ".git")
     private val git = new Git(repo)
+    private val revwalk = new RevWalk(repo)
 
     val defaultBranch = "master"
 
     def initialize = {
-        Git.cloneRepository.setURI(RepoModel.remote).setDirectory(RepoModel.getFile("")).call
+        Git.cloneRepository.setURI(remote).setDirectory(getFile("")).call
         update("master")
     }
 
     def update(branch: String) = {
         setBranch(branch)
+
+        val srcCommit = lastCommit
 
         git.pull.call
         git.log.add(
@@ -48,6 +52,29 @@ object GitModel extends SourceRepositoryModel {
                 case 0 => addInitialCommitRecords(commit, branch)
                 case _ => updateFileCommitRecords(commit, branch)
             }
+        }
+
+        val dstCommit = lastCommit
+
+        if (srcCommit != dstCommit) {
+            fastforward(srcCommit, dstCommit)
+        }
+    }
+
+    def lastCommit = repo.resolve(Constants.HEAD).name
+
+    def getFilePathsInCommit(hash: String): Seq[String] =
+            getFilePathsInCommit(revwalk.parseCommit(repo.resolve(hash)))
+
+    def getFilePathsInCommit(commit: RevCommit): Seq[String] = {
+        val parent = commit.getParent(0)
+        val df = new DiffFormatter(DisabledOutputStream.INSTANCE)
+        df.setRepository(repo)
+        df.setDiffComparator(RawTextComparator.DEFAULT)
+        df.setDetectRenames(true)
+
+        df.scan(parent.getTree, commit.getTree).map { diff =>
+           diff.getNewPath
         }
     }
 
@@ -78,21 +105,11 @@ object GitModel extends SourceRepositoryModel {
     }
 
     private def updateFileCommitRecords(commit: RevCommit, branch: String) = {
-        val parent = commit.getParent(0)
-        val df = new DiffFormatter(DisabledOutputStream.INSTANCE)
-        df.setRepository(repo)
-        df.setDiffComparator(RawTextComparator.DEFAULT)
-        df.setDetectRenames(true)
-
-        val timestamp = new DateTime(commit.getCommitTime.toLong * 1000)
-
         RepoFile.touchFiles(
-            df.scan(parent.getTree, commit.getTree).map { diff =>
-                diff.getNewPath
-            },
+            getFilePathsInCommit(commit),
             branch,
             commit.getName,
-            timestamp
+            new DateTime(commit.getCommitTime.toLong * 1000)
         )
     }
 
