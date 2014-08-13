@@ -7,6 +7,7 @@
     $scope.init = function () {
         SyntaxHighlighter.all();
         $scope.popupGetter();
+        $("[name='my-checkbox']").bootstrapSwitch();
     }
 
     // Checking for popup on page - modify it with appropriate data when it does
@@ -16,15 +17,19 @@
             if ($('.popover').length) {
                 $scope.makePopup();
                 clearInterval(checkExist);
+                var oldPop = $('.popover').attr("id");
                 var stillExists = setInterval(function () {
                     if (!($('.popover').length)) {
                         clearInterval(stillExists);
                         $scope.popupGetter();
+                    } else if ($('.popover').attr("id") != oldPop) {
+                        oldPop = $('.popover').attr("id");
+                        $scope.makePopup();
                     }
                 }, 10);
 
             }
-        }, 1000);
+        }, 500);
     }
 
     $scope.setFileContents = function (filestuff) {
