@@ -1,7 +1,0 @@
-REPOSITORY_PATHS = {
-    "/home/bootstrap/Projects/take2/": "http://localhost:9000",
-    "/home/bootstrap/Projects/well-contributed/": "http://localhost:9000",
-    "C:/dev/rb-vm-dev/src/ReviewBot/": "http://localhost:9000",
-    "/Users/jefflee/accio/take2/": "http://localhost:9000",
-    "C:/dev/well-contributed/": "http://localhost:9000",
-}
