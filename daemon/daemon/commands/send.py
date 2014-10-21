@@ -5,7 +5,6 @@ from os import path
 from sys import stdout, stderr, stdin
 from time import time
 
-from daemon.config import REPOSITORY_PATHS
 from daemon.network import Connection
 from daemon.parser import build_parser
 from daemon.scm.diff import create_diff, convert_line_numbers
