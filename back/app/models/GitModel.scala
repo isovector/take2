@@ -31,7 +31,7 @@ trait GitModel extends SourceRepositoryModel {
     def update(branch: String) = {
         setBranch(branch)
 
-        //val srcCommit = lastCommit
+        val srcCommit = lastCommit
 
         git.pull.call
         git.log.add(
@@ -54,11 +54,11 @@ trait GitModel extends SourceRepositoryModel {
             }
         }
 
-        //val dstCommit = lastCommit
+        val dstCommit = lastCommit
 
-        //if (srcCommit != dstCommit) {
-        //    fastforward(srcCommit, dstCommit)
-        //}
+        if (srcCommit != dstCommit) {
+            fastforward(srcCommit, dstCommit)
+        }
     }
 
     def lastCommit = repo.resolve(Constants.HEAD).name

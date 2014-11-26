@@ -1,14 +1,14 @@
 package models
 
-import play.api.db.slick.Config.driver.simple._
-import play.api.db.slick.DB
-import play.api.libs.json._
+import com.github.nscala_time.time.Imports._
 import play.api.data._
 import play.api.data.Forms._
-import play.api.libs.functional.syntax._
-import play.api.Play.current
 import play.api.db.slick.Config.driver.simple._
-import com.github.nscala_time.time.Imports._
+import play.api.db.slick.Config.driver.simple._
+import play.api.db.slick.DB
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
+import play.api.Play.current
 
 import utils._
 import utils.DateConversions._
@@ -45,6 +45,13 @@ case class User(
 
 object User {
     private val Table = TableQuery[UserModel]
+
+    def getAll(): Seq[User] = {
+        DB.withSession { implicit session =>
+            Table.list
+        }
+    }
+
     def getById(id: Int): Option[User] = {
         DB.withSession { implicit session =>
             Table.filter(_.id === id).firstOption

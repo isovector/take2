@@ -1,15 +1,15 @@
 package models
 
-import play.api.Logger
-import play.api.db.slick.Config.driver.simple._
-import play.api.db.slick.DB
-import play.api.libs.json._
+import com.github.nscala_time.time.Imports._
 import play.api.data._
 import play.api.data.Forms._
-import play.api.libs.functional.syntax._
-import play.api.Play.current
 import play.api.db.slick.Config.driver.simple._
-import com.github.nscala_time.time.Imports._
+import play.api.db.slick.Config.driver.simple._
+import play.api.db.slick.DB
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
+import play.api.Logger
+import play.api.Play.current
 
 import utils.DateConversions._
 
@@ -53,6 +53,13 @@ object Snapshot {
                 x => x._1 -> x._2.length
             }
         }.toMap
+    }
+
+    // this should probably use an interval too
+    def getByUser(user: User): Seq[Snapshot] = {
+        DB.withSession { implicit sesion =>
+            Table.filter(_.user === user).sortBy(_.timestamp.asc).list
+        }
     }
 
 
