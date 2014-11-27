@@ -49,6 +49,7 @@ object CoefficientCalculator {
             }
         }
 
+        Memcache += "coeffTimestamp" -> DateTime.now.getMillis.toString
         clusteredWith.toMap.map { case ((src, dest), count) =>
             (src, dest) -> (count.toFloat / totalInstances(src))
         }

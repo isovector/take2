@@ -26,15 +26,15 @@ object Memcache extends Flyweight {
   private val Table = TableQuery[MemcacheModel]
 
   def create(_1: String, _2: String) = {
-    getById(
-      DB.withSession { implicit session =>
-        (Table returning Table.map(_.id)) +=
-          new MemcacheVal(_1, _2)
-      }
-    ).get
+    DB.withSession { implicit session =>
+      Table += new MemcacheVal(_1, _2)
+    }
+
+    getById(_1).get
   }
 
-  def apply(id: Key): Option[String] = getById(id).map(_.value)
+  def get(id: Key): Option[String] = getById(id).map(_.value)
+  def apply(id: Key): String = get(id).get
   def +=(tuple: (Key, String)) = {
     val id = tuple._1
     val value = tuple._2
@@ -43,7 +43,7 @@ object Memcache extends Flyweight {
       memc.value = value
       memc.save()
     }.getOrElse {
-      create(id, value)
+     create(id, value)
     }
   }
 
