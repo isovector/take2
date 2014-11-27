@@ -16,91 +16,87 @@ import utils._
 import utils.DateConversions._
 
 case class RepoFile(
-        file: String,
-        var lastCommit: String,
-        var lastUpdated: DateTime) {
-    private val Table = TableQuery[RepoFileModel]
+    file: String,
+    var lastCommit: String,
+    var lastUpdated: DateTime) {
+  private val Table = TableQuery[RepoFileModel]
 
-    def save() = {
-        DB.withSession { implicit session =>
-            Table.filter(_.file === file).update(this)
-        }
+  def save() = {
+    DB.withSession { implicit session =>
+      Table.filter(_.file === file).update(this)
     }
+  }
 
-    def touch(commitId: String, timestamp: DateTime) = {
-        if (lastUpdated < timestamp) {
-            Logger.info("touching " + file)
-            lastCommit = commitId
-            lastUpdated = timestamp
-            save()
-        }
+  def touch(commitId: String, timestamp: DateTime) = {
+    if (lastUpdated < timestamp) {
+      Logger.info("touching " + file)
+      lastCommit = commitId
+      lastUpdated = timestamp
+      save()
     }
+  }
 }
 
 object RepoFile {
-    private val Table = TableQuery[RepoFileModel]
+  private val Table = TableQuery[RepoFileModel]
 
-    def create(_1: String, _2: String, _3: DateTime) = {
-        DB.withSession { implicit session =>
-          Table += new RepoFile(_1, _2, _3)
+  def create(_1: String, _2: String, _3: DateTime) = {
+    DB.withSession { implicit session =>
+      Table += new RepoFile(_1, _2, _3)
+    }
+  }
+
+  def getAll: Map[String, RepoFile] = {
+    DB.withSession { implicit session =>
+      Table.list
+      }.map { record =>
+        record.file -> (record: RepoFile)
+      }.toMap
+  }
+
+  def getByFile(file: String): Option[RepoFile] = {
+    DB.withSession { implicit session =>
+      Table.filter(_.file === file).firstOption
+    }
+  }
+
+  def touchFiles(filenames: Seq[String], branch: String, commitId: String, timestamp: DateTime) = {
+    filenames.map { filename =>
+      getByFile(filename).map { file =>
+        // HACK(sandy): only update file timestamps for master
+        Todo.hack
+        if (branch == RepoModel.defaultBranch) {
+          file.touch(commitId, timestamp)
         }
+      }.getOrElse {
+        Logger.info("adding " + filename)
+        RepoFile.create(
+          filename,
+          commitId,
+          timestamp)
+      }
     }
+  }
 
-    def getAll: Map[String, RepoFile] = {
-        DB.withSession { implicit session =>
-            Table.list
-        }.map { record =>
-            record.file -> (record: RepoFile)
-        }.toMap
-    }
-
-    def getByFile(file: String): Option[RepoFile] = {
-        DB.withSession { implicit session =>
-            Table.filter(_.file === file).firstOption
-        }
-    }
-
-    def touchFiles(filenames: Seq[String], branch: String, commitId: String, timestamp: DateTime) = {
-        filenames.map { filename =>
-            getByFile(filename) match {
-                case None => {
-                    Logger.info("adding " + filename)
-                    RepoFile.create(
-                      filename,
-                      commitId,
-                      timestamp)
-                }
-
-                case Some(file) => {
-                    // HACK(sandy): only update file timestamps for master
-                    Todo.hack
-                    if (branch == RepoModel.defaultBranch) {
-                        file.touch(commitId, timestamp)
-                    }
-                }
-            }
-        }
-    }
-
-    def getFilesOpenedSince(since: DateTime): Map[String, Int] = {
-        DB.withSession { implicit session =>
-            TableQuery[SnapshotModel]
-            .where(_.commit === RepoModel.lastCommit)
-            .where(x => x.timestamp > since)
-            .list
-        }.groupBy(_.file).toSeq.map {
-            // Only count number of snapshots
-            case (k, v) => k -> v.length
-        }.toMap
-    }
+  def getFilesOpenedSince(since: DateTime): Map[String, Int] = {
+    DB.withSession { implicit session =>
+      TableQuery[SnapshotModel]
+        .where(_.commit === RepoModel.lastCommit)
+        .where(x => x.timestamp > since)
+        .list
+    }.groupBy(_.file).toSeq.map {
+      // Only count number of snapshots
+      case (k, v) => k -> v.length
+    }.toMap
+  }
 }
 
 class RepoFileModel(tag: Tag) extends Table[RepoFile](tag, "RepoFile") {
-    def file = column[String]("file", O.PrimaryKey)
-    def lastCommit = column[String]("lastCommit")
-    def lastUpdated = column[DateTime]("lastUpdated")
+  def file = column[String]("file", O.PrimaryKey)
+  def lastCommit = column[String]("lastCommit")
+  def lastUpdated = column[DateTime]("lastUpdated")
 
-    val repoFile = RepoFile.apply _
-    def * = (file, lastCommit, lastUpdated) <> (repoFile.tupled, RepoFile.unapply _)
+  val repoFile = RepoFile.apply _
+  def * = (file, lastCommit, lastUpdated) <> (repoFile.tupled, RepoFile.unapply _)
 }
 
