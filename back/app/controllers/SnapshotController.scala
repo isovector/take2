@@ -1,16 +1,16 @@
 package controllers
 
+import com.github.nscala_time.time.Imports._
 import play.api._
-import play.api.libs.json._
-import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
 import play.api.db.slick.DB
+import play.api.libs.json._
+import play.api.mvc._
 import play.api.Play.current
-import com.github.nscala_time.time.Imports._
 
-import utils._
 import models._
+import utils._
 
 import play.api.db.slick.Config.driver.simple._
 
@@ -48,10 +48,6 @@ object SnapshotController extends Controller {
             "commit" -> text,
             "lines" -> seq(number)
         )(SnapshotFormData.apply)(SnapshotFormData.unapply)).bindFromRequest.get
-
-        Logger.info("updating: " + snapFormData.file)
-        Logger.info("with commit " + snapFormData.commit)
-        Logger.info("but should have commit " + RepoModel.lastCommit)
 
         if (!RepoModel.getFile(snapFormData.file).exists) {
             // is there a nicer way of doing this?

@@ -1,18 +1,18 @@
 package controllers
 
+import com.github.nscala_time.time.Imports._
 import play.api._
-import play.api.libs.json._
-import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
 import play.api.db.slick.DB
+import play.api.libs.json._
+import play.api.mvc._
 import play.api.Play.current
-import com.github.nscala_time.time.Imports._
 
 import models._
 import utils._
-import utils.JSON._
 import utils.DateConversions._
+import utils.JSON._
 
 import play.api.db.slick.Config.driver.simple._
 
@@ -100,5 +100,15 @@ object FileMetricsController extends Controller {
                 "snapshots" -> (_._2)
             )
         ).as("text/text")
+    }
+
+    def getFileCoefficients = Action {
+      Ok(
+        analytics.CoefficientCalculator.generateFileCoefficients.toSeq.sortBy(-_._2).mapJs(
+          "source"      -> (_._1._1),
+          "destination" -> (_._1._2),
+          "coefficient" -> (_._2)
+        )
+      )
     }
 }

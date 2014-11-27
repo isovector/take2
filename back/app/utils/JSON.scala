@@ -17,6 +17,7 @@ object JSON {
         case int: Int => toJson(int)
         case long: Long => toJson(long)
         case str: String => toJson(str)
+        case float: Float => toJson(float)
 
         case date: DateTime => toJson(date)
         case user: User => toJson(user)
