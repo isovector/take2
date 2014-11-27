@@ -10,7 +10,6 @@ from daemon.parser import build_parser
 from daemon.scm.diff import create_diff, convert_line_numbers
 from daemon.scm.git import Git
 
-
 OPTIONS = {
     '--filename': str,
     '--repo_path': str,
@@ -76,7 +75,7 @@ def send(args):
     parser = build_parser(OPTIONS)
     opt = parser.parse_args(args=args)
 
-    repo_path, server_url = repo_url(opt.filename)
+    repo_path, server_url = repo_url(path.dirname(opt.filename))
 
     if opt.repo_path:
         repo_path = opt.repo_path
