@@ -1,14 +1,14 @@
 package models
 
 import play.api._
-import play.api.db.slick.Config.driver.simple._
-import play.api.db.slick.DB
-import play.api.libs.json._
 import play.api.data._
 import play.api.data.Forms._
-import play.api.libs.functional.syntax._
-import play.api.Play.current
 import play.api.db.slick.Config.driver.simple._
+import play.api.db.slick.Config.driver.simple._
+import play.api.db.slick.DB
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
+import play.api.Play.current
 
 import com.github.nscala_time.time.Imports._
 
@@ -20,13 +20,6 @@ case class RepoFile(
         var lastCommit: String,
         var lastUpdated: DateTime) {
     private val Table = TableQuery[RepoFileModel]
-    def insert() = {
-        // TODO(sandy): check to see if this exists already
-
-        DB.withSession { implicit session =>
-            Table += this
-        }
-    }
 
     def save() = {
         DB.withSession { implicit session =>
@@ -47,6 +40,12 @@ case class RepoFile(
 object RepoFile {
     private val Table = TableQuery[RepoFileModel]
 
+    def create(_1: String, _2: String, _3: DateTime) = {
+        DB.withSession { implicit session =>
+          Table += new RepoFile(_1, _2, _3)
+        }
+    }
+
     def getAll: Map[String, RepoFile] = {
         DB.withSession { implicit session =>
             Table.list
@@ -66,11 +65,10 @@ object RepoFile {
             getByFile(filename) match {
                 case None => {
                     Logger.info("adding " + filename)
-                    RepoFile(
-                        filename,
-                        commitId,
-                        timestamp
-                    ).insert()
+                    RepoFile.create(
+                      filename,
+                      commitId,
+                      timestamp)
                 }
 
                 case Some(file) => {

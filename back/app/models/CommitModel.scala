@@ -1,45 +1,36 @@
 package models
 
-import play.api.db.slick.Config.driver.simple._
-import play.api.db.slick.DB
-import play.api.libs.json._
 import play.api.data._
 import play.api.data.Forms._
-import play.api.libs.functional.syntax._
-import play.api.Play.current
 import play.api.db.slick.Config.driver.simple._
+import play.api.db.slick.Config.driver.simple._
+import play.api.db.slick.DB
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
+import play.api.Play.current
 
 case class Commit(
-        var id: Option[Int] = None,
+        id: Int,
         branch: String,
         hash: String,
         parent: String) {
     private val Table = TableQuery[CommitModel]
-    def insert() = {
-        id match {
-            case Some(_) => throw new CloneNotSupportedException
-            case None => // do nothing
-        }
-
-        DB.withSession { implicit session =>
-            id = Some((Table returning Table.map(_.id)) += this)
-        }
-    }
 
     def save() = {
-        id match {
-            case Some(_) => // do nothing
-            case None => throw new NullPointerException
-        }
-
         DB.withSession { implicit session =>
-            Table.filter(_.id === id.get).update(this)
+            Table.filter(_.id === id).update(this)
         }
     }
 }
 
 object Commit {
     private val Table = TableQuery[CommitModel]
+
+    def create(_1: String, _2: String, _3: String) = {
+      DB.withSession { implicit session =>
+        Table += new Commit(0, _1, _2, _3)
+      }
+    }
 
     def getByHash(hash: String): Option[Commit] = {
         DB.withSession { implicit session =>
@@ -55,6 +46,6 @@ class CommitModel(tag: Tag) extends Table[Commit](tag, "Commit") {
     def parent = column[String]("email")
 
     val commit = Commit.apply _
-    def * = (id.?, branch, hash, parent) <> (commit.tupled, Commit.unapply _)
+    def * = (id, branch, hash, parent) <> (commit.tupled, Commit.unapply _)
 }
 

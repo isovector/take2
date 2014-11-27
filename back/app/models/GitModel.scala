@@ -38,15 +38,13 @@ trait GitModel extends SourceRepositoryModel {
       repo.resolve("HEAD")
     ).call.filter(x => Commit.getByHash(x.getName).isEmpty).map { commit =>
       Logger.info("committing " + commit.getName)
-      Commit(
-        None,
+      Commit.create(
         branch,
         commit.getName,
         commit.getParentCount match {
           case 0 => ""
           case _ => commit.getParent(0).getName
-        }
-        ).insert()
+        })
 
       commit.getParentCount match {
         case 0 => addInitialCommitRecords(commit, branch)

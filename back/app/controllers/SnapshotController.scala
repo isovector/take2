@@ -28,7 +28,6 @@ object SnapshotController extends Controller {
     def create = Action { implicit request =>
         // WHY DOES THIS HAVE TO SUCK SO HARD?
         case class SnapshotFormData(
-            id: Option[Int] = None,
             timestamp: Long,
             file: String,
             name: String,
@@ -39,7 +38,6 @@ object SnapshotController extends Controller {
         )
 
         val snapFormData = Form(mapping(
-            "id" -> optional(number),
             "timestamp" -> longNumber,
             "file" -> text,
             "name" -> text,
@@ -55,46 +53,29 @@ object SnapshotController extends Controller {
             NotFound
         } else {
             // Build a user if one doesn't exist
-            User.getByEmail(snapFormData.email) match {
-                    case None =>
-                    User(
-                        None,
-                        snapFormData.name,
-                        snapFormData.email,
-                        new DateTime(snapFormData.timestamp)
-                    ).insert()
-                case Some(user) => {
-                    user.lastActivity = new DateTime(snapFormData.timestamp)
-                    user.save()
-                }
+            User.getByEmail(snapFormData.email).map { user =>
+                user.lastActivity = new DateTime(snapFormData.timestamp)
+                user.save()
+            }.getOrElse {
+                User.create(
+                    snapFormData.name,
+                    snapFormData.email,
+                    new DateTime(snapFormData.timestamp))
             }
 
             // Build a commit if one doesn't exist
-            Commit.getByHash(snapFormData.commit) match {
-                case None => {
-                    Logger.info(snapFormData.branch + ": needs update!")
-                    RepoModel.update(snapFormData.branch)
-                }
-                case _ => // do nothing
+            Commit.getByHash(snapFormData.commit).getOrElse {
+                Logger.info(snapFormData.branch + ": needs update!")
+                RepoModel.update(snapFormData.branch)
             }
 
-            val snap = new Snapshot(
-              snapFormData.id,
+            Snapshot.create(
               new DateTime(snapFormData.timestamp),
               snapFormData.file,
               User.getByEmail(snapFormData.email).get,
               snapFormData.branch,
               snapFormData.commit,
-              snapFormData.lines.map(_ -> 1).toMap
-            );
-
-            if (snap.id.isEmpty) {
-                snap.insert()
-            } else {
-                DB.withSession { implicit session =>
-                    Table.filter(_.id === snap.id.get).update(snap)
-                }
-            }
+              snapFormData.lines.map(_ -> 1).toMap);
 
             Ok
         }

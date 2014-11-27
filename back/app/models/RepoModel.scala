@@ -1,12 +1,12 @@
 package models
 
-import play.api.Logger
-import play.api.Play.current
-import play.api.db.slick.DB
-import play.api.db.slick.Config.driver.simple._
 import java.io.ByteArrayInputStream
 import java.io.File
 import org.joda.time.DateTime
+import play.api.db.slick.Config.driver.simple._
+import play.api.db.slick.DB
+import play.api.Logger
+import play.api.Play.current
 
 import models._
 import utils._
@@ -73,15 +73,14 @@ trait SourceRepositoryModel {
                 line.toInt -> count.as[Int]
             }
         }.map { case(filepath, newlines) =>
-            Snapshot(
-                None,
+            Snapshot.create(
                 new DateTime(0), // TODO(sandy): get the right time for this
                 filepath,
                 User.getById(1).get, // TODO(sandy): figure out a proper user for this
                 defaultBranch,       // TODO(sandy): is this a meaningful branch?
                 dstCommit,
                 newlines.toMap
-            ).insert()
+            )
         }
     }
 }

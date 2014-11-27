@@ -14,37 +14,27 @@ import utils._
 import utils.DateConversions._
 
 case class User(
-        var id: Option[Int] = None,
+        id: Int,
         name: String,
         email: String,
         var lastActivity: DateTime) {
     private val Table = TableQuery[UserModel]
-    def insert() = {
-        // Ensure this Event hasn't already been put into the database
-        id match {
-            case Some(_) => throw new CloneNotSupportedException
-            case None => // do nothing
-        }
-
-        DB.withSession { implicit session =>
-            id = Some((Table returning Table.map(_.id)) += this)
-        }
-    }
 
     def save() = {
-        id match {
-            case Some(_) => // do nothing
-            case None => throw new NullPointerException
-        }
-
         DB.withSession { implicit session =>
-            Table.filter(_.id === id.get).update(this)
+            Table.filter(_.id === id).update(this)
         }
     }
 }
 
 object User {
     private val Table = TableQuery[UserModel]
+
+    def create(_1: String, _2: String, _3: DateTime) = {
+      DB.withSession { implicit session =>
+        Table += new User(0, _1, _2, _3)
+      }
+    }
 
     def getAll(): Seq[User] = {
         DB.withSession { implicit session =>
@@ -67,7 +57,7 @@ object User {
     implicit val implicitUserWrites = new Writes[User] {
         def writes(user: User): JsValue = {
             Json.obj(
-                "id" -> user.id.get,
+                "id" -> user.id,
                 "name" -> user.name,
                 "email" -> user.email,
                 "picture" -> Todo.unimplemented,
@@ -77,7 +67,7 @@ object User {
     }
 
     implicit def implicitUserColumnMapper = MappedColumnType.base[User, Int](
-        u => u.id.get,
+        u => u.id,
         i => User.getById(i).get
     )
 }
@@ -89,6 +79,6 @@ class UserModel(tag: Tag) extends Table[User](tag, "User") {
     def lastActivity = column[DateTime]("lastActivity")
 
     val user = User.apply _
-    def * = (id.?, name, email, lastActivity) <> (user.tupled, User.unapply _)
+    def * = (id, name, email, lastActivity) <> (user.tupled, User.unapply _)
 }
 
