@@ -27,33 +27,5 @@ object CoefficientCalculator {
       }
     }
   }
-
-  // Compute how likely dest is to be open at the same time as src
-  def generateFileCoefficients: Map[(String, String), Float] = {
-    val slidingWindow = 10
-    val clusterTime = 5 minutes
-
-    val totalInstances = scala.collection.mutable.Map[String, Int]().withDefaultValue(0)
-    val clusteredWith = scala.collection.mutable.Map[(String, String), Int]().withDefaultValue(0)
-
-    User.getAll().map { user =>
-      val snapshots = Snapshot.getByUser(user)
-      snapshots.sliding(slidingWindow).toList.map { window =>
-        val before = window.head.timestamp + clusterTime
-        val cluster = window.filter(_.timestamp <= before).map(_.file).toSet
-
-        cluster.map { file => totalInstances(file) += 1 }
-        cluster.toSeq.combinations(2).toList.map { choose =>
-          clusteredWith((choose(0), choose(1))) += 1
-          clusteredWith((choose(1), choose(0))) += 1
-        }
-      }
-    }
-
-    Memcache += "coeffTimestamp" -> DateTime.now.getMillis.toString
-    clusteredWith.toMap.map { case ((src, dest), count) =>
-      (src, dest) -> (count.toFloat / totalInstances(src))
-    }
-  }
 }
 
