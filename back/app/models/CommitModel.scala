@@ -10,18 +10,7 @@ import play.api.libs.json._
 import play.api.Logger
 import play.api.Play.current
 
-case class Commit(
-    id: String,
-    branch: String,
-    parents: Seq[Commit]) {
-  private val Table = TableQuery[CommitModel]
-
-  def save() = {
-    DB.withSession { implicit session =>
-      Table.filter(_.id === id).update(this)
-    }
-  }
-}
+case class Commit(id: String, branch: String, parents: Seq[Commit])
 
 object Commit extends utils.Flyweight {
   type T = Commit

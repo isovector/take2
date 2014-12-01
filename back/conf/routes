@@ -8,7 +8,8 @@ GET     /                           controllers.Application.index
 POST    /api/snapshot               controllers.SnapshotController.create
 DELETE  /api/snapshot/:id           controllers.SnapshotController.delete(id: Int)
 
-GET     /manage-repo/initialize     controllers.RepoController.initialize
+GET     /debug/init                 controllers.RepoController.initialize
+GET     /debug/commits-loaded       controllers.RepoController.commitsLoaded
 
 GET     /directory                  controllers.RepoController.retrieveFileByPath(file = "")
 GET     /directory/                 controllers.RepoController.retrieveFileByPath(file = "")
