@@ -29,7 +29,6 @@ case class RepoFile(
 
   def touch(commitId: String, timestamp: DateTime) = {
     if (lastUpdated < timestamp) {
-      Logger.info("touching " + file)
       lastCommit = commitId
       lastUpdated = timestamp
       save()

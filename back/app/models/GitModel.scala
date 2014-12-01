@@ -34,17 +34,15 @@ trait GitModel extends SourceRepositoryModel {
     // val srcCommit = lastCommit
 
     git.pull.call
-    git.log.add(
-      repo.resolve("HEAD")
-    ).call.filter(x => Commit.getByHash(x.getName).isEmpty).map { commit =>
-      Logger.info("committing " + commit.getName)
+    git.log.add(repo.resolve("HEAD")).call.filter(
+      x => Commit.getById(x.getName).isEmpty
+    ).toList.reverse.map { commit =>
+      Logger.info("creating commit " + commit.getName)
       Commit.create(
-        branch,
         commit.getName,
-        commit.getParentCount match {
-          case 0 => ""
-          case _ => commit.getParent(0).getName
-        })
+        branch,
+        commit.getParents.map(_.getName).map(Commit.getById _).map(_.get)
+      )
 
       commit.getParentCount match {
         case 0 => addInitialCommitRecords(commit, branch)
@@ -71,9 +69,7 @@ trait GitModel extends SourceRepositoryModel {
     df.setDiffComparator(RawTextComparator.DEFAULT)
     df.setDetectRenames(true)
 
-    df.scan(parent.getTree, commit.getTree).map { diff =>
-      diff.getNewPath
-    }
+    df.scan(parent.getTree, commit.getTree).map(_.getNewPath)
   }
 
   private def setBranch(branch: String) = {

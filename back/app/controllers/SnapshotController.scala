@@ -64,7 +64,7 @@ object SnapshotController extends Controller {
       }
 
       // Build a commit if one doesn't exist
-      Commit.getByHash(snapFormData.commit).getOrElse {
+      Commit.getById(snapFormData.commit).getOrElse {
         Logger.info(snapFormData.branch + ": needs update!")
         RepoModel.update(snapFormData.branch)
       }
