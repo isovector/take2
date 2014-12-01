@@ -53,13 +53,17 @@ trait GitModel extends SourceRepositoryModel {
     val dstCommit = lastCommit
 
     if (srcCommit != dstCommit) {
-      Snapshot.propagate(Commit.getById(srcCommit).get)
+      Snapshot.fastforward(Commit.getById(srcCommit).get)
     }
   }
 
   def lastCommit = repo.resolve(Constants.HEAD).name
 
   def isHead(commit: Commit): Boolean = {
+    import utils._
+    Todo.hack
+    // HACK(sandy): this probably should rely on commit.children.length == 0
+
     commit.id == lastCommit
   }
 

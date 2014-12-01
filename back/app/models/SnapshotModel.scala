@@ -20,7 +20,7 @@ case class Snapshot(
     user: User,
     commitId: String,
     lines: Map[Int, Int],
-    dirty: Boolean) {
+    dirty: Boolean /* does this snap need to be propagated still? */) {
   lazy val commit = Commit.getById(commitId)
 }
 
@@ -56,9 +56,14 @@ object Snapshot {
     }
   }
 
-  def propagate(commit: Commit): Unit = {
-    // Propagate snapshots from older commits up the tree
+  def fastforward(commit: Commit): Unit = {
+    // This needs to be two steps to avoid doing extra work for diamond patterns
+    propagate(commit)
+    coalesce(commit)
+  }
 
+  // Propagate snapshots from older commits up the tree
+  private def propagate(commit: Commit): Unit = {
     val toPropagate = lineviews(c => (c.file, c.user)) {
       DB.withSession { implicit session =>
         Table.filter(c => c.commitId === commit.id && c.dirty).list
@@ -101,13 +106,9 @@ object Snapshot {
         propagate(dstCommit)
       }
     }
-
-    if (!commit.isHead) {
-      coalesce(commit)
-    }
   }
 
-  def coalesce(commit: Commit) = {
+  private def coalesce(commit: Commit): Unit = {
     // Compress all snapshots for a commit into one per user per file
     val snaps = lineviews(c => (c.file, c.user)) {
       DB.withSession { implicit session =>
@@ -128,6 +129,12 @@ object Snapshot {
           commit.id,
           lines,
           false)
+      }
+    }
+
+    commit.children.map { child =>
+      if (!child.isHead) {
+        coalesce(child)
       }
     }
   }
