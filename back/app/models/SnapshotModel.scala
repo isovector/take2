@@ -14,18 +14,20 @@ import play.api.Play.current
 import utils.DateConversions._
 
 case class Snapshot(
-  id: Int,
-  timestamp: DateTime,
-  file: String,
-  user: User,
-  branch: String,
-  commit: String,
-  lines: Map[Int, Int])
+    id: Int,
+    timestamp: DateTime,
+    file: String,
+    user: User,
+    commitId: String,
+    lines: Map[Int, Int],
+    dirty: Boolean) {
+  lazy val commit = Commit.getById(commitId)
+}
 
 object Snapshot {
   private val Table = TableQuery[SnapshotModel]
 
-  def create(_1: DateTime, _2: String, _3: User, _4: String, _5: String, _6: Map[Int, Int]) = {
+  def create(_1: DateTime, _2: String, _3: User, _4: String, _5: Map[Int, Int], _6: Boolean = true) = {
     DB.withSession { implicit session =>
       Table += new Snapshot(0, _1, _2, _3, _4, _5, _6)
     }
@@ -49,8 +51,84 @@ object Snapshot {
 
   // this should probably use an interval too
   def getByUser(user: User): Seq[Snapshot] = {
-    DB.withSession { implicit sesion =>
+    DB.withSession { implicit session =>
       Table.filter(_.user === user).sortBy(_.timestamp.asc).list
+    }
+  }
+
+  def propagate(commit: Commit): Unit = {
+    // Propagate snapshots from older commits up the tree
+
+    val toPropagate = lineviews(c => (c.file, c.user)) {
+      DB.withSession { implicit session =>
+        Table.filter(c => c.commitId === commit.id && c.dirty).list
+      }
+    }.toSeq.map { case (k, lines) =>
+      k -> JsObject(
+        lines.map { case (line, count) =>
+          line.toString -> JsNumber(count)
+        }.toSeq).toString
+    }
+
+    commit.children.map { dstCommit =>
+      toPropagate.map { case (k@(filepath, user), json) =>
+        import scala.sys.process._
+        import java.io.ByteArrayInputStream
+
+        val resultJson = (Seq(
+          "accio",
+          "translate",
+          "--old_commit", commit.id,
+          "--new_commit", dstCommit.id,
+          "--filename", filepath,
+          "--repo_path", RepoModel.local
+        ) #< new ByteArrayInputStream(json.getBytes("UTF-8"))).!!
+
+        val resultLines = Json.parse(resultJson).asInstanceOf[JsObject].value
+
+        k -> resultLines.toSeq.map { case (line, count) =>
+          line.toInt -> count.as[Int]
+        }
+      }.map { case ((filepath, user), lines) =>
+        Snapshot.create(
+          new DateTime(0), // TODO(sandy): get the right time for this
+          filepath,
+          user,
+          dstCommit.id,
+          lines.toMap)
+
+        // Propagate next commit
+        propagate(dstCommit)
+      }
+    }
+
+    if (!commit.isHead) {
+      coalesce(commit)
+    }
+  }
+
+  def coalesce(commit: Commit) = {
+    // Compress all snapshots for a commit into one per user per file
+    val snaps = lineviews(c => (c.file, c.user)) {
+      DB.withSession { implicit session =>
+        Table.filter(c => c.commitId === commit.id).list
+      }
+    }
+
+    DB.withSession { implicit session =>
+      Table
+        .filter(c => c.commitId === commit.id)
+        .delete
+
+      snaps.map { case((filepath, user), lines) =>
+        Snapshot.create(
+          new DateTime(0), // TODO(sandy): get the right time for this
+          filepath,
+          user,
+          commit.id,
+          lines,
+          false)
+      }
     }
   }
 
@@ -78,11 +156,18 @@ class SnapshotModel(tag: Tag) extends Table[Snapshot](tag, "Snapshot") {
   def timestamp = column[DateTime]("timestamp")
   def file = column[String]("file")
   def user = column[User]("user")
-  def branch = column[String]("branch")
-  def commit = column[String]("commit")
+  def commitId = column[String]("commitId")
   def lines = column[Map[Int, Int]]("lines", O.DBType("TEXT"))
+  def dirty = column[Boolean]("dirty")
 
   val snapshot = Snapshot.apply _
-  def * = (id, timestamp, file, user, branch, commit, lines) <> (snapshot.tupled, Snapshot.unapply _)
+  def * = (
+    id,
+    timestamp,
+    file,
+    user,
+    commitId,
+    lines,
+    dirty) <> (snapshot.tupled, Snapshot.unapply _)
 }
 

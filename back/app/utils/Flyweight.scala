@@ -61,6 +61,10 @@ trait Flyweight {
     }
   }
 
+  def clear(): Unit = {
+    expire(cached.map(_._1).toSeq)
+  }
+
   def reclaim(beforeWhen: DateTime): Unit = {
     cached.synchronized {
       cached --= cached.filter { case (key, access) =>

@@ -27,7 +27,7 @@ object FileMetricsController extends Controller {
     val lines = Snapshot.lineviews(_.user) {
       DB.withSession { implicit session =>
         Table
-          .where(_.commit === RepoModel.lastCommit)
+          .where(_.commitId === RepoModel.lastCommit)
           .where(_.file === file)
           .list
       }
@@ -60,7 +60,7 @@ object FileMetricsController extends Controller {
     // TODO(sandy): it would be nice to get this using getFilesOpenedSince
     val users = DB.withSession { implicit session =>
       Table
-        .where(_.commit === RepoModel.lastCommit)
+        .where(_.commitId === RepoModel.lastCommit)
         .where(_.file.like(prefix + "%"))
         .where(x => x.timestamp > since)
         .list

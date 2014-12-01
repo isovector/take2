@@ -75,9 +75,19 @@ object RepoController extends Controller {
   }
 
   def commitsLoaded = Action {
+    // DEBUG
     Ok(Commit.inMemory.mapJs(
       "id" -> (_.id)
     ))
+  }
+
+  def destroyCommits = Action {
+    // DEBUG
+    DB.withSession { implicit session =>
+      TableQuery[CommitModel].delete
+    }
+    Commit.clear
+    Ok("yup")
   }
 
   def retrieveFileByRegex(regex: String) = Action {
