@@ -80,14 +80,14 @@ object Snapshot {
         import scala.sys.process._
         import java.io.ByteArrayInputStream
 
-        val resultJson = (Seq(
-          "accio",
-          "translate",
-          "--old_commit", commit.id,
-          "--new_commit", dstCommit.id,
-          "--filename", filepath,
-          "--repo_path", RepoModel.local
-        ) #< new ByteArrayInputStream(json.getBytes("UTF-8"))).!!
+        val resultJson = new utils.RpcClient("http://localhost:7432/")
+          .translate(
+            commit.id,
+            dstCommit.id,
+            filepath,
+            RepoModel.local,
+            json)
+          .asInstanceOf[String]
 
         val resultLines = Json.parse(resultJson).asInstanceOf[JsObject].value
 

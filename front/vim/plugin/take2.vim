@@ -7,8 +7,9 @@ import vim
 from os import unlink, write, close
 from shutil import rmtree
 from tempfile import mkstemp, mkdtemp
+import xmlrpclib
 
-global gTimer, gIsActive, gUpdatesToSend, gIdleCount, IS_IDLE_COUNT, RECORD_DURATION
+global accio, gTimer, gIsActive, gUpdatesToSend, gIdleCount, IS_IDLE_COUNT, RECORD_DURATION
 
 gTimer = None
 gIsActive = False
@@ -17,6 +18,8 @@ gIdleCount = 0
 
 RECORD_DURATION = 5.0
 IS_IDLE_COUNT = 12
+
+accio = xmlrpclib.ServerProxy("http://localhost:7432/")
 
 def make_tempfile(content=None):
     """ Creates a temporary file and returns the path. """
@@ -56,23 +59,11 @@ def send_to_daemon(filename, buffer, window_range):
     from os import getpid
 
     tmp = make_tempfile(buffer)
-
-    cmd = "accio send --start=%d --end=%d --filename=%s --buffer=%s &" % (
+    accio.snapshot(
+        filename,
         window_range[0],
         window_range[1],
-        filename,
-        tmp
-    )
-
-    pipe = Popen(
-        cmd,
-        shell = True,
-        stdin = PIPE,
-        stdout = PIPE,
-        stderr = PIPE
-    )
-
-    pipe.communicate(input = buffer)
+        tmp)
     delete_tempfile(tmp)
 
 

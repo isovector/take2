@@ -71,20 +71,11 @@ def repo_url(path):
     return None, None
 
 
-def send(args):
-    parser = build_parser(OPTIONS)
-    opt = parser.parse_args(args=args)
-
-    repo_path, server_url = repo_url(path.dirname(opt.filename))
-
-    if opt.repo_path:
-        repo_path = opt.repo_path
-
-    if opt.repo_path:
-        server_url = opt.server_url
+def send(filename, start, end, buffer, debug = False):
+    repo_path, server_url = repo_url(path.dirname(filename))
 
     if server_url is None:
-        return
+        return False
 
     try:
         git = Git(repo_path)
@@ -92,11 +83,11 @@ def send(args):
         stderr.write(str(e))
         return
 
-    rel_filename = git.relative_file_path(opt.filename)
+    rel_filename = git.relative_file_path(filename)
     commit = git.get_last_pushed_commit()
 
-    if opt.buffer:
-        f = open(opt.buffer, "r")
+    if buffer:
+        f = open(buffer, "r")
         wip = f.read()
     else:
         wip = stdin.read()
@@ -105,7 +96,7 @@ def send(args):
         create_diff(
             old_content=wip,
             new_content=git.get_file_content(rel_filename, commit)),
-        lines=range(opt.start, opt.end + 1))
+        lines=range(start, end + 1))
     lines = [x for x in lines if x is not None]
 
     payload = {
@@ -118,13 +109,15 @@ def send(args):
         "lines[]": lines,
     }
 
-    if opt.debug:
+    if debug:
         stdout.write(dumps(payload))
-        return
+        print ""
+        return False
 
     try:
         conn = Connection(server_url)
         conn.post(path="/api/snapshot", payload=payload)
+        return True
     except Exception as e:
         stderr.write(str(e))
-        return
+        return False
