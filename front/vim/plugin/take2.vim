@@ -59,11 +59,14 @@ def send_to_daemon(filename, buffer, window_range):
     from os import getpid
 
     tmp = make_tempfile(buffer)
-    accio.snapshot(
-        filename,
-        window_range[0],
-        window_range[1],
-        tmp)
+    try:
+        accio.snapshot(
+            filename,
+            window_range[0],
+            window_range[1],
+            tmp)
+    except:
+        pass
     delete_tempfile(tmp)
 
 
