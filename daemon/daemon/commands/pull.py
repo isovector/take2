@@ -4,9 +4,6 @@ import os
 
 from daemon.common import repo_url
 from daemon.network import Connection
-from daemon.parser import build_parser
-from daemon.scm.diff import create_diff, convert_line_numbers
-from daemon.scm.git import Git
 
 def getCoeffsForFile(filename):
     repo_path, server_url, filename = repo_url(filename)
