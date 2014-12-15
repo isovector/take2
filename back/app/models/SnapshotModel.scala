@@ -20,7 +20,8 @@ case class Snapshot(
     user: User,
     commitId: String,
     lines: Map[Int, Int],
-    dirty: Boolean /* does this snap need to be propagated still? */) {
+    dirty: Boolean, /* does this snap need to be propagated still? */
+    symbols: Seq[Symbol]) {
   lazy val commit = Commit.getById(commitId)
 }
 
@@ -28,8 +29,15 @@ object Snapshot {
   private val Table = TableQuery[SnapshotModel]
 
   def create(_1: DateTime, _2: String, _3: User, _4: String, _5: Map[Int, Int], _6: Boolean = true) = {
+    val file = _2
+    val lines = _5.keys
+
     DB.withSession { implicit session =>
-      Table += new Snapshot(0, _1, _2, _3, _4, _5, _6)
+      val symbols =
+        TableQuery[SymbolModel]
+          .filter(x => x.file === file && (x.line inSetBind lines))
+          .list
+      Table += new Snapshot(0, _1, _2, _3, _4, _5, _6, symbols)
     }
   }
 
@@ -158,6 +166,7 @@ object Snapshot {
 
 class SnapshotModel(tag: Tag) extends Table[Snapshot](tag, "Snapshot") {
   import Snapshot._
+  import Symbol._
 
   def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
   def timestamp = column[DateTime]("timestamp")
@@ -166,6 +175,7 @@ class SnapshotModel(tag: Tag) extends Table[Snapshot](tag, "Snapshot") {
   def commitId = column[String]("commitId")
   def lines = column[Map[Int, Int]]("lines", O.DBType("TEXT"))
   def dirty = column[Boolean]("dirty")
+  def symbols = column[Seq[Symbol]]("symbols")
 
   val snapshot = Snapshot.apply _
   def * = (
@@ -175,6 +185,8 @@ class SnapshotModel(tag: Tag) extends Table[Snapshot](tag, "Snapshot") {
     user,
     commitId,
     lines,
-    dirty) <> (snapshot.tupled, Snapshot.unapply _)
+    dirty,
+    symbols
+  ) <> (snapshot.tupled, Snapshot.unapply _)
 }
 

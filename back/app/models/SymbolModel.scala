@@ -27,6 +27,15 @@ object Symbol extends utils.Flyweight {
       Table.filter(_.id === id).firstOption
     }
   }
+
+  implicit def implSeqSymbolId = MappedColumnType.base[Seq[Symbol], String](
+    ss => ss.map(_.id).mkString(";"),
+    s =>
+      s.split(";")
+        .filter(_.length > 0)
+        .map(_.toInt)
+        .map(i => Symbol.getById(i).get)
+  )
 }
 
 class SymbolModel(tag: Tag) extends Table[Symbol](tag, "Symbol") {

@@ -55,6 +55,8 @@ trait GitModel extends SourceRepositoryModel {
     if (srcCommit != dstCommit) {
       Snapshot.fastforward(Commit.getById(srcCommit).get)
     }
+
+    buildTagsIndex()
   }
 
   def lastCommit = repo.resolve(Constants.HEAD).name
