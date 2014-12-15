@@ -90,6 +90,15 @@ object RepoController extends Controller {
     Ok("yup")
   }
 
+  def buildSymbols = Action {
+    // DEBUG
+    DB.withSession { implicit sesion =>
+      TableQuery[SymbolModel].delete
+    }
+    RepoModel.buildTagsIndex()
+    Ok("done")
+  }
+
   def retrieveFileByRegex(regex: String) = Action {
     var files = listFiles(
       new File(RepoModel.local),
