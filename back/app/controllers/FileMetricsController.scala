@@ -108,8 +108,16 @@ object FileMetricsController extends Controller {
       Coefficient.getAll.sortBy(-_.weight).mapJs(
         "source"      -> (_.src),
         "destination" -> (_.dest),
-        "coefficient" -> (_.weight)
-      )
-    )
+        "coefficient" -> (_.weight)))
+  }
+
+  def getFileCoefficientsFor(file: String) = Action {
+    Coefficient.update()
+
+    Ok(
+      Coefficient.getAll.filter(_.id._1 == file).sortBy(-_.weight).mapJs(
+        "source"      -> (_.src),
+        "destination" -> (_.dest),
+        "coefficient" -> (_.weight)))
   }
 }

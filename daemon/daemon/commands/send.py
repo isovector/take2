@@ -1,116 +1,52 @@
 from json import dumps
-from os.path import normpath
-import os
-from os import path
 from sys import stdout, stderr, stdin
 from time import time
+from os.path import relpath
 
+from daemon.common import repo_url
 from daemon.network import Connection
-from daemon.parser import build_parser
 from daemon.scm.diff import create_diff, convert_line_numbers
 from daemon.scm.git import Git
 
-OPTIONS = {
-    '--filename': str,
-    '--repo_path': str,
-    '--server_url': str,
-    '--start': int,
-    '--end': int,
-    '--debug': bool,
-    '--buffer': str,
-}
 
+def send(filename, start, end, buffer, debug=False, use_repo_path=None):
+    repo_path, server_url, new_filename = repo_url(filename)
 
-def walk_up(bottom):
-    """
-    mimic os.walk, but walk 'up'
-    instead of down the directory tree
-    from: https://gist.github.com/zdavkeos/1098474
-    """
+    if use_repo_path:
+        # we want to override the repo_path for some reason (testing usually)
+        repo_path = use_repo_path
 
-    bottom = path.realpath(bottom)
+    if new_filename:
+        filename = new_filename
 
-    #get files in current dir
-    try:
-        names = os.listdir(bottom)
-    except Exception as e:
-        print e
-        return
+    if use_repo_path:
+        # if we have overriden it, our filepath is no longer relative
+        filename = relpath(filename, repo_path)
 
-
-    dirs, nondirs = [], []
-    for name in names:
-        if path.isdir(path.join(bottom, name)):
-            dirs.append(name)
-        else:
-            nondirs.append(name)
-
-    yield bottom, dirs, nondirs
-
-    new_path = path.realpath(path.join(bottom, '..'))
-
-    # see if we are at the top
-    if new_path == bottom:
-        return
-
-    for x in walk_up(new_path):
-        yield x
-
-
-def repo_url(path):
-    """
-    Returns the list of server urls associated with a file path. If the path
-    is not in a supported repository, None is returned.
-    """
-    for dircontents in walk_up(path):
-        for filename in dircontents[2]:
-            dirname = dircontents[0]
-            if filename == ".take2rc":
-                with open(dirname + os.sep + filename) as f:
-                    return dirname, f.read()
-    return None, None
-
-
-def send(args):
-    parser = build_parser(OPTIONS)
-    opt = parser.parse_args(args=args)
-
-    repo_path, server_url = repo_url(path.dirname(opt.filename))
-
-    if opt.repo_path:
-        repo_path = opt.repo_path
-
-    if opt.repo_path:
-        server_url = opt.server_url
-
-    if server_url is None:
-        return
+    if server_url is None and not debug:
+        return False
 
     try:
         git = Git(repo_path)
     except Exception as e:
         stderr.write(str(e))
-        return
+        return None
 
-    rel_filename = git.relative_file_path(opt.filename)
     commit = git.get_last_pushed_commit()
 
-    if opt.buffer:
-        f = open(opt.buffer, "r")
-        wip = f.read()
-    else:
-        wip = stdin.read()
+    f = open(buffer, "r")
+    wip = f.read()
 
     lines = convert_line_numbers(
         create_diff(
             old_content=wip,
-            new_content=git.get_file_content(rel_filename, commit)),
-        lines=range(opt.start, opt.end + 1))
+            new_content=git.get_file_content(filename, commit)),
+        lines=range(start, end + 1))
     lines = [x for x in lines if x is not None]
 
     payload = {
         "timestamp": int(time() * 1000),
-        "file": rel_filename,
+        "file": filename,
         "name": git.name,
         "email": git.email,
         "branch": git.branch,
@@ -118,13 +54,11 @@ def send(args):
         "lines[]": lines,
     }
 
-    if opt.debug:
-        stdout.write(dumps(payload))
-        return
-
-    try:
-        conn = Connection(server_url)
-        conn.post(path="/api/snapshot", payload=payload)
-    except Exception as e:
-        stderr.write(str(e))
-        return
+    if not debug:
+        try:
+            conn = Connection(server_url)
+            conn.post(path="/api/snapshot", payload=payload)
+        except Exception as e:
+            stderr.write(str(e))
+            return False
+    return dumps(payload)
