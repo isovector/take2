@@ -6,6 +6,7 @@ from daemon.commands.pull import getCoeffsForFile
 import xmlrpclib
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 
+
 def main():
     server = SimpleXMLRPCServer(("localhost", 7432))
     server.register_function(send, "snapshot")

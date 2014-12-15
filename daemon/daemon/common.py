@@ -1,6 +1,7 @@
 import os
 from os import path
 
+
 def walk_up(bottom):
     """
     mimic os.walk, but walk 'up'
@@ -10,7 +11,7 @@ def walk_up(bottom):
 
     bottom = path.realpath(bottom)
 
-    #get files in current dir
+    # get files in current dir
     try:
         names = os.listdir(bottom)
     except Exception as e:
@@ -48,4 +49,3 @@ def repo_url(file):
                 with open(dirname + os.sep + filename) as f:
                     return dirname, f.read(), path.relpath(file, dirname)
     return None, None, None
-

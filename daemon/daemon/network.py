@@ -14,4 +14,3 @@ class Connection(object):
 
     def get(self, path):
         return get(urljoin(self.__url, path))
-

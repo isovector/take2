@@ -5,6 +5,7 @@ import os
 from daemon.common import repo_url
 from daemon.network import Connection
 
+
 def getCoeffsForFile(filename):
     repo_path, server_url, filename = repo_url(filename)
 
@@ -24,5 +25,7 @@ def getCoeffsForFile(filename):
         stderr.write(str(e))
         return None
 
-    return map(lambda x: (getLocalFile(x["destination"]), x["coefficient"]), json)
-
+    return map(
+        lambda x: (getLocalFile(x["destination"]), x["coefficient"]),
+        json
+    )

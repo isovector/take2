@@ -1,6 +1,7 @@
 from json import dumps
 from sys import stdout, stderr, stdin
 from time import time
+from os.path import relpath
 
 from daemon.common import repo_url
 from daemon.network import Connection
@@ -8,25 +9,33 @@ from daemon.scm.diff import create_diff, convert_line_numbers
 from daemon.scm.git import Git
 
 
-def send(filename, start, end, buffer, debug = False):
-    repo_path, server_url, filename = repo_url(filename)
+def send(filename, start, end, buffer, debug=False, use_repo_path=None):
+    repo_path, server_url, new_filename = repo_url(filename)
 
-    if server_url is None:
+    if use_repo_path:
+        # we want to override the repo_path for some reason (testing usually)
+        repo_path = use_repo_path
+
+    if new_filename:
+        filename = new_filename
+
+    if use_repo_path:
+        # if we have overriden it, our filepath is no longer relative
+        filename = relpath(filename, repo_path)
+
+    if server_url is None and not debug:
         return False
 
     try:
         git = Git(repo_path)
     except Exception as e:
         stderr.write(str(e))
-        return
+        return None
 
     commit = git.get_last_pushed_commit()
 
-    if buffer:
-        f = open(buffer, "r")
-        wip = f.read()
-    else:
-        wip = stdin.read()
+    f = open(buffer, "r")
+    wip = f.read()
 
     lines = convert_line_numbers(
         create_diff(
@@ -45,15 +54,11 @@ def send(filename, start, end, buffer, debug = False):
         "lines[]": lines,
     }
 
-    if debug:
-        stdout.write(dumps(payload))
-        print ""
-        return False
-
-    try:
-        conn = Connection(server_url)
-        conn.post(path="/api/snapshot", payload=payload)
-        return True
-    except Exception as e:
-        stderr.write(str(e))
-        return False
+    if not debug:
+        try:
+            conn = Connection(server_url)
+            conn.post(path="/api/snapshot", payload=payload)
+        except Exception as e:
+            stderr.write(str(e))
+            return False
+    return dumps(payload)
