@@ -74,7 +74,7 @@ object SnapshotController extends Controller {
         snapFormData.file,
         User.getByEmail(snapFormData.email).get,
         snapFormData.commit,
-        snapFormData.lines.map(_ -> 1).toMap);
+        snapFormData.lines);
 
       Ok
     }

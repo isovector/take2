@@ -31,8 +31,6 @@ trait GitModel extends SourceRepositoryModel {
   def update(branch: String) = {
     setBranch(branch)
 
-    val srcCommit = lastCommit
-
     git.pull.call
     git.log.add(repo.resolve("HEAD")).call.filter(
       x => Commit.getById(x.getName).isEmpty
@@ -48,12 +46,6 @@ trait GitModel extends SourceRepositoryModel {
         case 0 => addInitialCommitRecords(commit, branch)
         case _ => updateFileCommitRecords(commit, branch)
       }
-    }
-
-    val dstCommit = lastCommit
-
-    if (srcCommit != dstCommit) {
-      Snapshot.fastforward(Commit.getById(srcCommit).get)
     }
 
     buildTagsIndex()

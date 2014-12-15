@@ -7,7 +7,7 @@ create table "Coefficient" ("id" VARCHAR(254) PRIMARY KEY NOT NULL,"clusterCount
 create table "Commit" ("id" VARCHAR(254) PRIMARY KEY NOT NULL,"branch" VARCHAR(254) NOT NULL,"rawParents" VARCHAR(254) NOT NULL);
 create table "Memcache" ("id" VARCHAR(254) PRIMARY KEY NOT NULL,"value" VARCHAR(254) NOT NULL);
 create table "RepoFile" ("file" VARCHAR(254) PRIMARY KEY NOT NULL,"lastCommit" VARCHAR(254) NOT NULL,"lastUpdated" BIGINT NOT NULL);
-create table "Snapshot" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"timestamp" BIGINT NOT NULL,"file" VARCHAR(254) NOT NULL,"user" INTEGER NOT NULL,"commitId" VARCHAR(254) NOT NULL,"lines" TEXT NOT NULL,"dirty" INTEGER NOT NULL,"symbols" VARCHAR(254) NOT NULL);
+create table "Snapshot" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"timestamp" BIGINT NOT NULL,"file" VARCHAR(254) NOT NULL,"user" INTEGER NOT NULL,"commitId" VARCHAR(254) NOT NULL,"symbols" TEXT NOT NULL);
 create table "Symbol" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"file" VARCHAR(254) NOT NULL,"name" VARCHAR(254) NOT NULL,"line" INTEGER NOT NULL,"kind" VARCHAR(254) NOT NULL);
 create table "User" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"name" VARCHAR(254) NOT NULL,"email" VARCHAR(254) NOT NULL,"lastActivity" BIGINT NOT NULL);
 

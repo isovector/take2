@@ -56,9 +56,7 @@ trait SourceRepositoryModel {
       .getLines
       .foreach { line =>
         if (line(0) != '!') {
-          Logger.info(line)
           val pieces = line.split("\t")
-
           Symbol.create(
             pieces(1),
             pieces(0),
