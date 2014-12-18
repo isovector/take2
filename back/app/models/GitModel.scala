@@ -48,7 +48,7 @@ trait GitModel extends SourceRepositoryModel {
       }
     }
 
-    buildTagsIndex()
+    Symbol.synchronizeWithRepo()
   }
 
   def lastCommit = repo.resolve(Constants.HEAD).name

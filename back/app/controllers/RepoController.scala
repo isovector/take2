@@ -95,7 +95,7 @@ object RepoController extends Controller {
     DB.withSession { implicit sesion =>
       TableQuery[SymbolModel].delete
     }
-    RepoModel.buildTagsIndex()
+    Symbol.synchronizeWithRepo()
     Ok("done")
   }
 

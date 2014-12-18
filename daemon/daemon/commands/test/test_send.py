@@ -4,6 +4,7 @@ from json import loads
 from os.path import join, normpath
 from unittest2 import TestCase
 
+from daemon.commands.send import send
 from daemon.utils import (
     delete_tempfolder,
     make_tempdir,
@@ -12,36 +13,6 @@ from daemon.utils import (
 
 
 class SendTest(TestCase):
-    def test_send(self):
-        folder = make_tempdir()
-        remote = make_tempdir()
-        filename = join(folder, 'test.txt')
-
-        repo = Repo.init(folder)
-        Repo.init(remote, bare=True)
-
-        f = open(filename, 'w')
-        f.write("1\n2\n7\n5\n6")
-        f.close()
-
-        repo.git.add('.')
-        repo.git.commit(m="testing")
-        repo.git.remote('add', 'origin', normpath(remote))
-        repo.git.push('-u', 'origin', 'master')
-
-        result = envoy_run(
-            ('accio send --filename %s --start 2 --end 5 --debug ' +
-                '--repo_path %s --server_url %s')
-            % (norm_path(filename), norm_path(folder), "test"),
-            data="1\n2\n3\n4\n5\n6")
-
-        self.assertNotEqual(result.std_out, '')
-        payload = loads(result.std_out)
-        self.assertEqual(payload['lines[]'], [2, 4])
-
-        delete_tempfolder(folder)
-        delete_tempfolder(remote)
-
     def test_send_file(self):
         folder = make_tempdir()
         remote = make_tempdir()
@@ -61,13 +32,17 @@ class SendTest(TestCase):
 
         fin = make_tempfile("1\n2\n3\n4\n5\n6")
 
-        result = envoy_run(
-            ('accio send --filename %s --start 2 --end 5 --debug ' +
-                '--repo_path %s --server_url  %s --buffer %s')
-            % (norm_path(filename), norm_path(folder), "test", norm_path(fin)))
+        json = send(
+            norm_path(filename),
+            2,
+            5,
+            norm_path(fin),
+            True,
+            norm_path(folder)
+        )
 
-        self.assertNotEqual(result.std_out, '')
-        payload = loads(result.std_out)
+        self.assertNotEqual(json, False)
+        payload = loads(json)
         self.assertEqual(payload['lines[]'], [2, 4])
 
         delete_tempfolder(folder)

@@ -7,37 +7,19 @@ from daemon.scm.diff import create_diff, convert_line_numbers
 from daemon.scm.git import Git
 
 
-OPTIONS = {
-    '--old_commit': str,
-    '--new_commit': str,
-    '--filename': str,
-    '--repo_path': str,
-    '--buffer': str,
-}
-
-
-def translate(args):
-    parser = build_parser(OPTIONS)
-    opt = parser.parse_args(args=args)
-
+def translate(old_commit, new_commit, filename, repo_path, inp):
     try:
-        git = Git(opt.repo_path)
+        git = Git(repo_path)
     except Exception as e:
         stderr.write(str(e))
         return
-
-    if opt.buffer:
-        f = open(opt.buffer, "r")
-        inp = f.read()
-    else:
-        inp = stdin.read()
 
     line_counts = loads(sub('\s', '', inp))
     line_counts = dict((int(k), v) for k, v in line_counts.iteritems())
 
     diff = create_diff(
-        old_content=git.get_file_content(opt.filename, opt.old_commit),
-        new_content=git.get_file_content(opt.filename, opt.new_commit))
+        old_content=git.get_file_content(filename, old_commit),
+        new_content=git.get_file_content(filename, new_commit))
     new_lines = convert_line_numbers(diff, line_counts.keys())
 
     result = {}
@@ -47,4 +29,5 @@ def translate(args):
             result[new_lines[i]] = v
 
     stdout.write(dumps(result))
+    print ""
     return dumps(result)
