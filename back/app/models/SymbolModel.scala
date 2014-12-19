@@ -96,6 +96,7 @@ object Symbol extends utils.Flyweight {
 
     while (!it.isEmpty) {
       val file = it.head.file
+      Logger.info("processing symbols from: " + file)
 
       withFileSymbols(file) {
         val newSymbols = it.takeWhile(_.file == file).toList
@@ -112,7 +113,7 @@ object Symbol extends utils.Flyweight {
           accio.translate(
             srcCommit.get,
             dstCommit,
-            file,
+            RepoModel.getFilePath(file),
             RepoModel.local,
             oldLinesJson
           ).asInstanceOf[String]
@@ -124,8 +125,7 @@ object Symbol extends utils.Flyweight {
           .toMap
 
 
-        newSymbols.foreach { newSymbol =>
-
+        newSymbols.foreach { symbol =>
         }
       }
     }
@@ -137,7 +137,7 @@ object Symbol extends utils.Flyweight {
   def withFileSymbols(file: String)(func: => Unit): Unit = {
     preload {
       DB.withSession { implicit session =>
-        Table.filter(_.file == file).list
+        Table.filter(_.file === file).list
       }
     }
 
