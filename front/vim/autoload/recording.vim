@@ -3,7 +3,7 @@ import vim
 from os import unlink, write, close
 from shutil import rmtree
 from tempfile import mkstemp, mkdtemp
-import xmlrpclib
+import xmlrpclib, socket
 
 global accio, gTimer, gIsActive, gUpdatesToSend, gIdleCount, IS_IDLE_COUNT, RECORD_DURATION
 
@@ -16,6 +16,7 @@ RECORD_DURATION = 5.0
 IS_IDLE_COUNT = 12
 
 accio = xmlrpclib.ServerProxy("http://localhost:7432/")
+socket.setdefaulttimeout(int(RECORD_DURATION) - 1)
 
 def make_tempfile(content=None):
     """ Creates a temporary file and returns the path. """

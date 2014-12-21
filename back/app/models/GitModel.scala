@@ -24,14 +24,15 @@ trait GitModel extends SourceRepositoryModel {
   val defaultBranch = "master"
 
   def initialize = {
-    //Git.cloneRepository.setURI(remote).setDirectory(getFile("")).call
+    if (!getFile("").exists()) {
+      Git.cloneRepository.setURI(remote).setDirectory(getFile("")).call
+    }
+
     update("master")
   }
 
   def update(branch: String) = {
     setBranch(branch)
-
-    val srcCommit = lastCommit
 
     git.pull.call
     git.log.add(repo.resolve("HEAD")).call.filter(
@@ -50,13 +51,7 @@ trait GitModel extends SourceRepositoryModel {
       }
     }
 
-    val dstCommit = lastCommit
-
-    if (srcCommit != dstCommit) {
-      Snapshot.fastforward(Commit.getById(srcCommit).get)
-    }
-
-    buildTagsIndex()
+    Symbol.synchronizeWithRepo()
   }
 
   def lastCommit = repo.resolve(Constants.HEAD).name

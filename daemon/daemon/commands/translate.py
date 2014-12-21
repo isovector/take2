@@ -1,13 +1,16 @@
 from json import dumps, loads
 from re import sub
 from sys import stderr, stdout, stdin
+from os.path import relpath
 
-from daemon.parser import build_parser
 from daemon.scm.diff import create_diff, convert_line_numbers
 from daemon.scm.git import Git
 
 
 def translate(old_commit, new_commit, filename, repo_path, inp):
+    filename = relpath(filename, repo_path)
+    repo_path = relpath(repo_path)
+
     try:
         git = Git(repo_path)
     except Exception as e:
@@ -28,6 +31,4 @@ def translate(old_commit, new_commit, filename, repo_path, inp):
         if new_lines[i] is not None:
             result[new_lines[i]] = v
 
-    stdout.write(dumps(result))
-    print ""
     return dumps(result)

@@ -48,4 +48,9 @@ def convert_line_numbers(diff, lines):
         if not len(lines):
             break
 
+    # Ensure that our array sizes are the same if we ran out of lines in diff
+    # without matching all of the lines
+    for i in range(len(lines)):
+        result.append(None)
+
     return result

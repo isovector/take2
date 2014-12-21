@@ -37,13 +37,6 @@ object Commit extends utils.Flyweight {
     }
   }
 
-  preload {
-    // Ensure we maintain the entire commit tree in memory always
-    DB.withSession { implicit session =>
-      Table.list
-    }
-  }
-
   implicit def commitIdToCommit = MappedColumnType.base[Seq[String], String](
     ss => ss.mkString(";"),
     s=> s.split(";").filter(_.length != 0))
