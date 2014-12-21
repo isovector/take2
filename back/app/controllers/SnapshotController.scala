@@ -25,6 +25,7 @@ object SnapshotController extends Controller {
   Ok
   }
 
+  // scalastyle:ignore method.length
   def create = Action { implicit request =>
     // WHY DOES THIS HAVE TO SUCK SO HARD?
     case class SnapshotFormData(

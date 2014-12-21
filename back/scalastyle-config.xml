@@ -75,6 +75,6 @@
  <check level="warning" class="org.scalastyle.file.NewLineAtEofChecker" enabled="true"/>
  <check level="warning" class="org.scalastyle.scalariform.NotImplementedErrorUsage" enabled="true" />
  <check level="warning" class="org.scalastyle.scalariform.BlockImportChecker" enabled="false"/>
- <check enabled="true" class="org.scalastyle.scalariform.ImportGroupingChecker" level="warning"/>
+ <check enabled="false" class="org.scalastyle.scalariform.ImportGroupingChecker" level="warning"/>
 </scalastyle>
 

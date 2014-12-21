@@ -1,8 +1,10 @@
 package models
 
+import com.github.nscala_time.time.Imports._
 import java.io.File
 import org.eclipse.jgit._
 import org.eclipse.jgit.api._
+import org.eclipse.jgit.api.CreateBranchCommand.SetupUpstreamMode
 import org.eclipse.jgit.diff._
 import org.eclipse.jgit.lib.Constants
 import org.eclipse.jgit.revwalk._
@@ -13,8 +15,6 @@ import org.eclipse.jgit.util.io._
 import org.gitective.core._
 import play.api._
 import scala.collection.JavaConversions._
-
-import com.github.nscala_time.time.Imports._
 
 trait GitModel extends SourceRepositoryModel {
   private val repo = new FileRepository(local + File.separator + ".git")
@@ -57,8 +57,7 @@ trait GitModel extends SourceRepositoryModel {
   def lastCommit = repo.resolve(Constants.HEAD).name
 
   def isHead(commit: Commit): Boolean = {
-    import utils._
-    Todo.hack
+    utils.Todo.hack
     // HACK(sandy): this probably should rely on commit.children.length == 0
 
     commit.id == lastCommit
@@ -78,7 +77,6 @@ trait GitModel extends SourceRepositoryModel {
   }
 
   private def setBranch(branch: String) = {
-    import org.eclipse.jgit.api.CreateBranchCommand.SetupUpstreamMode
     import org.eclipse.jgit.api.errors._
 
     try {

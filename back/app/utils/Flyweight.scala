@@ -4,7 +4,7 @@ import com.github.nscala_time.time.Imports._
 
 trait Flyweight {
   type Key
-  type T <: { val id: Key }
+  type T <: { val id: Key } // scalastyle:ignore
 
   def rawGet(key: Key): Option[T]
 

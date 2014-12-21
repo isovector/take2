@@ -1,5 +1,6 @@
 package models
 
+import java.io.ByteArrayInputStream
 import play.api.data._
 import play.api.db.slick.Config.driver.simple._
 import play.api.db.slick.DB
@@ -23,7 +24,7 @@ case class Symbol(
     !((this ~== other) && line == other.line)
   }
 
-  object unsafe {
+  object unsafe { // scalastyle:ignore
     def insert() = {
       Symbol.create(file, name, line, kind)
     }
@@ -53,14 +54,12 @@ object Symbol extends utils.Flyweight {
   def synchronizeWithRepo(): Unit = {
     import scala.io._
     import scala.sys.process._
-    import java.io.ByteArrayInputStream
-
 
     val srcCommit = Memcache.get("lastSymbolCommit")
     val dstCommit = RepoModel.lastCommit
 
     if (!srcCommit.isEmpty && srcCommit.get == dstCommit) {
-      return
+      return // scalastyle:ignore
     }
 
     val ctagsName = ".take2.ctags"
@@ -114,12 +113,8 @@ object Symbol extends utils.Flyweight {
       // need to migrate
       it.foreach(_.unsafe.insert())
       Memcache += "lastSymbolCommit" -> dstCommit
-      return
+      return // scalastyle:ignore
     }
-
-    Logger.info(srcCommit.get)
-    Logger.info(dstCommit)
-
 
     while (!it.isEmpty) {
       val file = it.head.file

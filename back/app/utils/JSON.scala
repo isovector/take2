@@ -1,17 +1,18 @@
 package utils
 
-import play.api.data._
-import play.api.libs.json._
-
 import com.github.nscala_time.time.Imports._
 import models._
+import play.api.data._
+import play.api.libs.json._
 
 object JSON {
     import Json._
 
+    // scalastyle:off
     def apply[T](obj: T)(implicit m: reflect.Manifest[T]): JsValue = obj match {
         case seq: Seq[Any] => toJson(seq.map(JSON(_)))
-        case map: Map[String, Any] => toJson(map.map{ case (k, v) => k -> JSON(v)})
+        case map: Map[String, Any] =>
+          toJson(map.map{ case (k, v) => k -> JSON(v)})
 
         case bool: Boolean => toJson(bool)
         case int: Int => toJson(int)
@@ -25,6 +26,7 @@ object JSON {
         case js: JsValue => js
         case bad => throw new Exception(m.toString)
     }
+    // scalastyle:on
 
     // given a map of names to functions, create a JSON object
     // by calling the functions on src
