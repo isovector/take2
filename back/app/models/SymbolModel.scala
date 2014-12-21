@@ -7,7 +7,29 @@ import play.api.libs.json._
 import play.api.Logger
 import play.api.Play.current
 
-case class Symbol(id: Int, file: String, name: String, var line: Int, kind: String)
+case class Symbol(
+    id: Int,
+    file: String,
+    name: String,
+    line: Int,
+    kind: String) {
+  // loosely equal
+  def ~==(other: Symbol): Boolean = {
+    file == other.file &&
+      name == other.name &&
+      kind == other.kind
+  }
+
+  def needsUpdate(other: Symbol): Boolean = {
+    !((this ~== other) && line == other.line)
+  }
+
+  object unsafe {
+    def insert() = {
+      Symbol.create(file, name, line, kind)
+    }
+  }
+}
 
 object Symbol extends utils.Flyweight {
   type T = Symbol
@@ -33,6 +55,7 @@ object Symbol extends utils.Flyweight {
     import scala.io._
     import scala.sys.process._
     import java.io.ByteArrayInputStream
+
 
     val srcCommit = Memcache.get("lastSymbolCommit")
     lazy val dstCommit = RepoModel.lastCommit
@@ -86,13 +109,14 @@ object Symbol extends utils.Flyweight {
     if (srcCommit == None) {
       // This is the first time we are building symbols, we do not
       // need to migrate
-      it.foreach { symbol =>
-        Symbol.create(symbol.file, symbol.name, symbol.line, symbol.kind)
-      }
-
+      it.foreach(_.unsafe.insert())
       Memcache += "lastSymbolCommit" -> dstCommit
       return
     }
+
+    Logger.info(srcCommit.get)
+    Logger.info(dstCommit)
+
 
     while (!it.isEmpty) {
       val file = it.head.file
@@ -105,7 +129,7 @@ object Symbol extends utils.Flyweight {
         val oldLinesJson =
           JsObject(
             oldSymbols.map(
-              symbol => symbol.line.toString -> JsString(symbol.line.toString)
+              symbol => symbol.line.toString -> JsNumber(symbol.line)
             ).toSeq)
           .toString
 
@@ -122,16 +146,54 @@ object Symbol extends utils.Flyweight {
           Json.parse(newLinesJson)
           .asInstanceOf[JsObject]
           .value
+          .map { case (k, v) => k.toInt -> v.as[Int] }
           .toMap
 
+        newSymbols.foreach { newSymbol =>
+          findOldSymbol(
+            newSymbol, newSymbols, oldSymbols, resultLines
+          ) match {
+            case Some(oldSymbol) => {
+              if (newSymbol.needsUpdate(oldSymbol)) {
+                DB.withSession { implicit session =>
+                  Table
+                    .filter(_.id === oldSymbol.id)
+                    .update(
+                      newSymbol.copy(id = oldSymbol.id))
+                }
+              }
+            }
 
-        newSymbols.foreach { symbol =>
+            case None            => newSymbol.unsafe.insert()
+          }
         }
       }
     }
 
     ctagsFile.delete()
     Memcache += "lastSymbolCommit" -> dstCommit
+  }
+
+  def findOldSymbol(
+      newSymbol: Symbol,
+      newSymbols: Seq[Symbol],
+      oldSymbols: Seq[Symbol],
+      newToOld: Map[Int, Int]): Option[Symbol] = {
+    newToOld.get(newSymbol.line) flatMap { oldLine =>
+      val oldSymbol = oldSymbols.find(_.line == oldLine).get
+      if (oldSymbol ~== newSymbol) {
+        // The symbol has only moved
+        Some(oldSymbol)
+      } else if (oldSymbol.kind == newSymbol.kind &&
+          !newSymbols.exists(_.name == oldSymbol.name)) {
+        // There is no new symbol with the name that used to be here
+        // so it is a rename
+        Some(oldSymbol)
+      } else {
+        // Relatively major refactoring; nothing to do.
+        None
+      }
+    }
   }
 
   def withFileSymbols(file: String)(func: => Unit): Unit = {

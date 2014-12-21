@@ -31,5 +31,4 @@ def translate(old_commit, new_commit, filename, repo_path, inp):
         if new_lines[i] is not None:
             result[new_lines[i]] = v
 
-    print(dumps(result))
     return dumps(result)
