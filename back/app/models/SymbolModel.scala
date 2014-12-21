@@ -13,8 +13,7 @@ case class Symbol(
     name: String,
     line: Int,
     kind: String) {
-  // loosely equal
-  def ~==(other: Symbol): Boolean = {
+  def ~==(other: Symbol): Boolean = { // losely equals
     file == other.file &&
       name == other.name &&
       kind == other.kind
@@ -58,7 +57,11 @@ object Symbol extends utils.Flyweight {
 
 
     val srcCommit = Memcache.get("lastSymbolCommit")
-    lazy val dstCommit = RepoModel.lastCommit
+    val dstCommit = RepoModel.lastCommit
+
+    if (!srcCommit.isEmpty && srcCommit.get == dstCommit) {
+      return
+    }
 
     val ctagsName = ".take2.ctags"
 
