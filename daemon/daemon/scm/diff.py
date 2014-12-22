@@ -1,5 +1,8 @@
 from difflib import ndiff
 
+# we might want to integrate this for patience diffing
+# http://bazaar.launchpad.net/~bzr-pqm/bzr/bzr.dev/view/head:/bzrlib/_patiencediff_py.py
+
 
 def create_diff(new_content, old_content):
     """ Returns the diff between the new and old file """

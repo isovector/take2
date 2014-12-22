@@ -35,7 +35,7 @@ object Symbol extends utils.Flyweight {
   type T = Symbol
   type Key = Int
 
-  private val Table = TableQuery[SymbolModel]
+  lazy private val Table = TableQuery[SymbolModel]
 
   def create(_1: String, _2: String, _3: Int, _4: String) = {
     getById(
@@ -177,6 +177,17 @@ object Symbol extends utils.Flyweight {
       newSymbols: Seq[Symbol],
       oldSymbols: Seq[Symbol],
       newToOld: Map[Int, Int]): Option[Symbol] = {
+    val newCount = newSymbols.count(_ ~== newSymbol)
+    val oldCount = oldSymbols.count(_ ~== newSymbol)
+
+    if (oldCount == 1 && newCount == 1) {
+      // Unique names, so just update the old one
+      return oldSymbols.find(_ ~== newSymbol) // scalastyle:ignore
+    }
+
+    // Otherwise, look at the diff to try to watch things move around
+    // TODO(sandy or matt): this would work much better if we used a patience
+    // diff algorithm on the python side
     newToOld.get(newSymbol.line) flatMap { oldLine =>
       val oldSymbol = oldSymbols.find(_.line == oldLine).get
       if (oldSymbol ~== newSymbol) {
