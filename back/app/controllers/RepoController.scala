@@ -1,8 +1,6 @@
 package controllers
 
 import java.io.File
-import org.apache.commons.io.filefilter.RegexFileFilter
-import org.apache.commons.io.FileUtils.listFiles
 import org.joda.time._
 import play.api._
 import play.api.data._
@@ -99,15 +97,14 @@ object RepoController extends Controller {
     Ok("done")
   }
 
-  def retrieveFileByRegex(regex: String) = Action {
-    var files = listFiles(
-      new File(RepoModel.local),
-      new RegexFileFilter(regex),
-      new RegexFileFilter(".*"))
+  def retrieveFileByRegex(toFind: String) = Action {
+    val regex = ".*?" + toFind + ".*?"
+    val files = RepoFile.getAll.filter(_._1.matches(regex)).map(_._2)
+
     Ok(
-      files.filter(!_.isHidden).to[Seq].mapJs(
-        "name" -> (_.getName),
-        "path" -> (getPath(_))
+      files.toSeq.mapJs(
+        "name" -> (_.file),
+        "path" -> (_.file)
       ).toString
     )
   }
