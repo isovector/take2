@@ -20,13 +20,14 @@ GET     /directory/*file            controllers.RepoController.retrieveFileByPat
 GET     /api/search/directory/*file controllers.RepoController.retrieveFileByRegex(file)
 
 GET     /api/currently/viewing/*file controllers.FileMetricsController.getUsersInFile(file)
-GET     /api/currently/open         controllers.FileMetricsController.getCurrentlyOpenFiles
-GET     /api/coefficients           controllers.FileMetricsController.getFileCoefficients
+GET     /api/currently/open         controllers.DashboardController.getCurrentlyOpenFiles
+GET     /api/coefficients           controllers.DashboardController.getFileCoefficients
 GET     /api/coefficients/*file     controllers.FileMetricsController.getFileCoefficientsFor(file)
+GET     /api/experts                controllers.DashboardController.getAbsoluteExperts
 GET     /api/experts/*file          controllers.FileMetricsController.getFileExperts(file)
 
 GET     /api/metrics/all/*file      controllers.FileMetricsController.getFileLineViews(file)
-GET     /api/metrics/popular/:since controllers.FileMetricsController.getMostPopularFiles(since)
+GET     /api/metrics/popular/:since controllers.DashboardController.getMostPopularFiles(since)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
