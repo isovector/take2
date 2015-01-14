@@ -64,70 +64,25 @@ object FileMetricsController extends Controller {
         .where(_.file.like(prefix + "%"))
         .where(x => x.timestamp > since)
         .list
-        }.groupBy(_.user).toSeq.map {
-          case (k, v) => k -> v.map(_.file).distinct
-        }
-        Ok(
-          users.mapJs(
-            "user" -> (_._1.toJs),
-            "files" -> (_._2)
-          )
-        ).as("text/text")
-  }
-
-  def getCurrentlyOpenFiles = Action {
-    val files =
-      RepoFile.getFilesOpenedSince(DateTime.now - recentDuration) .toSeq.map {
-        case (k, v) => k
-      }
+    }.groupBy(_.user).toSeq.map {
+      case (k, v) => k -> v.map(_.file).distinct
+    }
 
     Ok(
-      Json.toJson(files)
-    ).as("text/text")
-  }
-
-  def getMostPopularFiles(since: String) = Action {
-    val files =
-      RepoFile.getFilesOpenedSince(new DateTime(since.toLong))
-        .toSeq
-        .sortBy(-_._2) // sort by descending viewsigs
-        .take(10)
-
-    Ok(
-      files.mapJs(
-        "file" -> (_._1),
-        "snapshots" -> (_._2)
+      users.mapJs(
+        "user" -> (_._1.toJs),
+        "files" -> (_._2)
       )
     ).as("text/text")
   }
 
   def getFileExperts(file: String) = Action {
-    val lines = DB.withSession { implicit session =>
-      Table
-        .where(_.file === file)
-        .list
-    }.groupBy(_.user)
-
-    val counts = lines.map { case(k, v) =>
-      k -> v.length
-    }.toSeq
-
-    val totals = (0 /: counts)(_ + _._2)
+    val experts = DashboardModel.getFileExperts(file)
 
     Ok(
-      counts.mapJs(
+      experts.toSeq.mapJs(
         "user" -> (_._1.toJs),
-        "views" -> (_._2 / totals)))
-  }
-
-  def getFileCoefficients = Action {
-    Coefficient.update()
-
-    Ok(
-      Coefficient.getAll.sortBy(-_.weight).mapJs(
-        "source"      -> (_.src),
-        "destination" -> (_.dest),
-        "coefficient" -> (_.weight)))
+        "knowledge" -> (_._2)))
   }
 
   def getFileCoefficientsFor(file: String) = Action {

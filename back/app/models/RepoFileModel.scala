@@ -82,10 +82,10 @@ object RepoFile {
         .where(_.commitId === RepoModel.lastCommit)
         .where(x => x.timestamp > since)
         .list
-    }.groupBy(_.file).toSeq.map {
+    }.groupBy(_.file).map {
       // Only count number of snapshots
       case (k, v) => k -> v.length
-    }.toMap
+    }
   }
 }
 
