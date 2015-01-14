@@ -101,6 +101,25 @@ object FileMetricsController extends Controller {
     ).as("text/text")
   }
 
+  def getFileExperts(file: String) = Action {
+    val lines = DB.withSession { implicit session =>
+      Table
+        .where(_.file === file)
+        .list
+    }.groupBy(_.user)
+
+    val counts = lines.map { case(k, v) =>
+      k -> v.length
+    }.toSeq
+
+    val totals = (0 /: counts)(_ + _._2)
+
+    Ok(
+      counts.mapJs(
+        "user" -> (_._1.toJs),
+        "views" -> (_._2 / totals)))
+  }
+
   def getFileCoefficients = Action {
     Coefficient.update()
 
