@@ -64,15 +64,16 @@ object FileMetricsController extends Controller {
         .where(_.file.like(prefix + "%"))
         .where(x => x.timestamp > since)
         .list
-        }.groupBy(_.user).toSeq.map {
-          case (k, v) => k -> v.map(_.file).distinct
-        }
-        Ok(
-          users.mapJs(
-            "user" -> (_._1.toJs),
-            "files" -> (_._2)
-          )
-        ).as("text/text")
+    }.groupBy(_.user).toSeq.map {
+      case (k, v) => k -> v.map(_.file).distinct
+    }
+
+    Ok(
+      users.mapJs(
+        "user" -> (_._1.toJs),
+        "files" -> (_._2)
+      )
+    ).as("text/text")
   }
 
   def getFileExperts(file: String) = Action {

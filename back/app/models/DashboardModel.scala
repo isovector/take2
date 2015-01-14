@@ -1,10 +1,9 @@
 package models
 
-import java.io.ByteArrayInputStream
+import com.github.nscala_time.time.Imports._
 import play.api.data._
 import play.api.db.slick.Config.driver.simple._
 import play.api.db.slick.DB
-import play.api.libs.json._
 import play.api.Logger
 import play.api.Play.current
 
@@ -21,6 +20,13 @@ object DashboardModel {
     counts.map { case (k, v) =>
       k -> (v / totals)
     }
+  }
+
+  def getMostActiveUsers(since: DateTime): Seq[(User, Int)] = {
+    User.getActiveSince(since)
+      .toSeq
+      .sortBy(-_._2) // sort by descending viewsigs
+      .take(10)
   }
 
   def getFileExperts(file: String): Map[User, Float] = {

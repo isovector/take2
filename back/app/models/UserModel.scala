@@ -54,6 +54,17 @@ object User {
     }
   }
 
+  def getActiveSince(since: DateTime): Map[User, Int] = {
+    DB.withSession { implicit session =>
+      TableQuery[SnapshotModel]
+        .where(x => x.timestamp > since)
+        .list
+    }.groupBy(_.user).map {
+      // Only count number of snapshots
+      case (k, v) => k -> v.length
+    }
+  }
+
   implicit val implicitUserWrites = new Writes[User] {
     def writes(user: User): JsValue =
       Json.obj(

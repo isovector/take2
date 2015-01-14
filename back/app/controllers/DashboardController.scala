@@ -32,6 +32,17 @@ object DashboardController extends Controller {
     ).as("text/text")
   }
 
+  def getMostActiveUsers(since: String) = Action {
+    val users = DashboardModel.getMostActiveUsers(new DateTime(since.toLong))
+
+    Ok(
+      users.mapJs(
+        "user" -> (_._1.toJs),
+        "snapshots" -> (_._2)
+      )
+    ).as("text/text")
+  }
+
   def getMostPopularFiles(since: String) = Action {
     val files =
       RepoFile.getFilesOpenedSince(new DateTime(since.toLong))
