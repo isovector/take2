@@ -64,21 +64,20 @@ object Symbol extends utils.Flyweight {
 
     val ctagsName = ".take2.ctags"
 
-    Seq(
+    (Seq(
       "ctags",
       "--excmd=numbers",
       "--tag-relative=yes",
       "-f", RepoModel.getFilePath(ctagsName),
       "--sort=no",
-      "-R",
-      // TODO(sandy): make this configurable
-      "--exclude=repo/back/public/javascripts/angular-1.2.1/*",
-      "--exclude=repo/back/public/javascripts/bootstrap*",
-      "--exclude=repo/back/public/javascripts/jquery*",
-      "--exclude=repo/back/public/javascripts/syntax-highlighter/*",
-      "--exclude=repo/back/public/javascripts/*.min.js",
-      RepoModel.getFilePath("")
-    ).!
+      "-R") ++
+      // Ignore files from .accioignore
+      RepoFile.getIgnoreRules.map { rule =>
+        "--exclude=" + RepoModel.getFilePath(rule)
+      } ++
+      Seq(
+        RepoModel.getFilePath("")
+      )).!
 
     val accio = new utils.RpcClient("http://localhost:7432/")
     val ctagsFile = RepoModel.getFile(ctagsName)

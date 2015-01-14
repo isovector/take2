@@ -9,8 +9,10 @@ import play.api.db.slick.DB
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import play.api.Play.current
+import scala.io._
 
 import com.github.nscala_time.time.Imports._
+import java.util.regex._
 
 import utils._
 import utils.DateConversions._
@@ -38,6 +40,34 @@ case class RepoFile(
 
 object RepoFile {
   private val Table = TableQuery[RepoFileModel]
+  private var ignoreRules = Seq[String]()
+
+  def parseAccioIgnore() = {
+    try {
+      ignoreRules =
+        Source
+          .fromFile(RepoModel.getFile(".accioignore"))
+          .getLines
+          .toList
+          .filter(_(0) != '#')
+    } catch {
+      case _: Throwable =>
+        ignoreRules = Seq()
+    }
+  }
+
+  private def doesGlobMatch(str: String, pattern: String) = {
+    str.matches(
+      Pattern
+        .quote(pattern)
+        .replace(Pattern.quote("*"), ".*"))
+  }
+
+  def isTracked(file: String): Boolean = {
+    (true /: ignoreRules)((a, b) => a && !(doesGlobMatch(file, b)))
+  }
+
+  def getIgnoreRules = ignoreRules
 
   def create(_1: String, _2: String, _3: DateTime) = {
     DB.withSession { implicit session =>

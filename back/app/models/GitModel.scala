@@ -35,6 +35,9 @@ trait GitModel extends SourceRepositoryModel {
     setBranch(branch)
 
     git.pull.call
+
+    RepoFile.parseAccioIgnore()
+
     git.log.add(repo.resolve("HEAD")).call.filter(
       x => Commit.getById(x.getName).isEmpty
     ).toList.reverse.map { commit =>
