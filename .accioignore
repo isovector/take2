@@ -1,0 +1,6 @@
+# comment
+back/public/javascripts/angular-1.2.1/*
+back/public/javascripts/bootstrap*
+back/public/javascripts/jquery*
+back/public/javascripts/syntax-highlighter/*
+back/public/javascripts/*.min.js
