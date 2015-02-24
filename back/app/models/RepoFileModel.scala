@@ -52,19 +52,22 @@ object RepoFile {
           .filter(_(0) != '#')
     } catch {
       case _: Throwable =>
+        println("can't parse accioignore")
         ignoreRules = Seq()
     }
   }
 
   private def doesGlobMatch(str: String, pattern: String) = {
-    str.matches(
-      Pattern
-        .quote(pattern)
-        .replace(Pattern.quote("*"), ".*"))
+    val p =
+      pattern
+        .replace(".", "\\.")
+        .replace("*", ".*")
+
+    str.matches(p)
   }
 
   def isTracked(file: String): Boolean = {
-    (true /: ignoreRules)((a, b) => a && !(doesGlobMatch(file, b)))
+    !ignoreRules.exists(rule => doesGlobMatch(file, rule))
   }
 
   def getIgnoreRules = ignoreRules

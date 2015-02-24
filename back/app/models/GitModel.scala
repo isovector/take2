@@ -23,6 +23,8 @@ trait GitModel extends SourceRepositoryModel {
 
   val defaultBranch = "master"
 
+  RepoFile.parseAccioIgnore()
+
   def initialize = {
     if (!getFile("").exists()) {
       Git.cloneRepository.setURI(remote).setDirectory(getFile("")).call
