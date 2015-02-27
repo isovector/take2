@@ -23,6 +23,8 @@ trait GitModel extends SourceRepositoryModel {
 
   val defaultBranch = "master"
 
+  RepoFile.parseAccioIgnore()
+
   def initialize = {
     if (!getFile("").exists()) {
       Git.cloneRepository.setURI(remote).setDirectory(getFile("")).call
@@ -35,6 +37,9 @@ trait GitModel extends SourceRepositoryModel {
     setBranch(branch)
 
     git.pull.call
+
+    RepoFile.parseAccioIgnore()
+
     git.log.add(repo.resolve("HEAD")).call.filter(
       x => Commit.getById(x.getName).isEmpty
     ).toList.reverse.map { commit =>

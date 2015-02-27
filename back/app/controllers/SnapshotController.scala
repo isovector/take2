@@ -52,6 +52,9 @@ object SnapshotController extends Controller {
       // is there a nicer way of doing this?
       Logger.info("doesn't exist")
       NotFound
+    } else if (!RepoFile.isTracked(snapFormData.file)) {
+      Logger.info("not tracked")
+      NotFound
     } else {
       // Build a user if one doesn't exist
       User.getByEmail(snapFormData.email).map { user =>

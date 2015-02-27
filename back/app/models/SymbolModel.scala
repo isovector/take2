@@ -64,21 +64,20 @@ object Symbol extends utils.Flyweight {
 
     val ctagsName = ".take2.ctags"
 
-    Seq(
+    (Seq(
       "ctags",
       "--excmd=numbers",
       "--tag-relative=yes",
       "-f", RepoModel.getFilePath(ctagsName),
       "--sort=no",
-      "-R",
-      // TODO(sandy): make this configurable
-      "--exclude=repo/back/public/javascripts/angular-1.2.1/*",
-      "--exclude=repo/back/public/javascripts/bootstrap*",
-      "--exclude=repo/back/public/javascripts/jquery*",
-      "--exclude=repo/back/public/javascripts/syntax-highlighter/*",
-      "--exclude=repo/back/public/javascripts/*.min.js",
-      RepoModel.getFilePath("")
-    ).!
+      "-R") ++
+      // Ignore files from .accioignore
+      RepoFile.getIgnoreRules.map { rule =>
+        "--exclude=" + RepoModel.getFilePath(rule)
+      } ++
+      Seq(
+        RepoModel.getFilePath("")
+      )).!
 
     val accio = new utils.RpcClient("http://localhost:7432/")
     val ctagsFile = RepoModel.getFile(ctagsName)
@@ -118,51 +117,53 @@ object Symbol extends utils.Flyweight {
 
     while (!it.isEmpty) {
       val file = it.head.file
-      Logger.info("processing symbols from: " + file)
+      if (RepoFile.isTracked(file)) {
+        Logger.info("processing symbols from: " + file)
 
-      withFileSymbols(file) {
-        val newSymbols = it.takeWhile(_.file == file).toList
-        val oldSymbols = inMemory.sortBy(_.line)
+        withFileSymbols(file) {
+          val newSymbols = it.takeWhile(_.file == file).toList
+          val oldSymbols = inMemory.sortBy(_.line)
 
-        val oldLinesJson =
-          JsObject(
-            oldSymbols.map(
-              symbol => symbol.line.toString -> JsNumber(symbol.line)
-            ).toSeq)
-          .toString
+          val oldLinesJson =
+            JsObject(
+              oldSymbols.map(
+                symbol => symbol.line.toString -> JsNumber(symbol.line)
+              ).toSeq)
+            .toString
 
-        val newLinesJson =
-          accio.translate(
-            srcCommit.get,
-            dstCommit,
-            RepoModel.getFilePath(file),
-            RepoModel.local,
-            oldLinesJson
-          ).asInstanceOf[String]
+          val newLinesJson =
+            accio.translate(
+              srcCommit.get,
+              dstCommit,
+              RepoModel.getFilePath(file),
+              RepoModel.local,
+              oldLinesJson
+            ).asInstanceOf[String]
 
-        val resultLines =
-          Json.parse(newLinesJson)
-          .asInstanceOf[JsObject]
-          .value
-          .map { case (k, v) => k.toInt -> v.as[Int] }
-          .toMap
+          val resultLines =
+            Json.parse(newLinesJson)
+              .asInstanceOf[JsObject]
+              .value
+              .map { case (k, v) => k.toInt -> v.as[Int] }
+              .toMap
 
-        newSymbols.foreach { newSymbol =>
-          findOldSymbol(
-            newSymbol, newSymbols, oldSymbols, resultLines
-          ) match {
-            case Some(oldSymbol) => {
-              if (newSymbol.needsUpdate(oldSymbol)) {
-                DB.withSession { implicit session =>
-                  Table
-                    .filter(_.id === oldSymbol.id)
-                    .update(
-                      newSymbol.copy(id = oldSymbol.id))
+          newSymbols.foreach { newSymbol =>
+            findOldSymbol(
+              newSymbol, newSymbols, oldSymbols, resultLines
+            ) match {
+              case Some(oldSymbol) => {
+                if (newSymbol.needsUpdate(oldSymbol)) {
+                  DB.withSession { implicit session =>
+                    Table
+                      .filter(_.id === oldSymbol.id)
+                      .update(
+                        newSymbol.copy(id = oldSymbol.id))
+                  }
                 }
               }
-            }
 
-            case None            => newSymbol.unsafe.insert()
+              case None            => newSymbol.unsafe.insert()
+            }
           }
         }
       }
