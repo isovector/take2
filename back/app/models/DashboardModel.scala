@@ -14,14 +14,18 @@ object DashboardModel {
       (grouper: Snapshot => T)
       (dataset: Seq[Snapshot]): Map[T, Float] = {
     val counts =
-      dataset.groupBy(grouper).map { case(k, v) =>
-        k -> v.length
-      }
+      dataset
+        .groupBy(grouper)
+        .map { case(k, v) =>
+          k -> v.length
+        }
+        .toSeq
+        .sortBy(-_._2)
 
     val totals = (0f /: counts)(_ + _._2)
     counts.map { case (k, v) =>
       k -> (v / totals)
-    }
+    }.toMap
   }
 
   def getMostActiveUsers(since: DateTime): Seq[(User, Int)] = {
