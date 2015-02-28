@@ -42,8 +42,8 @@
                 <input type="checkbox" data-on-text="File" data-off-text="User" data-size="normal" name="my-checkbox" checked>
                 <input type="checkbox" data-on-text="Real" data-off-text="Data" data-size="normal" name="fake-data" checked>
 			</div>
-
-			<div class="file-viewer" ng-show="showFile">
+			<div class="row widget-holder">
+			<div class="col-lg-9 file-viewer" ng-show="showFile">
 				<div>
 					<pre id="file_brush" class="brush: js">
 					</pre>
@@ -53,7 +53,12 @@
                 <canvas id="userChart" width='500px' height="500px" style="width: 200px;display: block;margin-left: auto;margin-right: auto;"></canvas>
                 <br/>
                 <div id="user-legend" width="200px" height="200px" style="list-style: none;">Loading...</div>
-            </div>
+			</div>
+				<div class="col-lg-3">
+					<div related-files files="relatedFiles"></div>
+					<div expert-users experts="expertUsers"></div>
+				</div>
+		</div>
 		</article>
 	</body>
 	<!-- Finally, to actually run the highlighter, you need to include this JS on your page -->

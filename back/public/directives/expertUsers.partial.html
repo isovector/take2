@@ -1,0 +1,15 @@
+<div class="col-md-12 popular-files-widget well">
+	<div ng-if="expertUsers.length != 0">
+		<span>There are {{expertUsers.length}} experts in this file:</span>
+		<ul>
+			<li ng-repeat="user in expertUsers">
+			<!-- TODO: put a href to the users profile! or email ro something... -->
+			<a href="http://www.google.ca">{{user.user.name}}</a>
+			<span style="float:right">{{user.knowledge | percent}}%</span>
+			</li>
+		</ul>
+	</div>
+	<div ng-if="expertUsers.length == 0">
+		There are no expert users found for this file.
+	</div>
+</div>

@@ -60,7 +60,7 @@ frostbite.filter('isDirectory', function() {
 				$http.get("/api/currently/viewing/" + $scope.items[i].path).success(function(data) {
 					$scope.items[i].users = data;
 					//TODO: uncomment if we want to see multiple users
-					/*
+					/*			
 					if ($scope.items[i].users.length == 1) {
 						$scope.items[0].users.push ({ "user":{"name":"Sandy Maguire", "email":"sandy.g.maguire@gmail.com"}, "files":["back/app/controllers/FileMetricsController.scala"]});
 

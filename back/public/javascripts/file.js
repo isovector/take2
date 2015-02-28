@@ -1,14 +1,58 @@
-﻿frostbite.controller('FileCtrl', ['$scope', '$http', '$q', function ($scope, $http, $q) {
+﻿frostbite.directive('relatedFiles', function() {
+	    return {
+			restrict: 'A',
+			replace: true,
+			templateUrl: "/assets/directives/relatedFiles.partial.html",
+			scope : {
+				relatedFiles: '=files'
+			}
+	    }
+});
+frostbite.directive('expertUsers', function() {
+	    return {
+			restrict: 'A',
+			replace: true,
+			templateUrl: "/assets/directives/expertUsers.partial.html",
+	        scope : {
+	            expertUsers: '=experts'
+	        }      
+
+	    }
+});
+
+frostbite.filter('percent', function() {
+	return function(input) {
+		return (input*100).toFixed(2);
+	}
+})
+
+frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $http, $q) {
     $scope.lines = []
     $scope.lineItems = []
     $scope.path = ""
+	$scope.name = ""
     $scope.showFile = true;
     $scope.useFakeData = false;
     $scope.userChartData = []
 
+    $scope.getRelatedFiles = function (filename) {
+		$http.get('/api/coefficients/' + filename).success(function(data) {
+			$scope.relatedFiles = data;
+		}).error(function() {
+			$scope.relatedFiles = [];	
+		});
+	}
+
+   $scope.getExpertUsers = function(filename) {
+		$http.get('/api/experts/' + filename).success(function(data) {
+			$scope.expertUsers = data;
+		}).error(function() {
+			$scope.expertUsers = [];	
+		});
+	}
 
     $scope.init = function () {
-        SyntaxHighlighter.all();
+		SyntaxHighlighter.all();
         $scope.popupGetter();
 
         $("[name='my-checkbox']").bootstrapSwitch();
@@ -94,13 +138,14 @@
         console.log(filestuff);
         //Get our path for breadcrumbs
         $scope.pathArray = filestuff.path.split("/");
-
         //Insert the code content into the page
         $('#file_brush').html(filestuff.contents);
         $scope.path = filestuff.path;
         console.log(filestuff.path);
         console.log($scope.path);
         $scope.create_data();
+		$scope.getExpertUsers(filestuff.path);
+		$scope.getRelatedFiles(filestuff.path);
     }
 
     // Adding chart, and styling the popup (title, arrow, margins)

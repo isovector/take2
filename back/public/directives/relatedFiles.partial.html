@@ -1,0 +1,14 @@
+<div class="col-md-12 related-files-widget well">
+	<div ng-if="relatedFiles.length != 0">
+		<span>Files related to this one: </span>
+		<ul>
+			<li ng-repeat="file in relatedFiles">
+			<a href="http://localhost:9000/directory/{{file.destination}}">{{file.destination | pathName }}</a>
+			<span style="float:right">{{file.coefficient | percent}}%</span>
+			</li>
+		</ul>
+	</div>
+	<div ng-if="relatedFiles.length == 0">
+		There are no files related to this one.
+	</div>
+</div>
