@@ -12,8 +12,16 @@ case class Cluster(
     id: Int,
     user: User,
     created: DateTime,
-    var snapshots: Seq[Snapshot]) {
+    var snapshots: Seq[Snapshot],
+    var rawFiles: String) {
   lazy private val Table = TableQuery[ClusterModel]
+
+  // Necessary to allow LIKE queries on the files
+  def files = rawFiles.split(";").filter(_.length != 0).toSet
+
+  def addFile(file: String) = {
+    rawFiles = (files + file).mkString(";")
+  }
 
   def save() = {
     DB.withSession { implicit sesion =>
@@ -36,10 +44,10 @@ object Cluster extends utils.Flyweight {
     }
   }
 
-  def create(_1: User, _2: DateTime, _3: Seq[Snapshot]) = {
+  def create(_1: User, _2: DateTime, _3: Seq[Snapshot], _4: String) = {
     getById(
       DB.withSession { implicit session =>
-        (Table returning Table.map(_.id)) += new Cluster(0, _1, _2, _3)
+        (Table returning Table.map(_.id)) += new Cluster(0, _1, _2, _3, _4)
       }
     ).get
   }
@@ -63,7 +71,42 @@ object Cluster extends utils.Flyweight {
         reclaim(after)
         Snapshot.reclaim(after)
 
-        create(user, when, Seq())
+        create(user, when, Seq(), "")
+      }
+  }
+
+  object unmanaged {
+    def getClustersWithFile(file: String): Seq[Cluster] = {
+      val likeQuery = s"%$file%"
+
+      DB.withSession { implicit session =>
+        Table
+          .filter(_.files like likeQuery)
+          .list
+      }
+    }
+  }
+
+  def getClusteredSymbols(symbol: Symbol): Map[Symbol, Float] = {
+    val file = symbol.file
+    val fileClusters = unmanaged.getClustersWithFile(file)
+
+    val clusters =
+      fileClusters.filter(_.snapshots.exists(_.symbols.contains(symbol)))
+
+    val symbols =
+      clusters
+        .flatMap(
+          _.snapshots
+            .filter(_.file != file)
+            .flatMap(_.symbols)
+        )
+
+    val total = symbols.length
+    symbols
+      .groupBy(_.id)
+      .map { case (k, v) =>
+        Symbol.getById(k).get -> v.length.toFloat / total
       }
   }
 }
@@ -75,14 +118,16 @@ class ClusterModel(tag: Tag) extends Table[Cluster](tag, "Cluster") {
   def id        = column[Int]("id", O.PrimaryKey, O.AutoInc)
   def user      = column[User]("user")
   def created   = column[DateTime]("created")
-  def snapshots = column[Seq[Snapshot]]("snapshots")
+  def snapshots = column[Seq[Snapshot]]("snapshots", O.DBType("TEXT"))
+  def files     = column[String]("files", O.DBType("TEXT"))
 
   val underlying = Cluster.apply _
   def * = (
     id,
     user,
     created,
-    snapshots
+    snapshots,
+    files
   ) <> (underlying.tupled, Cluster.unapply _)
 }
 

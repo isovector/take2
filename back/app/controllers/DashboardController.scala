@@ -76,4 +76,26 @@ object DashboardController extends Controller {
         "user" -> (_._1.toJs),
         "knowledge" -> (_._2)))
   }
+
+  def getClusteredSymbols(id: Int) = Action {
+    Symbol.getById(id) match {
+      case Some(symbol: Symbol) =>
+        Ok(
+          Cluster
+            .getClusteredSymbols(symbol)
+            .toSeq
+            .sortBy(-_._2)
+            .mapJs(
+              "symbol" -> (_._1.asJs(
+                "id" -> (_.id),
+                "file" -> (_.file),
+                "line" -> (_.line),
+                "name" -> (_.name),
+                "kind" -> (_.kind)
+              )),
+              "weight" -> (_._2)))
+
+      case None => NotFound
+    }
+  }
 }

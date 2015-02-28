@@ -44,8 +44,8 @@ object Snapshot extends utils.Flyweight {
           TableQuery[SymbolModel]
             .filter(x => x.file === file && (x.line inSetBind lines))
             .list
-            (Table returning Table.map(_.id)) +=
-              new Snapshot(0, _1, _2, _3, _4, symbols)
+        (Table returning Table.map(_.id)) +=
+          new Snapshot(0, _1, _2, _3, _4, symbols)
       }
     ).get
   }

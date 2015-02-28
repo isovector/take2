@@ -47,7 +47,7 @@ class CommitModel(tag: Tag) extends Table[Commit](tag, "Commit") {
 
   def id = column[String]("id", O.PrimaryKey)
   def branch = column[String]("branch")
-  def rawParents = column[Seq[String]]("rawParents")
+  def rawParents = column[Seq[String]]("rawParents", O.DBType("TEXT"))
 
   val commit = Commit.apply _
   def * = (id, branch, rawParents) <> (commit.tupled, Commit.unapply _)

@@ -87,6 +87,7 @@ object SnapshotController extends Controller {
           snapFormData.lines);
 
       cluster.snapshots = cluster.snapshots :+ snapshot
+      cluster.addFile(snapFormData.file)
       cluster.save()
 
       Ok
