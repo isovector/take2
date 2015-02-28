@@ -3,6 +3,7 @@
 
 # --- !Ups
 
+create table "Cluster" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"user" INTEGER NOT NULL,"created" BIGINT NOT NULL,"snapshots" VARCHAR(254) NOT NULL);
 create table "Coefficient" ("id" VARCHAR(254) PRIMARY KEY NOT NULL,"clusterCount" INTEGER NOT NULL,"totalCount" INTEGER NOT NULL);
 create table "Commit" ("id" VARCHAR(254) PRIMARY KEY NOT NULL,"branch" VARCHAR(254) NOT NULL,"rawParents" VARCHAR(254) NOT NULL);
 create table "Memcache" ("id" VARCHAR(254) PRIMARY KEY NOT NULL,"value" VARCHAR(254) NOT NULL);
@@ -13,6 +14,7 @@ create table "User" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"name" VARC
 
 # --- !Downs
 
+drop table "Cluster";
 drop table "Coefficient";
 drop table "Commit";
 drop table "Memcache";

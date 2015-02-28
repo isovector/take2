@@ -42,7 +42,7 @@ object Symbol extends utils.Flyweight {
       DB.withSession { implicit session =>
         (Table returning Table.map(_.id)) += new Symbol(0, _1, _2, _3, _4)
       }
-    )
+    ).get
   }
 
   def rawGet(id: Key): Option[Symbol] = {
