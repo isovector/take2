@@ -52,7 +52,7 @@ object Symbol extends utils.Flyweight {
   }
 
   def synchronizeWithRepo(): Unit = {
-	import scala.io._
+    import scala.io._
     import scala.sys.process._
 
     val srcCommit = Memcache.get("lastSymbolCommit")
