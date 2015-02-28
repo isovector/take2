@@ -30,7 +30,6 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
     $scope.lines = []
     $scope.lineItems = []
     $scope.path = ""
-	$scope.name = ""
     $scope.showFile = true;
     $scope.useFakeData = false;
     $scope.userChartData = []
@@ -52,7 +51,7 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
 	}
 
     $scope.init = function () {
-		SyntaxHighlighter.all();
+        SyntaxHighlighter.all();
         $scope.popupGetter();
 
         $("[name='my-checkbox']").bootstrapSwitch();
