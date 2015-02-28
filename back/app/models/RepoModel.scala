@@ -13,7 +13,7 @@ import models._
 import utils._
 
 trait SourceRepositoryModel {
-  val remote = "git@github.com:Paamayim/take2.git"
+  val remote = "https://github.com/isovector/take2.git"
   //val remote = "git@github.com:Paamayim/well-contributed.git"
   val local = "repo"
   val defaultBranch: String
