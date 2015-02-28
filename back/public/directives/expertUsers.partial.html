@@ -4,7 +4,7 @@
 		<ul>
 			<li ng-repeat="user in expertUsers">
 			<!-- TODO: put a href to the users profile! or email ro something... -->
-			<a href="http://www.google.ca">{{user.user.name}}</a>
+			<a href="/users/{{user.user.id}}">{{user.user.name}}</a>
 			<span style="float:right">{{user.knowledge | percent}}%</span>
 			</li>
 		</ul>

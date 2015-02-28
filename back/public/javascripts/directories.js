@@ -1,11 +1,10 @@
-var ROOTURL = "http://localhost:9000/"
 
 frostbite.filter('isDirectory', function() {
     return function(input) {
         if (input.isDir) {
-	    return ROOTURL + "assets/images/directory.png"
+	    return "/assets/images/directory.png"
 	} else {
-	    return ROOTURL + "assets/images/file.png"
+	    return "/assets/images/file.png"
 	}	    
     }
 })
