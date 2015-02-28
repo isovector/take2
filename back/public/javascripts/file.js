@@ -144,8 +144,8 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
         console.log(filestuff.path);
         console.log($scope.path);
         $scope.create_data();
-		$scope.getExpertUsers(filestuff.path);
-		$scope.getRelatedFiles(filestuff.path);
+        $scope.getExpertUsers(filestuff.path);
+        $scope.getRelatedFiles(filestuff.path);
     }
 
     // Adding chart, and styling the popup (title, arrow, margins)
