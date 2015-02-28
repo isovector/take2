@@ -201,9 +201,6 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
             '#5CA0FF',
             '#4794FF',
             '#3388FF'
-            /*'#0000ff',
-            '#00ff00',
-            '#ff0000'*/
         ];
         var maxCount = 0;
 
@@ -218,23 +215,11 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
                 console.log(lineItem.line);
                 console.log(lineItem.totalCount)
                 var color = 'background-color:';
-                //Currently modifying color after page load, hence the modifying of style element
-                //If we know importance on page load, revert to modifying css class name
-                /*if (lineItem.totalCount > 2) {
-                    color += colors[2];
-                }
-                else if (lineItem.totalCount > 1) {
-                    color += colors[1];
-                }
-                else if (lineItem.totalCount > 0) {
-                    color += colors[0];
-                }*/
+
                 color += colors[Math.floor(lineItem.totalCount/maxLineCount * 10)];
                 color += ' !important';
                
                 lines[lineItem.line - 1].style.cssText = color;
-                //lines[(lineItem.line - 1) + lines.length / 2].style.cssText = color;
-
                 // Highlighting the line on hover
                 $(lines[(lineItem.line - 1) + lines.length / 2]).hover(
                     function () {
@@ -260,27 +245,6 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
 
             }
         });
-    }
-
-    $scope.rainbow = function(numOfSteps, step) {
-        // This function generates vibrant, "evenly spaced" colours (i.e. no clustering). This is ideal for creating easily distinguishable vibrant markers in Google Maps and other apps.
-        // Adam Cole, 2011-Sept-14
-        // HSV to RBG adapted from: http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript
-        var r, g, b;
-        var h = step / numOfSteps;
-        var i = ~~(h * 6);
-        var f = h * 6 - i;
-        var q = 1 - f;
-        switch (i % 6) {
-            case 0: r = 1, g = f, b = 0; break;
-            case 1: r = q, g = 1, b = 0; break;
-            case 2: r = 0, g = 1, b = f; break;
-            case 3: r = 0, g = q, b = 1; break;
-            case 4: r = f, g = 0, b = 1; break;
-            case 5: r = 1, g = 0, b = q; break;
-        }
-        var c = "#" + ("00" + (~ ~(r * 255)).toString(16)).slice(-2) + ("00" + (~ ~(g * 255)).toString(16)).slice(-2) + ("00" + (~ ~(b * 255)).toString(16)).slice(-2);
-        return (c);
     }
 
     $scope.add_user = function (userData, color) {
@@ -310,7 +274,7 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
         console.log("into add lines")
         console.log(userData);
 
-        var userColor = color;//$scope.rainbow(length, index);
+        var userColor = color;
 
         userData.timeSpentByLine.forEach(function (lineItem) {
             console.log(lineItem);
@@ -371,7 +335,6 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
             if ($scope.useFakeData) {
                 data = { "file": "back/app/controllers/SnapshotController.scala", "commit": "unimplemented", "userData": [{ "user": { "id": 1, "name": "Adam Sils", "email": "silsadam@gmail.com", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 28, "timeSpentByLine": [{ "line": 40, "count": 1 }, { "line": 41, "count": 1 }, { "line": 42, "count": 1 }, { "line": 43, "count": 1 }, { "line": 44, "count": 1 }, { "line": 45, "count": 2 }, { "line": 46, "count": 1 }, { "line": 47, "count": 1 }, { "line": 48, "count": 2 }, { "line": 49, "count": 2 }, { "line": 50, "count": 2 }, { "line": 51, "count": 2 }, { "line": 52, "count": 2 }, { "line": 53, "count": 1 }, { "line": 54, "count": 1 }, { "line": 55, "count": 1 }, { "line": 56, "count": 1 }, { "line": 57, "count": 1 }, { "line": 58, "count": 1 }, { "line": 59, "count": 1 }, { "line": 60, "count": 1 }] }, { "user": { "id": 3, "name": "Sandy Maguire", "email": "sandy@sandymaguire.me", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 45, "timeSpentByLine": [{ "line": 30, "count": 1 }, { "line": 31, "count": 1 }, { "line": 32, "count": 1 }, { "line": 33, "count": 1 }, { "line": 34, "count": 1 }, { "line": 35, "count": 2 }, { "line": 36, "count": 1 }, { "line": 37, "count": 1 }, { "line": 38, "count": 2 }, { "line": 39, "count": 2 }, { "line": 40, "count": 2 }, { "line": 41, "count": 2 }, { "line": 42, "count": 2 }, { "line": 43, "count": 1 }, { "line": 44, "count": 1 }, { "line": 45, "count": 1 }, { "line": 6, "count": 1 }, { "line": 7, "count": 1 }, { "line": 8, "count": 1 }, { "line": 9, "count": 1 }, { "line": 10, "count": 1 }, { "line": 11, "count": 1 }, { "line": 12, "count": 1 }, { "line": 13, "count": 1 }, { "line": 14, "count": 1 }, { "line": 15, "count": 1 }, { "line": 16, "count": 1 }, { "line": 17, "count": 1 }, { "line": 18, "count": 1 }] }, { "user": { "id": 2, "name": "Yolo Swagins", "email": "yolo@swag.me", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 8, "timeSpentByLine": [{ "line": 20, "count": 2 }, { "line": 21, "count": 2 }, { "line": 22, "count": 2 }, { "line": 23, "count": 2 }, { "line": 43, "count": 1 }, { "line": 44, "count": 1 }, { "line": 45, "count": 1 }, { "line": 54, "count": 2 }, { "line": 55, "count": 2 }] }] }
             }
-            debugger;
             var colors = Please.make_color({
                 colors_returned: data.userData.length
             });
