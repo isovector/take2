@@ -22,7 +22,7 @@
 <div frostbite-header></div>
 <body>
 	<article ng-controller="ProfileCtrl" ng-init="init(@profile)" class="container">
-	<div class="col-lg-12 profile" style="position:fixed;">
+	<div class="col-lg-8 profile" style="position:fixed;">
 		<img id="profile-pic" id="thumbnail" ng-src={{user.picture}} ng-alt="/assets/images/Lana.jpg">
 		<div id="name" class="text-large">
 			{{user.name}}
@@ -30,7 +30,19 @@
 		<div id="email" class="text-large">
 			Email: <a class="text-large" href="mailto:{{user.email}}">{{user.email}}</a>
 		</div>
+		<div id="expert-list">
+			<div class="text-medium">Expert on the following files:</div>
+			<ul style="margin-left:25px" class="col-lg-6">
+				<li ng-repeat="expertFile in user.expertise">
+					<a class="text-small" href="/directory/{{expertFile.filename}}">{{ expertFile.filename }}</a>
+					<span style="float:right" class="text-small">{{ expertFile.knowledge | percent }}%</span>
+				</li>
+			</ul>
+		</div>
+
 	</div>
+	
+
 	</article>
 </body>
 </html>
