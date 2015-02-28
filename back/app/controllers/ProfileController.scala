@@ -22,7 +22,6 @@ object ProfileController extends Controller {
 	val user = User.getById(userId);
 	user match{ 
 		case Some(u: User) =>
-// do things with u here
 			Ok(
 				views.html.profile(u.asJs(
 				"id" -> (_.id),

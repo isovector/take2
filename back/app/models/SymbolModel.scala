@@ -52,7 +52,6 @@ object Symbol extends utils.Flyweight {
   }
 
   def synchronizeWithRepo(): Unit = {
-	return;
 	import scala.io._
     import scala.sys.process._
 
