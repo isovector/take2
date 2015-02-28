@@ -4,6 +4,7 @@ import com.github.nscala_time.time.Imports._
 import java.io.File
 import org.eclipse.jgit._
 import org.eclipse.jgit.api._
+import org.eclipse.jgit.api.errors._
 import org.eclipse.jgit.api.CreateBranchCommand.SetupUpstreamMode
 import org.eclipse.jgit.diff._
 import org.eclipse.jgit.lib.Constants
@@ -30,7 +31,11 @@ trait GitModel extends SourceRepositoryModel {
       Git.cloneRepository.setURI(remote).setDirectory(getFile("")).call
     }
 
-    update("master")
+    try {
+      update("master")
+    } catch {
+      case _: RefNotFoundException => throw new Exception("The repository was not initialized")
+    }
   }
 
   def update(branch: String) = {
@@ -82,7 +87,6 @@ trait GitModel extends SourceRepositoryModel {
   }
 
   private def setBranch(branch: String) = {
-    import org.eclipse.jgit.api.errors._
 
     try {
       git.checkout.setName(branch).call
