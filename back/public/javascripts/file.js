@@ -146,6 +146,27 @@
     $scope.add_importance = function () {
         
         var lines = $('.line');
+        var colors = [
+            '#E9F2FF',
+            '#D6E7FF',
+            '#C2DBFF',
+            '#ADCFFF',
+            '#99C4FF',
+            '#85B8FF',
+            '#70ACFF',
+            '#5CA0FF',
+            '#4794FF',
+            '#3388FF'
+            /*'#0000ff',
+            '#00ff00',
+            '#ff0000'*/
+        ];
+        var maxCount = 0;
+
+        var maxLineCount = (_.max($scope.lineItems, function(lineItem){
+            return lineItem.totalCount;
+        })).totalCount;
+        
         $scope.lineItems.forEach(function (lineItem) {
             
             if (lineItem.line < lines.length / 2 && lineItem.totalCount > 0) {
@@ -155,21 +176,20 @@
                 var color = 'background-color:';
                 //Currently modifying color after page load, hence the modifying of style element
                 //If we know importance on page load, revert to modifying css class name
-
-                if (lineItem.totalCount > 2) {
-                    color += '#F37E91';
+                /*if (lineItem.totalCount > 2) {
+                    color += colors[2];
                 }
                 else if (lineItem.totalCount > 1) {
-                    color += '#F9A2B0';
+                    color += colors[1];
                 }
                 else if (lineItem.totalCount > 0) {
-                    color += '#FDDAE0';
-                }
-
+                    color += colors[0];
+                }*/
+                color += colors[Math.floor(lineItem.totalCount/maxLineCount * 10)];
                 color += ' !important';
                
                 lines[lineItem.line - 1].style.cssText = color;
-                lines[(lineItem.line - 1) + lines.length / 2].style.cssText = color;
+                //lines[(lineItem.line - 1) + lines.length / 2].style.cssText = color;
 
                 // Highlighting the line on hover
                 $(lines[(lineItem.line - 1) + lines.length / 2]).hover(
@@ -178,7 +198,7 @@
                         lines[(lineItem.line - 1) + lines.length / 2].style.cssText = 'background-color: #FFFF99 !important';
                     }, function () {
                         lines[lineItem.line - 1].style.cssText = color;
-                        lines[(lineItem.line - 1) + lines.length / 2].style.cssText = color;
+                        lines[(lineItem.line - 1) + lines.length / 2].style.cssText = 'background-color: #FFFFFF !important';
                     });
 
                 // Creating popup to be displayed on hover
@@ -307,6 +327,7 @@
             if ($scope.useFakeData) {
                 data = { "file": "back/app/controllers/SnapshotController.scala", "commit": "unimplemented", "userData": [{ "user": { "id": 1, "name": "Adam Sils", "email": "silsadam@gmail.com", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 28, "timeSpentByLine": [{ "line": 40, "count": 1 }, { "line": 41, "count": 1 }, { "line": 42, "count": 1 }, { "line": 43, "count": 1 }, { "line": 44, "count": 1 }, { "line": 45, "count": 2 }, { "line": 46, "count": 1 }, { "line": 47, "count": 1 }, { "line": 48, "count": 2 }, { "line": 49, "count": 2 }, { "line": 50, "count": 2 }, { "line": 51, "count": 2 }, { "line": 52, "count": 2 }, { "line": 53, "count": 1 }, { "line": 54, "count": 1 }, { "line": 55, "count": 1 }, { "line": 56, "count": 1 }, { "line": 57, "count": 1 }, { "line": 58, "count": 1 }, { "line": 59, "count": 1 }, { "line": 60, "count": 1 }] }, { "user": { "id": 3, "name": "Sandy Maguire", "email": "sandy@sandymaguire.me", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 45, "timeSpentByLine": [{ "line": 30, "count": 1 }, { "line": 31, "count": 1 }, { "line": 32, "count": 1 }, { "line": 33, "count": 1 }, { "line": 34, "count": 1 }, { "line": 35, "count": 2 }, { "line": 36, "count": 1 }, { "line": 37, "count": 1 }, { "line": 38, "count": 2 }, { "line": 39, "count": 2 }, { "line": 40, "count": 2 }, { "line": 41, "count": 2 }, { "line": 42, "count": 2 }, { "line": 43, "count": 1 }, { "line": 44, "count": 1 }, { "line": 45, "count": 1 }, { "line": 6, "count": 1 }, { "line": 7, "count": 1 }, { "line": 8, "count": 1 }, { "line": 9, "count": 1 }, { "line": 10, "count": 1 }, { "line": 11, "count": 1 }, { "line": 12, "count": 1 }, { "line": 13, "count": 1 }, { "line": 14, "count": 1 }, { "line": 15, "count": 1 }, { "line": 16, "count": 1 }, { "line": 17, "count": 1 }, { "line": 18, "count": 1 }] }, { "user": { "id": 2, "name": "Yolo Swagins", "email": "yolo@swag.me", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 8, "timeSpentByLine": [{ "line": 20, "count": 2 }, { "line": 21, "count": 2 }, { "line": 22, "count": 2 }, { "line": 23, "count": 2 }, { "line": 43, "count": 1 }, { "line": 44, "count": 1 }, { "line": 45, "count": 1 }, { "line": 54, "count": 2 }, { "line": 55, "count": 2 }] }] }
             }
+            debugger;
             for (var i = 0; i < data.userData.length; i++) {
                 var curColor = $scope.add_lines(data.userData[i], i, data.userData.length);
                 $scope.add_user(data.userData[i], curColor);
