@@ -7,7 +7,6 @@ frostbite.controller('ProfileCtrl', ['$scope', '$http', '$timeout', function($sc
     $scope.user = {};
 
 	$scope.init = function(data) {
-		console.log("INIT");
 		$scope.user = data;
 		console.log(data);
 		$scope.getPicture();
@@ -22,10 +21,8 @@ frostbite.controller('ProfileCtrl', ['$scope', '$http', '$timeout', function($sc
 
    $scope.getExpertise = function() {
 		var array = $.map($scope.user.expertise, function(value, index) {
-			console.log(index);
 			return {filename: index, knowledge: value};
 		});
-		console.log(array);
 		$scope.user.expertise = array;
    }	   
 }]);
