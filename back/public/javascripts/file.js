@@ -306,11 +306,11 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
     }
 
     // Parse data and attach user data to lines of code
-    $scope.add_lines = function (userData, index, length) {
+    $scope.add_lines = function (userData, length, color) {
         console.log("into add lines")
         console.log(userData);
 
-        var userColor = $scope.rainbow(length, index);
+        var userColor = color;//$scope.rainbow(length, index);
 
         userData.timeSpentByLine.forEach(function (lineItem) {
             console.log(lineItem);
@@ -372,16 +372,19 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
                 data = { "file": "back/app/controllers/SnapshotController.scala", "commit": "unimplemented", "userData": [{ "user": { "id": 1, "name": "Adam Sils", "email": "silsadam@gmail.com", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 28, "timeSpentByLine": [{ "line": 40, "count": 1 }, { "line": 41, "count": 1 }, { "line": 42, "count": 1 }, { "line": 43, "count": 1 }, { "line": 44, "count": 1 }, { "line": 45, "count": 2 }, { "line": 46, "count": 1 }, { "line": 47, "count": 1 }, { "line": 48, "count": 2 }, { "line": 49, "count": 2 }, { "line": 50, "count": 2 }, { "line": 51, "count": 2 }, { "line": 52, "count": 2 }, { "line": 53, "count": 1 }, { "line": 54, "count": 1 }, { "line": 55, "count": 1 }, { "line": 56, "count": 1 }, { "line": 57, "count": 1 }, { "line": 58, "count": 1 }, { "line": 59, "count": 1 }, { "line": 60, "count": 1 }] }, { "user": { "id": 3, "name": "Sandy Maguire", "email": "sandy@sandymaguire.me", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 45, "timeSpentByLine": [{ "line": 30, "count": 1 }, { "line": 31, "count": 1 }, { "line": 32, "count": 1 }, { "line": 33, "count": 1 }, { "line": 34, "count": 1 }, { "line": 35, "count": 2 }, { "line": 36, "count": 1 }, { "line": 37, "count": 1 }, { "line": 38, "count": 2 }, { "line": 39, "count": 2 }, { "line": 40, "count": 2 }, { "line": 41, "count": 2 }, { "line": 42, "count": 2 }, { "line": 43, "count": 1 }, { "line": 44, "count": 1 }, { "line": 45, "count": 1 }, { "line": 6, "count": 1 }, { "line": 7, "count": 1 }, { "line": 8, "count": 1 }, { "line": 9, "count": 1 }, { "line": 10, "count": 1 }, { "line": 11, "count": 1 }, { "line": 12, "count": 1 }, { "line": 13, "count": 1 }, { "line": 14, "count": 1 }, { "line": 15, "count": 1 }, { "line": 16, "count": 1 }, { "line": 17, "count": 1 }, { "line": 18, "count": 1 }] }, { "user": { "id": 2, "name": "Yolo Swagins", "email": "yolo@swag.me", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 8, "timeSpentByLine": [{ "line": 20, "count": 2 }, { "line": 21, "count": 2 }, { "line": 22, "count": 2 }, { "line": 23, "count": 2 }, { "line": 43, "count": 1 }, { "line": 44, "count": 1 }, { "line": 45, "count": 1 }, { "line": 54, "count": 2 }, { "line": 55, "count": 2 }] }] }
             }
             debugger;
+            var colors = Please.make_color({
+                colors_returned: data.userData.length
+            });
             for (var i = 0; i < data.userData.length; i++) {
-                var curColor = $scope.add_lines(data.userData[i], i, data.userData.length);
-                $scope.add_user(data.userData[i], curColor);
+                $scope.add_lines(data.userData[i], data.userData.length, colors[i]);
+                $scope.add_user(data.userData[i], colors[i]);
             }
         }).error(function (data) {
             if ($scope.useFakeData) {
                 data = { "file": "back/app/controllers/SnapshotController.scala", "commit": "unimplemented", "userData": [{ "user": { "id": 1, "name": "Adam Sils", "email": "silsadam@gmail.com", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 28, "timeSpentByLine": [{ "line": 40, "count": 1 }, { "line": 41, "count": 1 }, { "line": 42, "count": 1 }, { "line": 43, "count": 1 }, { "line": 44, "count": 1 }, { "line": 45, "count": 2 }, { "line": 46, "count": 1 }, { "line": 47, "count": 1 }, { "line": 48, "count": 2 }, { "line": 49, "count": 2 }, { "line": 50, "count": 2 }, { "line": 51, "count": 2 }, { "line": 52, "count": 2 }, { "line": 53, "count": 1 }, { "line": 54, "count": 1 }, { "line": 55, "count": 1 }, { "line": 56, "count": 1 }, { "line": 57, "count": 1 }, { "line": 58, "count": 1 }, { "line": 59, "count": 1 }, { "line": 60, "count": 1 }] }, { "user": { "id": 3, "name": "Sandy Maguire", "email": "sandy@sandymaguire.me", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 45, "timeSpentByLine": [{ "line": 30, "count": 1 }, { "line": 31, "count": 1 }, { "line": 32, "count": 1 }, { "line": 33, "count": 1 }, { "line": 34, "count": 1 }, { "line": 35, "count": 2 }, { "line": 36, "count": 1 }, { "line": 37, "count": 1 }, { "line": 38, "count": 2 }, { "line": 39, "count": 2 }, { "line": 40, "count": 2 }, { "line": 41, "count": 2 }, { "line": 42, "count": 2 }, { "line": 43, "count": 1 }, { "line": 44, "count": 1 }, { "line": 45, "count": 1 }, { "line": 6, "count": 1 }, { "line": 7, "count": 1 }, { "line": 8, "count": 1 }, { "line": 9, "count": 1 }, { "line": 10, "count": 1 }, { "line": 11, "count": 1 }, { "line": 12, "count": 1 }, { "line": 13, "count": 1 }, { "line": 14, "count": 1 }, { "line": 15, "count": 1 }, { "line": 16, "count": 1 }, { "line": 17, "count": 1 }, { "line": 18, "count": 1 }] }, { "user": { "id": 2, "name": "Yolo Swagins", "email": "yolo@swag.me", "picture": "unimplemented", "lastActivity": 1406511540074 }, "timeSpent": 8, "timeSpentByLine": [{ "line": 20, "count": 2 }, { "line": 21, "count": 2 }, { "line": 22, "count": 2 }, { "line": 23, "count": 2 }, { "line": 43, "count": 1 }, { "line": 44, "count": 1 }, { "line": 45, "count": 1 }, { "line": 54, "count": 2 }, { "line": 55, "count": 2 }] }] }
                 for (var i = 0; i < data.userData.length; i++) {
-                    var curColor = $scope.add_lines(data.userData[i], i, data.userData.length)
-                    $scope.add_user(data.userData[i], curColor);
+                    $scope.add_lines(data.userData[i], data.userData.length, colors[i])
+                    $scope.add_user(data.userData[i], colors[i]);
                 }
             }
         });
