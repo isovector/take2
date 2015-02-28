@@ -17,11 +17,7 @@ GET     /directory                  controllers.RepoController.retrieveFileByPat
 GET     /directory/                 controllers.RepoController.retrieveFileByPath(file = "")
 GET     /directory/*file            controllers.RepoController.retrieveFileByPath(file)
 
-<<<<<<< Updated upstream
-GET     /users/*userId              controllers.ProfileController.getUser(userId: Int)
-=======
 GET		/users/*userId				controllers.ProfileController.getUser(userId: Int)
->>>>>>> Stashed changes
 
 GET     /api/search/directory/*file controllers.RepoController.retrieveFileByRegex(file)
 
