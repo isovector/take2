@@ -1,0 +1,17 @@
+#profile-pic {
+	float:left;
+	border:5px solid;
+	border-radius:25px;
+}
+
+.text-large {
+	font-size:40px;
+}
+
+#email {
+	margin-left:265px;
+}
+
+#name {
+	margin-left:265px;
+}
