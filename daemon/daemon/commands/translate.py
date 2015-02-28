@@ -17,7 +17,9 @@ def translate(old_commit, new_commit, filename, repo_path, inp):
         stderr.write(str(e))
         return
 
+    # Load the line numbers and the times they have been looked at
     line_counts = loads(sub('\s', '', inp))
+    # Put those line numbers in a dictionary so we can translate them to the new diff
     line_counts = dict((int(k), v) for k, v in line_counts.iteritems())
 
     diff = create_diff(
