@@ -28,7 +28,7 @@ object Commit extends utils.Flyweight {
       Table += new Commit(_1, _2, _3.map(_.id))
     }
 
-    getById(_1)
+    getById(_1).get
   }
 
   def rawGet(id: String): Option[Commit] = {

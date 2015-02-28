@@ -42,7 +42,7 @@ object Symbol extends utils.Flyweight {
       DB.withSession { implicit session =>
         (Table returning Table.map(_.id)) += new Symbol(0, _1, _2, _3, _4)
       }
-    )
+    ).get
   }
 
   def rawGet(id: Key): Option[Symbol] = {
@@ -131,14 +131,14 @@ object Symbol extends utils.Flyweight {
               ).toSeq)
             .toString
 
-          val newLinesJson =
-            accio.translate(
-              srcCommit.get,
-              dstCommit,
-              RepoModel.getFilePath(file),
-              RepoModel.local,
-              oldLinesJson
-            ).asInstanceOf[String]
+          val newLinesJson = (Seq(
+            "accio",
+            "translate",
+            "--old_commit", srcCommit.get,
+            "--new_commit", dstCommit,
+            "--filename", RepoModel.getFilePath(file),
+            "--repo_path", RepoModel.local
+          ) #< new ByteArrayInputStream(oldLinesJson.getBytes("UTF-8"))).!!
 
           val resultLines =
             Json.parse(newLinesJson)

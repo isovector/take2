@@ -57,15 +57,20 @@ object SnapshotController extends Controller {
       NotFound
     } else {
       // Build a user if one doesn't exist
-      User.getByEmail(snapFormData.email).map { user =>
-        user.lastActivity = new DateTime(snapFormData.timestamp)
-        user.save()
-      }.getOrElse {
-        User.create(
-          snapFormData.name,
-          snapFormData.email,
-          new DateTime(snapFormData.timestamp))
-      }
+      val user =
+        User.getByEmail(snapFormData.email).map { user =>
+          user.lastActivity = new DateTime(snapFormData.timestamp)
+          user.save()
+          user
+        }.getOrElse {
+          User.create(
+            snapFormData.name,
+            snapFormData.email,
+            new DateTime(snapFormData.timestamp))
+        }
+
+      val when = new DateTime(snapFormData.timestamp)
+      val cluster = Cluster.getByUserAndTime(user, when)
 
       // Build a commit if one doesn't exist
       Commit.getById(snapFormData.commit).getOrElse {
@@ -73,12 +78,16 @@ object SnapshotController extends Controller {
         RepoModel.update(snapFormData.branch)
       }
 
-      Snapshot.create(
-        new DateTime(snapFormData.timestamp),
-        snapFormData.file,
-        User.getByEmail(snapFormData.email).get,
-        snapFormData.commit,
-        snapFormData.lines);
+      val snapshot =
+        Snapshot.create(
+          when,
+          snapFormData.file,
+          User.getByEmail(snapFormData.email).get,
+          snapFormData.commit,
+          snapFormData.lines);
+
+      cluster.snapshots = cluster.snapshots :+ snapshot
+      cluster.save()
 
       Ok
     }

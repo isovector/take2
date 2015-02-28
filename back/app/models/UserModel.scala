@@ -27,13 +27,18 @@ case class User(
   }
 }
 
-object User {
+object User extends utils.Flyweight {
+  type T = User
+  type Key = Int
+
   private val Table = TableQuery[UserModel]
 
-  def create(_1: String, _2: String, _3: DateTime) = {
-    DB.withSession { implicit session =>
-      Table += new User(0, _1, _2, _3)
-    }
+  def create(_1: String, _2: String, _3: DateTime): User = {
+    getById(
+      DB.withSession { implicit session =>
+        (Table returning Table.map(_.id)) += new User(0, _1, _2, _3)
+      }
+    ).get
   }
 
   def getAll(): Seq[User] = {
@@ -42,7 +47,7 @@ object User {
     }
   }
 
-  def getById(id: Int): Option[User] = {
+  def rawGet(id: Key): Option[User] = {
     DB.withSession { implicit session =>
       Table.filter(_.id === id).firstOption
     }

@@ -59,7 +59,7 @@ object Coefficient {
 
   def update() = {
     val slidingWindow = 10
-    val clusterTime = 5 minutes
+    val clusterTime = Cluster.clusterTime
 
     val totalInstances = scala.collection.mutable.Map[String, Int]().withDefaultValue(0)
     val clusteredWith = scala.collection.mutable.Map[(String, String), Int]().withDefaultValue(0)
