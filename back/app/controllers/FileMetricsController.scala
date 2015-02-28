@@ -48,9 +48,16 @@ object FileMetricsController extends Controller {
               )
             })
           ))
-        }
+        }),
+        "symbols" ->
+          Symbol.unmanaged.getFileSymbols(file).mapJs(
+            "id" -> (_.id),
+            "line" -> (_.line),
+            "name" -> (_.name),
+            "kind" -> (_.kind)
+            )
         )
-      ))
+      )
     ).as("text/text")
   }
 

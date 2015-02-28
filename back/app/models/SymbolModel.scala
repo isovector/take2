@@ -206,11 +206,17 @@ object Symbol extends utils.Flyweight {
     }
   }
 
-  def withFileSymbols(file: String)(func: => Unit): Unit = {
-    preload {
+  object unmanaged {
+    def getFileSymbols(file: String): Seq[Symbol] = {
       DB.withSession { implicit session =>
         Table.filter(_.file === file).list
       }
+    }
+  }
+
+  def withFileSymbols(file: String)(func: => Unit): Unit = {
+    preload {
+      unmanaged.getFileSymbols(file)
     }
 
     func
