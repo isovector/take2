@@ -37,7 +37,7 @@
 				<!--<div id="right"><a id="users" href="/users/{{item.path}}">{{item.currentUsers}}</a></div>-->
 				<div id="right">
 					<a href="#" ng-repeat="user in item.users" custom-popover popover-html="{{user}}" data-trigger="hover">
-						<img id="thumbnail" ng-src={{user.user.picture}} width="24" height="24" ng-alt="http://localhost:9000/assets/images/Lana.jpg">
+						<img id="thumbnail" ng-src={{user.user.picture}} width="24" height="24" ng-alt="/assets/images/Lana.jpg">
 					</a>
 				</div>
 				<div id="center">{{item.editedlast.time | date:'short'}}</div>
