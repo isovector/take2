@@ -26,14 +26,13 @@ object ProfileController extends Controller {
 				views.html.profile(u.asJs(
 				"id" -> (_.id),
 				"name" -> (_.name),
-				"email" -> (_.email)
+				"email" -> (_.email),
+				"expertise" -> (_.getExpertise())
 			).toString
 	)) 
 		case None =>
 			// error
 			Forbidden
 	}
-
-
   }
 }

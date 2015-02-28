@@ -8,10 +8,22 @@
 	font-size:40px;
 }
 
+.text-medium {
+	font-size:24px;
+}
+
+.text-small {
+	font-size:18px;
+}
+
 #email {
 	margin-left:265px;
 }
 
 #name {
+	margin-left:265px;
+}
+
+#expert-list {
 	margin-left:265px;
 }
