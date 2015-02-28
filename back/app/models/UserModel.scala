@@ -25,6 +25,10 @@ case class User(
       Table.filter(_.id === id).update(this)
     }
   }
+
+  def getExpertise(): Map[String, Float] = {
+    DashboardModel.getUserExpertise(this)
+  }
 }
 
 object User extends utils.Flyweight {

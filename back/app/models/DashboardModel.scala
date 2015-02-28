@@ -10,9 +10,11 @@ import play.api.Play.current
 object DashboardModel {
   private val Table = TableQuery[SnapshotModel]
 
-  private def computeExperts(dataset: Seq[Snapshot]): Map[User, Float] = {
+  private def computeExperts[T]
+      (grouper: Snapshot => T)
+      (dataset: Seq[Snapshot]): Map[T, Float] = {
     val counts =
-      dataset.groupBy(_.user).map { case(k, v) =>
+      dataset.groupBy(grouper).map { case(k, v) =>
         k -> v.length
       }
 
@@ -29,8 +31,18 @@ object DashboardModel {
       .take(10)
   }
 
+  def getUserExpertise(user: User): Map[String, Float] = {
+    computeExperts(_.file) {
+      DB.withSession { implicit session =>
+        Table
+          .where(_.user === user)
+          .list
+      }
+    }
+  }
+
   def getFileExperts(file: String): Map[User, Float] = {
-    computeExperts {
+    computeExperts(_.user) {
       DB.withSession { implicit session =>
         Table
           .where(_.file === file)
