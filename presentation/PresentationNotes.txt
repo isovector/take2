@@ -1,0 +1,14 @@
+Presentation Outline
+
+Goals of Our Project:
+Software teams have a hard time with communication overhead. Ever since the 70's and the Mythical Man Month the industry has recognized that communication has a significant effect on how fast software teams can work. Often software has multiple people working on the same components, and there is rarely one expert on the whole codebase. Knowlege is distributed throughout a team, and it is important to know who has that knowlege. 
+
+Our tool aims to have a place where there is consolidated knowlege about who knows what, and who is working on what. Rather than provide a tedious interface where people tell team managers or their teammates what files they are working on we decided to let the computer do the work of watching what each person is doing. By directly observing what programmers are working on it allows us to track the files they have the most expertise in and what files are related to eachother. 
+
+Technical Challenges:
+-Tracking Commits Through time
+
+-Measuring how related files are
+
+-Measure who is an expert in a file
+
