@@ -47,20 +47,21 @@ trait GitModel extends SourceRepositoryModel {
 
     git.log.add(repo.resolve("HEAD")).call.filter(
       x => Commit.getById(x.getName).isEmpty
-    ).toList.reverse.map { commit =>
-      Logger.info("creating commit " + commit.getName)
-      val author = commit.getAuthorIdent
+    ).toList.reverse.map { revCommit =>
+      Logger.info("creating commit " + revCommit.getName)
+      val author = revCommit.getAuthorIdent
 
-      Commit.create(
-        commit.getName,
-        User.getOrCreate(author.getName, author.getEmailAddress),
-        branch,
-        commit.getParents.map(_.getName).map(Commit.getById _).map(_.get)
-      )
+      val commit =
+        Commit.create(
+          revCommit.getName,
+          User.getOrCreate(author.getName, author.getEmailAddress),
+          branch,
+          revCommit.getParents.map(_.getName).map(Commit.getById _).map(_.get)
+        )
 
-      commit.getParentCount match {
-        case 0 => addInitialCommitRecords(commit, branch)
-        case _ => updateFileCommitRecords(commit, branch)
+      revCommit.getParentCount match {
+        case 0 => addInitialCommitRecords(revCommit, branch, commit)
+        case _ => updateFileCommitRecords(revCommit, branch, commit)
       }
     }
 
@@ -89,18 +90,31 @@ trait GitModel extends SourceRepositoryModel {
     df.scan(parent.getTree, commit.getTree).map(_.getNewPath)
   }
 
-  def countLines(commit: Commit): Unit = {
+  def countLines(commit: Commit): Seq[FileChange] = {
     import scala.io._
     import scala.sys.process._
 
-    Seq(
+    val id = commit.id
+    val range =
+      if (commit.parents.length == 0)
+        id
+      else
+        s"$id~...$id"
+
+    Process(
+      Seq(
         "git",
+        "--no-pager",
         "log",
-        "pretty=tformat:",
+        "--pretty=tformat:",
         "--numstat",
-        "$commit.id$...$commit.id$~")
+        range,
+        "--"),
+      RepoModel.getFile(".")
+    )
       .!!
       .split("\n")
+      .filter(_.length != 0)
       .map ( line =>
         line(0) match {
           case '-' => None
@@ -111,10 +125,10 @@ trait GitModel extends SourceRepositoryModel {
         val pieces = line.split("\t")
         FileChange(pieces(2), pieces(0).toInt, pieces(1).toInt)
       }
+      .filter(RepoFile isTracked _.file)
   }
 
   private def setBranch(branch: String) = {
-
     try {
       git.checkout.setName(branch).call
     } catch {
@@ -138,21 +152,29 @@ trait GitModel extends SourceRepositoryModel {
     }
   }
 
-  private def updateFileCommitRecords(commit: RevCommit, branch: String) = {
+  private def updateFileCommitRecords(
+      revCommit: RevCommit,
+      branch: String,
+      commit: Commit) = {
     RepoFile.touchFiles(
-      getFilePathsInCommit(commit),
+      getFilePathsInCommit(revCommit),
       branch,
-      commit.getName,
-      new DateTime(commit.getCommitTime.toLong * 1000)
+      revCommit.getName,
+      new DateTime(revCommit.getCommitTime.toLong * 1000)
     )
+
+    RepoModel.updateCounts(commit)
   }
 
-  private def addInitialCommitRecords(commit: RevCommit, branch: String) = {
+  private def addInitialCommitRecords(
+      revCommit: RevCommit,
+      branch: String,
+      commit: Commit) = {
     val walk = new TreeWalk(repo)
-    walk.addTree(commit.getTree)
+    walk.addTree(revCommit.getTree)
     walk.setRecursive(true)
 
-    val timestamp = new DateTime(commit.getCommitTime.toLong * 1000)
+    val timestamp = new DateTime(revCommit.getCommitTime.toLong * 1000)
 
     var files: List[String] = Nil
     while (walk.next) {
@@ -162,9 +184,11 @@ trait GitModel extends SourceRepositoryModel {
     RepoFile.touchFiles(
       files,
       branch,
-      commit.getName,
+      revCommit.getName,
       timestamp
     )
+
+    RepoModel.updateCounts(commit)
   }
 }
 

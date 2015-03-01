@@ -35,23 +35,39 @@ object DashboardModel {
       .take(10)
   }
 
+  private def computeExpertise(change: Change, file: RepoFile): Float = {
+    val denom = file.adds + file.dels
+
+    if (denom != 0)
+      (change.adds + change.dels).toFloat / denom
+    else
+      1
+  }
+
   def getUserExpertise(user: User): Map[String, Float] = {
-    computeExperts(_.file) {
-      DB.withSession { implicit session =>
-        Table
-          .where(_.user === user)
-          .list
-      }
+    DB.withSession { implicit session =>
+      TableQuery[ChangeModel]
+        .filter(_.user === user)
+        .list
+        .map { change =>
+          val file = RepoFile.getByFile(change.file).get
+          change.file -> computeExpertise(change, file)
+        }
+        .toMap
     }
   }
 
   def getFileExperts(file: String): Map[User, Float] = {
-    computeExperts(_.user) {
-      DB.withSession { implicit session =>
-        Table
-          .where(_.file === file)
-          .list
-      }
+    val repoFile = RepoFile.getByFile(file).get
+
+    DB.withSession { implicit session =>
+      TableQuery[ChangeModel]
+        .filter(_.file === file)
+        .list
+        .map { change =>
+          change.user -> computeExpertise(change, repoFile)
+        }
+        .toMap
     }
   }
 
