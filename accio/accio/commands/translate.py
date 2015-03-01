@@ -3,8 +3,8 @@ from re import sub
 from sys import stderr, stdout, stdin
 from os.path import relpath
 
-from daemon.scm.diff import create_diff, convert_line_numbers
-from daemon.scm.git import Git
+from accio.scm.diff import create_diff, convert_line_numbers
+from accio.scm.git import Git
 
 
 def translate(old_commit, new_commit, filename, repo_path, inp):

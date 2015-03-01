@@ -3,7 +3,7 @@
 echo -n "checking for take2rc... "
 if [ ! -e ./.take2rc ]; then
     echo "missing"
-    echo -n "enter the port number we gave you: "
+    echo -n "enter the unique project number we gave you: "
     read PORT
     echo "http://ec2-52-10-51-63.us-west-2.compute.amazonaws.com:$PORT/" > ./.take2rc
 else

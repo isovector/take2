@@ -2,8 +2,8 @@ from sys import stdout, stderr, stdin
 from time import time
 import os
 
-from daemon.common import repo_url
-from daemon.network import Connection
+from accio.common import repo_url
+from accio.network import Connection
 
 
 def getCoeffsForFile(filename):

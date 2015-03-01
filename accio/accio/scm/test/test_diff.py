@@ -1,6 +1,6 @@
 from unittest2 import TestCase
 
-from daemon.scm.diff import create_diff, convert_line_numbers
+from accio.scm.diff import create_diff, convert_line_numbers
 
 
 class DiffTest(TestCase):

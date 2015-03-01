@@ -7,7 +7,7 @@ Red CC3F2D*/
 header {
 	width: 100%;
 	background-color: #496A99;
-	height: 45px;
+	min-height: 45px;
 }
 
 .home-link {
@@ -20,8 +20,17 @@ header {
 }
 
 .search-bar {
-	height: 30px;
-	margin-top: 7px;
+	height:30px;
+	margin-top:7px;
+}
+
+.directory-form {
+	height:100%;
+}
+
+.directory-button {
+	margin-top:5px;
+	margin-bottom:5px;
 }
 
 .time-widget {

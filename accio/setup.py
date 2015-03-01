@@ -9,7 +9,7 @@ except ImportError:
     use_setuptools()
     from setuptools import setup, find_packages
 
-from daemon import get_package_version, DAEMON_MAIN
+from accio import get_package_version, ACCIO_MAIN
 
 root_dir = dirname(__file__)
 
@@ -17,16 +17,17 @@ if root_dir != "":
     chdir(root_dir)
 
 setup(
-    name='daemon',
+    name='accio',
     version=get_package_version(),
     author='Matt Maclean',
     author_email='matthewcmaclean@gmail.com',
     description='Sends information from code editors to server',
     entry_points={
         'console_scripts': {
-            DAEMON_MAIN + ' = daemon.cli:main',
+            ACCIO_MAIN + ' = accio.cli:main',
         }
     },
+    url='https://github.com/isovector/take2', # use the URL to the github repo
     packages=find_packages(exclude="test"),
     include_package_data=True,
     install_requires=[

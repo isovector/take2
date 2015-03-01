@@ -3,10 +3,10 @@ from sys import stdout, stderr, stdin
 from time import time
 from os.path import relpath
 
-from daemon.common import repo_url
-from daemon.network import Connection
-from daemon.scm.diff import create_diff, convert_line_numbers
-from daemon.scm.git import Git
+from accio.common import repo_url
+from accio.network import Connection
+from accio.scm.diff import create_diff, convert_line_numbers
+from accio.scm.git import Git
 
 
 def send(filename, start, end, buffer, debug=False, use_repo_path=None):

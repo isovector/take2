@@ -1,11 +1,11 @@
 from argparse import ArgumentParser
 
-from daemon import DAEMON_MAIN
+from accio import ACCIO_MAIN
 
 
 def build_parser(options):
     parser = ArgumentParser(
-        prog=DAEMON_MAIN,
+        prog=ACCIO_MAIN,
         usage='%(prog)s <command> [<args>]',
         add_help=False)
 

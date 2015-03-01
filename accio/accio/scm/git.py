@@ -1,7 +1,7 @@
 from envoy import run as envoy_run
 from os.path import normpath
 
-from daemon.scm import SCMBase
+from accio.scm import SCMBase
 
 
 class Git(SCMBase):
