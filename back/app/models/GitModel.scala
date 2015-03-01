@@ -1,6 +1,8 @@
 package models
 
 import com.github.nscala_time.time.Imports._
+import com.jcraft.jsch.{Session, JSch}
+import com.jcraft.jsch.agentproxy._
 import java.io.File
 import org.eclipse.jgit._
 import org.eclipse.jgit.api._
@@ -11,7 +13,9 @@ import org.eclipse.jgit.lib.Constants
 import org.eclipse.jgit.revwalk._
 import org.eclipse.jgit.storage._
 import org.eclipse.jgit.storage.file._
+import org.eclipse.jgit.transport._
 import org.eclipse.jgit.treewalk._
+import org.eclipse.jgit.util.FS
 import org.eclipse.jgit.util.io._
 import org.gitective.core._
 import play.api._
@@ -27,6 +31,37 @@ trait GitModel extends SourceRepositoryModel {
   RepoFile.parseAccioIgnore()
 
   def initialize = {
+    SshSessionFactory.setInstance(new JschConfigSessionFactory() {
+      override protected def configure(host: OpenSshConfig.Host, session: Session): Unit = {
+          // This can be removed, but the overriden method is required since JschConfigSessionFactory is abstract
+          session.setConfig("StrictHostKeyChecking", "false");
+      }
+      
+      /*override protected def createDefaultJSch(fs: FS): JSch =  {
+          Connector con = null;
+          try {
+              if(SSHAgentConnector.isConnectorAvailable()){
+                  //USocketFactory usf = new JUnixDomainSocketFactory();
+                  USocketFactory usf = new JNAUSocketFactory();
+                  con = new SSHAgentConnector(usf);
+              }
+          } catch(AgentProxyException e){
+              System.out.println(e);
+          }
+   
+          if (con == null) {
+              return super.createDefaultJSch(fs)
+          } else {
+              val jsch = new JSch();
+              jsch.setConfig("PreferredAuthentications", "publickey");
+              val irepo = new RemoteIdentityRepository(con);
+              jsch.setIdentityRepository(irepo);
+              knownHosts(jsch, fs) // private method from parent class, yeah for Groovy!
+              return jsch
+          }
+      }*/
+    })
+  
     if (!getFile("").exists()) {
       Git.cloneRepository.setURI(remote).setDirectory(getFile("")).call
     }
