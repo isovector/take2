@@ -1,5 +1,6 @@
 package models
 
+import com.typesafe.config.ConfigFactory
 import java.io.ByteArrayInputStream
 import java.io.File
 import org.joda.time.DateTime
@@ -13,9 +14,10 @@ import models._
 import utils._
 
 trait SourceRepositoryModel {
-  val remote = "https://github.com/isovector/take2.git"
-  //val remote = "git@github.com:Paamayim/well-contributed.git"
-  val local = "repo"
+  private val config = ConfigFactory.load
+
+  val remote = config.getString("accio.remote")
+  val local = config.getString("accio.local")
   val defaultBranch: String
 
   // Prototype methods
