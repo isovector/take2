@@ -23,9 +23,12 @@ case class Change(
 object Change {
   private val Table = TableQuery[ChangeModel]
 
-  def create(_1: User, _2: String, _3: Int, _4: Int) = {
+  def create(_1: User, _2: String, _3: Int, _4: Int): Change = {
     DB.withSession { implicit session =>
-      Table += new Change(0, _1, _2, _3, _4)
+      val id =
+        (Table returning Table.map(_.id)) +=
+          Change(0, _1, _2, _3, _4)
+      Table.filter(_.id === id).first
     }
   }
 
