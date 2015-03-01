@@ -153,9 +153,9 @@ endfunction
 
 function! recording#onEnter()
     python << endpython
-from subprocess import Popen
+from subprocess import Popen, PIPE
 global accioProc
-accioProc = Popen(['accio'])
+accioProc = Popen(['accio'], stdout=PIPE, stderr=PIPE)
 scheduleNextTimer()
 endpython
 endfunction

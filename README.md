@@ -30,6 +30,11 @@ us, you can install it directly from pip:
 sudo pip install accio
 ```
 
+You should now be good to go! Whenever you are editing a file in a project that
+is Accio-enabled, your vim will silently send reports of what you're working on
+to the Accio server, which will use this information to perform implicit code
+coupling analytics on the codebase. Sweet!
+
 
 ## Maintainer Guide
 
