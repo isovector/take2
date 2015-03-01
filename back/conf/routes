@@ -5,6 +5,12 @@
 # Home page
 GET     /                           controllers.Application.index
 
+
+# Session management
+GET     /login                      controllers.AuthController.login()
+POST    /login                      controllers.AuthController.authenticate()
+GET     /logout                     controllers.AuthController.logout
+
 POST    /api/snapshot               controllers.SnapshotController.create
 DELETE  /api/snapshot/:id           controllers.SnapshotController.delete(id: Int)
 
