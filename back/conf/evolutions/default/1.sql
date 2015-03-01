@@ -3,7 +3,7 @@
 
 # --- !Ups
 
-create table "Change" ("id" INTEGER PRIMARY KEY NOT NULL,"x" INTEGER PRIMARY KEY NOT NULL);
+create table "Change" ("id" INTEGER PRIMARY KEY NOT NULL,"user" INTEGER PRIMARY KEY NOT NULL,"file" VARCHAR(254) PRIMARY KEY NOT NULL,"adds" INTEGER PRIMARY KEY NOT NULL,"dels" INTEGER PRIMARY KEY NOT NULL);
 create table "Cluster" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"user" INTEGER NOT NULL,"created" BIGINT NOT NULL,"snapshots" TEXT NOT NULL,"files" TEXT NOT NULL);
 create table "Coefficient" ("id" VARCHAR(254) PRIMARY KEY NOT NULL,"clusterCount" INTEGER NOT NULL,"totalCount" INTEGER NOT NULL);
 create table "Commit" ("id" VARCHAR(254) PRIMARY KEY NOT NULL,"branch" VARCHAR(254) NOT NULL,"rawParents" TEXT NOT NULL);
