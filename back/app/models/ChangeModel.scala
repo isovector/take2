@@ -34,10 +34,10 @@ object Change {
 
 class ChangeModel(tag: Tag) extends Table[Change](tag, "Change") {
   def id = column[Int]("id", O.PrimaryKey)
-  def user = column[User]("user", O.PrimaryKey)
-  def file = column[String]("file", O.PrimaryKey)
-  def adds = column[Int]("adds", O.PrimaryKey)
-  def dels = column[Int]("dels", O.PrimaryKey)
+  def user = column[User]("user")
+  def file = column[String]("file")
+  def adds = column[Int]("adds")
+  def dels = column[Int]("dels")
 
   val change = Change.apply _
   def * = (id, user, file, adds, dels) <> (change.tupled, Change.unapply _)
