@@ -319,9 +319,21 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
             if ($scope.useFakeData) {
                 data = {"file":"back/app/models/UserModel.scala","commit":"(unimplemented)","userData":[{"user":{"id":1,"name":"Sandy Maguire","email":"sandy@sandymaguire.me","picture":"(unimplemented)","lastActivity":1425163907882},"timeSpent":14,"timeSpentByLine":[{"line":20,"count":16},{"line":78,"count":2},{"line":29,"count":18},{"line":60,"count":18},{"line":77,"count":2},{"line":34,"count":54},{"line":54,"count":18},{"line":66,"count":10},{"line":35,"count":18},{"line":48,"count":18},{"line":16,"count":9},{"line":40,"count":18},{"line":23,"count":17},{"line":36,"count":18}]}],"symbols":[{"id":139,"line":16,"name":"User","kind":"c"},{"id":140,"line":20,"name":"lastActivity","kind":"l"},{"id":141,"line":23,"name":"save","kind":"m"},{"id":142,"line":29,"name":"getExpertise","kind":"m"},{"id":143,"line":34,"name":"User","kind":"c"},{"id":144,"line":35,"name":"T","kind":"T"},{"id":145,"line":36,"name":"Key","kind":"T"},{"id":146,"line":40,"name":"create","kind":"m"},{"id":147,"line":48,"name":"getAll","kind":"m"},{"id":148,"line":54,"name":"rawGet","kind":"m"},{"id":149,"line":60,"name":"getByEmail","kind":"m"},{"id":150,"line":66,"name":"getActiveSince","kind":"m"},{"id":151,"line":77,"name":"implicitUserWrites","kind":"l"},{"id":152,"line":78,"name":"writes","kind":"m"},{"id":153,"line":87,"name":"implicitUserColumnMapper","kind":"m"},{"id":154,"line":92,"name":"UserModel","kind":"c"},{"id":155,"line":93,"name":"id","kind":"m"},{"id":156,"line":94,"name":"name","kind":"m"},{"id":157,"line":95,"name":"email","kind":"m"},{"id":158,"line":96,"name":"lastActivity","kind":"m"},{"id":159,"line":98,"name":"user","kind":"l"},{"id":459,"line":34,"name":"User","kind":"c"},{"id":468,"line":34,"name":"User","kind":"c"}]};
             }
-            var colors = Please.make_color({
-                colors_returned: data.userData.length
-            });
+            // Make the user colors array
+            var colors = [];
+            if(data.userData.length == 1){
+                colors.push(
+                    Please.make_color({
+                        colors_returned: data.userData.length,
+                        scheme_type: 'analogous'
+                    })
+                );
+            } else {
+                colors = Please.make_color({
+                    colors_returned: data.userData.length,
+                    scheme_type: 'analogous'
+                });
+            }
             // Add the symbols so we can mark sections as the same
             $scope.add_symbols(data.symbols);  
 
