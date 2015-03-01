@@ -57,17 +57,9 @@ object SnapshotController extends Controller {
       NotFound
     } else {
       // Build a user if one doesn't exist
-      val user =
-        User.getByEmail(snapFormData.email).map { user =>
-          user.lastActivity = new DateTime(snapFormData.timestamp)
-          user.save()
-          user
-        }.getOrElse {
-          User.create(
-            snapFormData.name,
-            snapFormData.email,
-            new DateTime(snapFormData.timestamp))
-        }
+      val user = User.getOrCreate(snapFormData.name, snapFormData.email)
+      user.lastActivity = new DateTime(snapFormData.timestamp)
+      user.save()
 
       val when = new DateTime(snapFormData.timestamp)
       val cluster = Cluster.getByUserAndTime(user, when)

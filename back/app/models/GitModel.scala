@@ -4,8 +4,8 @@ import com.github.nscala_time.time.Imports._
 import java.io.File
 import org.eclipse.jgit._
 import org.eclipse.jgit.api._
-import org.eclipse.jgit.api.errors._
 import org.eclipse.jgit.api.CreateBranchCommand.SetupUpstreamMode
+import org.eclipse.jgit.api.errors._
 import org.eclipse.jgit.diff._
 import org.eclipse.jgit.lib.Constants
 import org.eclipse.jgit.revwalk._
@@ -49,8 +49,11 @@ trait GitModel extends SourceRepositoryModel {
       x => Commit.getById(x.getName).isEmpty
     ).toList.reverse.map { commit =>
       Logger.info("creating commit " + commit.getName)
+      val author = commit.getAuthorIdent
+
       Commit.create(
         commit.getName,
+        User.getOrCreate(author.getName, author.getEmailAddress),
         branch,
         commit.getParents.map(_.getName).map(Commit.getById _).map(_.get)
       )

@@ -24,6 +24,7 @@ trait SourceRepositoryModel {
   def lastCommit: String
   def initialize: Unit
   def update(branch: String): Unit
+  // def countLines(commit: Commit): Unit
   def getFilePathsInCommit(hash: String): Seq[String]
   def isHead(commit: Commit): Boolean
 
