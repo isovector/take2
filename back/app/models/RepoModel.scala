@@ -14,6 +14,8 @@ import models._
 import utils._
 
 trait SourceRepositoryModel {
+  case class FileChange(file: String, adds: Int, dels: Int)
+
   private val config = ConfigFactory.load
 
   val remote = config.getString("accio.remote")

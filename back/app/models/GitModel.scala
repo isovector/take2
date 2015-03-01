@@ -89,6 +89,30 @@ trait GitModel extends SourceRepositoryModel {
     df.scan(parent.getTree, commit.getTree).map(_.getNewPath)
   }
 
+  def countLines(commit: Commit): Unit = {
+    import scala.io._
+    import scala.sys.process._
+
+    Seq(
+        "git",
+        "log",
+        "pretty=tformat:",
+        "--numstat",
+        "$commit.id$...$commit.id$~")
+      .!!
+      .split("\n")
+      .map ( line =>
+        line(0) match {
+          case '-' => None
+          case _ => Some(line)
+        })
+      .flatten
+      .map { line =>
+        val pieces = line.split("\t")
+        FileChange(pieces(2), pieces(0).toInt, pieces(1).toInt)
+      }
+  }
+
   private def setBranch(branch: String) = {
 
     try {
