@@ -5,7 +5,7 @@ from shutil import rmtree
 from tempfile import mkstemp, mkdtemp
 import xmlrpclib, socket
 
-global accio, gTimer, gIsActive, gUpdatesToSend, gIdleCount, IS_IDLE_COUNT, RECORD_DURATION
+global accio, accioProc, gTimer, gIsActive, gUpdatesToSend, gIdleCount, IS_IDLE_COUNT, RECORD_DURATION
 
 gTimer = None
 gIsActive = False
@@ -153,12 +153,17 @@ endfunction
 
 function! recording#onEnter()
     python << endpython
+from subprocess import Popen
+global accioProc
+accioProc = Popen(['accio'])
 scheduleNextTimer()
 endpython
 endfunction
 
 function! recording#onExit()
     python << endpython
+global accioProc
+accioProc.terminate()
 gTimer.cancel()
 gTimer = None
 endpython
