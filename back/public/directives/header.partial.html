@@ -1,6 +1,11 @@
 <header>
-	<a class="col-md-3 col-md-offset-1 home-link" href="/">Accio</a>
+	<a class="col-md-3 col-md-offset-1 col-xs-3 home-link" href="/">Accio</a>
 	<div ng-controller="SearchTypeaheadController">
-		<input type="text" ng-model="asyncSelected" ng-change="getFileSearch(asyncSelected)" placeholder="Search for files" typeahead="file as file.name for file in files | limitTo:8" class="col-md-4 search-bar" typeahead-on-select="goToFile(asyncSelected)">
+		<input type="text" ng-model="asyncSelected" ng-change="getFileSearch(asyncSelected)" 
+			placeholder="Search for files" typeahead="file as file.name for file in files | limitTo:8" 
+			class="col-md-4 col-xs-5 search-bar" typeahead-on-select="goToFile(asyncSelected)"/>
 	</div>
+	<form class="col-md-1 col-md-offset-2 col-xs-2 directory-form" action="/directory">
+		<input class="btn btn-primary directory-button" type="submit" value="Home Directory"/>
+	</form>	
 </header>
