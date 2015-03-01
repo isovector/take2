@@ -9,6 +9,6 @@ class LinterTest(TestCase):
         pep8style = StyleGuide(testsuite=True)
         report = pep8style.init_report()
 
-        pep8style.input_dir(dirname=join(getcwd(), 'daemon'))
+        pep8style.input_dir(dirname=join(getcwd(), 'accio'))
 
         self.assertEqual(report.total_errors, 0, "Found code style errors.")

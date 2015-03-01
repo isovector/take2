@@ -14,6 +14,25 @@ get_take2() {
     mv vim take2
 }
 
+echo -n "checking for take2... "
+if [ ! -e ~/.vim/bundle/take2 ]; then
+    echo "missing"
+    cd ~/.vim/bundle
+    get_take2
+else
+    echo "found"
+fi
+
+echo -n "checking for accio... "
+if hash accio 2>/dev/null; then
+    echo "found"
+else
+    echo "missing"
+    echo
+    echo "need root to install accio..."
+    sudo pip install accio
+fi
+
 echo -n "checking for vimrc... "
 if [ -e ~/.vimrc ]; then
     if grep "Plug" ~/.vimrc > /dev/null; then
@@ -26,14 +45,12 @@ if [ -e ~/.vimrc ]; then
         echo
         echo "install client failed"
         exit 1
-
     elif grep "pathogen" ~/.vimrc > /dev/null; then
         echo "pathogen found"
     else
         echo "pathogen missing"
         echo "execute pathogen#infect()" >> ~/.vimrc
     fi
-
 else
     echo "missing"
     cat << EOF > ~/.vimrc
@@ -41,15 +58,6 @@ execute pathogen#infect()
 syntax on
 filetype plugin indent on
 EOF
-fi
-
-echo -n "checking for take2... "
-if [ ! -e ~/.vim/bundle/take2 ]; then
-    echo "missing"
-    cd ~/.vim/bundle
-    get_take2
-else
-    echo "found"
 fi
 
 echo

@@ -4,8 +4,8 @@ from json import loads
 from os.path import join, normpath
 from unittest2 import TestCase
 
-from daemon.commands.send import send
-from daemon.utils import (
+from accio.commands.send import send
+from accio.utils import (
     delete_tempfolder,
     make_tempdir,
     norm_path,

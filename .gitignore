@@ -3,4 +3,5 @@
 *.egg
 *.pyc
 *.swp
-daemon/build
+accio/build
+accio/dist

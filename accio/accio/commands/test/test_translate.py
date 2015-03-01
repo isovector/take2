@@ -3,9 +3,9 @@ from envoy import run as envoy_run
 from json import loads, dumps
 from os.path import join
 from unittest2 import TestCase
-from daemon.commands.translate import translate
+from accio.commands.translate import translate
 
-from daemon.utils import (
+from accio.utils import (
     delete_tempfolder,
     make_tempdir,
     norm_path,

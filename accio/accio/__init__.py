@@ -1,5 +1,5 @@
 VERSION = (0, 1)
-DAEMON_MAIN = 'accio'
+ACCIO_MAIN = 'accio'
 
 
 def get_package_version():

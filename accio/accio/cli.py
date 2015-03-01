@@ -1,7 +1,7 @@
-from daemon.parser import build_parser
-from daemon.commands.translate import translate
-from daemon.commands.send import send
-from daemon.commands.pull import getCoeffsForFile
+from accio.parser import build_parser
+from accio.commands.translate import translate
+from accio.commands.send import send
+from accio.commands.pull import getCoeffsForFile
 from sys import stderr, stdout, stdin, argv
 
 
@@ -18,7 +18,7 @@ OPTIONS = {
 }
 
 def main():
-    # We want our daemon to be able to just use the translate function. 
+    # We want our accio to be able to just use the translate function. 
     # This is used on the backend server to translate diffs between commits
     if len(argv) > 1:
         parser = build_parser(OPTIONS)
@@ -29,7 +29,7 @@ def main():
         # Pass our paremeters down and read the map of line numbers -> number of times looked at from stdin
         print translate(opt.old_commit, opt.new_commit, opt.filename, opt.repo_path, stdin.read())
     else:
-        # Otherwise we are running the daemon on the user's machine so set it up to send the info to our server
+        # Otherwise we are running the accio on the user's machine so set it up to send the info to our server
         server = SimpleXMLRPCServer(("localhost", 7432))
         server.register_function(send, "snapshot")
         server.register_function(translate, "translate")
