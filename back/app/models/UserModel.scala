@@ -37,10 +37,10 @@ object User extends utils.Flyweight {
 
   private val Table = TableQuery[UserModel]
 
-  def create(_1: String, _2: String, _3: DateTime): User = {
+  def create(_1: String, _2: String): User = {
     getById(
       DB.withSession { implicit session =>
-        (Table returning Table.map(_.id)) += new User(0, _1, _2, _3)
+        (Table returning Table.map(_.id)) += User(0, _1, _2, new DateTime())
       }
     ).get
   }
@@ -57,10 +57,14 @@ object User extends utils.Flyweight {
     }
   }
 
+  def getOrCreate(name: String, email: String): User = {
+    getByEmail(email) getOrElse create(name, email)
+  }
+
   def getByEmail(email: String): Option[User] = {
     DB.withSession { implicit session =>
       Table.filter(_.email === email).firstOption
-    }
+    }.map(u => getById(u.id).get)
   }
 
   def getActiveSince(since: DateTime): Map[User, Int] = {

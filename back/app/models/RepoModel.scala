@@ -10,10 +10,11 @@ import play.api.Logger
 import play.api.Play.current
 import scala.io._
 
-import models._
 import utils._
 
 trait SourceRepositoryModel {
+  case class FileChange(file: String, adds: Int, dels: Int)
+
   private val config = ConfigFactory.load
 
   val remote = config.getString("accio.remote")
@@ -24,6 +25,7 @@ trait SourceRepositoryModel {
   def lastCommit: String
   def initialize: Unit
   def update(branch: String): Unit
+  def countLines(commit: Commit): Seq[FileChange]
   def getFilePathsInCommit(hash: String): Seq[String]
   def isHead(commit: Commit): Boolean
 
@@ -31,6 +33,23 @@ trait SourceRepositoryModel {
   def getFilePath(localPath: String) =
     local + File.separator + localPath
   def getFile(localPath: String) = new File(getFilePath(localPath))
+
+  def updateCounts(commit: Commit): Unit = {
+    if (commit.parents.length > 1) return
+
+    countLines(commit)
+      .foreach { case FileChange(file, adds, dels) =>
+        val repoFile = RepoFile.getByFile(file).get
+        repoFile.adds += adds
+        repoFile.dels += dels
+        repoFile.save()
+
+        val change = Change.getOrCreate(commit.author, file)
+        change.adds += adds
+        change.dels += dels
+        change.save()
+      }
+  }
 }
 
 object RepoModel extends GitModel

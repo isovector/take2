@@ -10,7 +10,11 @@ import play.api.libs.json._
 import play.api.Logger
 import play.api.Play.current
 
-case class Commit(id: String, branch: String, rawParents: Seq[String]) {
+case class Commit(
+    id: String,
+    author: User,
+    branch: String,
+    rawParents: Seq[String]) {
   lazy val parents = rawParents.map(x => Commit.getById(x).get)
 
   def children = Commit.inMemory.filter(_.parents.map(_.id).contains(id))
@@ -23,9 +27,9 @@ object Commit extends utils.Flyweight {
 
   private val Table = TableQuery[CommitModel]
 
-  def create(_1: String, _2: String, _3: Seq[Commit]) = {
+  def create(_1: String, _2: User, _3: String, _4: Seq[Commit]) = {
     DB.withSession { implicit session =>
-      Table += new Commit(_1, _2, _3.map(_.id))
+      Table += Commit(_1, _2, _3, _4.map(_.id))
     }
 
     getById(_1).get
@@ -46,10 +50,11 @@ class CommitModel(tag: Tag) extends Table[Commit](tag, "Commit") {
   import Commit._
 
   def id = column[String]("id", O.PrimaryKey)
+  def author = column[User]("author")
   def branch = column[String]("branch")
   def rawParents = column[Seq[String]]("rawParents", O.DBType("TEXT"))
 
   val commit = Commit.apply _
-  def * = (id, branch, rawParents) <> (commit.tupled, Commit.unapply _)
+  def * = (id, author, branch, rawParents) <> (commit.tupled, Commit.unapply _)
 }
 

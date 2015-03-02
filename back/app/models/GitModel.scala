@@ -4,8 +4,8 @@ import com.github.nscala_time.time.Imports._
 import java.io.File
 import org.eclipse.jgit._
 import org.eclipse.jgit.api._
-import org.eclipse.jgit.api.errors._
 import org.eclipse.jgit.api.CreateBranchCommand.SetupUpstreamMode
+import org.eclipse.jgit.api.errors._
 import org.eclipse.jgit.diff._
 import org.eclipse.jgit.lib.Constants
 import org.eclipse.jgit.revwalk._
@@ -47,17 +47,21 @@ trait GitModel extends SourceRepositoryModel {
 
     git.log.add(repo.resolve("HEAD")).call.filter(
       x => Commit.getById(x.getName).isEmpty
-    ).toList.reverse.map { commit =>
-      Logger.info("creating commit " + commit.getName)
-      Commit.create(
-        commit.getName,
-        branch,
-        commit.getParents.map(_.getName).map(Commit.getById _).map(_.get)
-      )
+    ).toList.reverse.map { revCommit =>
+      Logger.info("creating commit " + revCommit.getName)
+      val author = revCommit.getAuthorIdent
 
-      commit.getParentCount match {
-        case 0 => addInitialCommitRecords(commit, branch)
-        case _ => updateFileCommitRecords(commit, branch)
+      val commit =
+        Commit.create(
+          revCommit.getName,
+          User.getOrCreate(author.getName, author.getEmailAddress),
+          branch,
+          revCommit.getParents.map(_.getName).map(Commit.getById _).map(_.get)
+        )
+
+      revCommit.getParentCount match {
+        case 0 => addInitialCommitRecords(revCommit, branch, commit)
+        case _ => updateFileCommitRecords(revCommit, branch, commit)
       }
     }
 
@@ -86,8 +90,45 @@ trait GitModel extends SourceRepositoryModel {
     df.scan(parent.getTree, commit.getTree).map(_.getNewPath)
   }
 
-  private def setBranch(branch: String) = {
+  def countLines(commit: Commit): Seq[FileChange] = {
+    import scala.io._
+    import scala.sys.process._
 
+    val id = commit.id
+    val range =
+      if (commit.parents.length == 0)
+        id
+      else
+        s"$id~...$id"
+
+    Process(
+      Seq(
+        "git",
+        "--no-pager",
+        "log",
+        "--pretty=tformat:",
+        "--numstat",
+        range,
+        "--"),
+      RepoModel.getFile(".")
+    )
+      .!!
+      .split("\n")
+      .filter(_.length != 0)
+      .map ( line =>
+        line(0) match {
+          case '-' => None
+          case _ => Some(line)
+        })
+      .flatten
+      .map { line =>
+        val pieces = line.split("\t")
+        FileChange(pieces(2), pieces(0).toInt, pieces(1).toInt)
+      }
+      .filter(RepoFile isTracked _.file)
+  }
+
+  private def setBranch(branch: String) = {
     try {
       git.checkout.setName(branch).call
     } catch {
@@ -111,21 +152,29 @@ trait GitModel extends SourceRepositoryModel {
     }
   }
 
-  private def updateFileCommitRecords(commit: RevCommit, branch: String) = {
+  private def updateFileCommitRecords(
+      revCommit: RevCommit,
+      branch: String,
+      commit: Commit) = {
     RepoFile.touchFiles(
-      getFilePathsInCommit(commit),
+      getFilePathsInCommit(revCommit),
       branch,
-      commit.getName,
-      new DateTime(commit.getCommitTime.toLong * 1000)
+      revCommit.getName,
+      new DateTime(revCommit.getCommitTime.toLong * 1000)
     )
+
+    RepoModel.updateCounts(commit)
   }
 
-  private def addInitialCommitRecords(commit: RevCommit, branch: String) = {
+  private def addInitialCommitRecords(
+      revCommit: RevCommit,
+      branch: String,
+      commit: Commit) = {
     val walk = new TreeWalk(repo)
-    walk.addTree(commit.getTree)
+    walk.addTree(revCommit.getTree)
     walk.setRecursive(true)
 
-    val timestamp = new DateTime(commit.getCommitTime.toLong * 1000)
+    val timestamp = new DateTime(revCommit.getCommitTime.toLong * 1000)
 
     var files: List[String] = Nil
     while (walk.next) {
@@ -135,9 +184,11 @@ trait GitModel extends SourceRepositoryModel {
     RepoFile.touchFiles(
       files,
       branch,
-      commit.getName,
+      revCommit.getName,
       timestamp
     )
+
+    RepoModel.updateCounts(commit)
   }
 }
 
