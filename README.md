@@ -28,10 +28,7 @@ computer, and non-destructively update your vim configuration to use the editor
 plugin.
 
 ```bash
-wget https://raw.githubusercontent.com/isovector/take2/master/scripts/install_client.sh && \
-chmod +x install_client.sh && \
-bash install_client.sh && \
-rm install_client.sh
+wget -O- https://raw.githubusercontent.com/isovector/take2/master/scripts/install_client.sh | bash
 ```
 
 If your .vimrc file cannot be patched safely, it will cancel the
@@ -61,11 +58,7 @@ number for your hosting account. Once this has been granted to you, in the root
 of your project:
 
 ```bash
-wget
-https://raw.githubusercontent.com/isovector/take2/master/scripts/init_project.sh && \
-chmod +x init_project.sh && \
-bash init_project.sh && \
-rm init_project.sh
+wget -O- https://raw.githubusercontent.com/isovector/take2/master/scripts/init_project.sh | bash
 ```
 
 Add a user named **AccioServer** as a contributor with read-access on your
