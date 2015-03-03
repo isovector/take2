@@ -11,7 +11,7 @@ object LoginAware extends AuthenticatedBuilder({ request =>
   val email = request.session.get("email").getOrElse("")
 
   if (email.isEmpty) {
-    Some("")
+    Some("LOGIN")
   } else if (Global.whitelist contains email) {
     Some(email)
   } else {
