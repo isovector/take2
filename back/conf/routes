@@ -5,6 +5,10 @@
 # Home page
 GET     /                           controllers.Application.index
 
+GET     /auth                       controllers.AuthController.authenticate
+GET     /auth/callback              controllers.AuthController.callback
+GET     /logout                     controllers.AuthController.logout
+
 POST    /api/snapshot               controllers.SnapshotController.create
 DELETE  /api/snapshot/:id           controllers.SnapshotController.delete(id: Int)
 

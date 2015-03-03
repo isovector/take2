@@ -9,6 +9,7 @@ import play.api.libs.json._
 import play.api.mvc._
 import play.api.Play.current
 
+import actions._
 import models._
 import utils._
 import utils.DateConversions._
@@ -21,7 +22,7 @@ object DashboardController extends Controller {
 
   private val recentDuration = 5.minutes;
 
-  def getCurrentlyOpenFiles = Action {
+  def getCurrentlyOpenFiles = Authenticated { implicit request =>
     val files =
       RepoFile.getFilesOpenedSince(DateTime.now - recentDuration) .toSeq.map {
         case (k, v) => k
@@ -32,7 +33,7 @@ object DashboardController extends Controller {
     ).as("text/text")
   }
 
-  def getMostActiveUsers(since: String) = Action {
+  def getMostActiveUsers(since: String) = Authenticated { implicit request =>
     val users = DashboardModel.getMostActiveUsers(new DateTime(since.toLong))
 
     Ok(
@@ -43,7 +44,7 @@ object DashboardController extends Controller {
     ).as("text/text")
   }
 
-  def getMostPopularFiles(since: String) = Action {
+  def getMostPopularFiles(since: String) = Authenticated { implicit request =>
     val files =
       RepoFile.getFilesOpenedSince(new DateTime(since.toLong))
         .toSeq
@@ -58,7 +59,7 @@ object DashboardController extends Controller {
     ).as("text/text")
   }
 
-  def getFileCoefficients = Action {
+  def getFileCoefficients = Authenticated { implicit request =>
     Coefficient.update()
 
     Ok(
@@ -68,7 +69,7 @@ object DashboardController extends Controller {
         "coefficient" -> (_.weight)))
   }
 
-  def getAbsoluteExperts = Action {
+  def getAbsoluteExperts = Authenticated { implicit request =>
     val experts = DashboardModel.getAbsoluteExperts()
 
     Ok(
@@ -77,7 +78,7 @@ object DashboardController extends Controller {
         "knowledge" -> (_._2)))
   }
 
-  def getClusteredSymbols(id: Int) = Action {
+  def getClusteredSymbols(id: Int) = Authenticated { implicit request =>
     Symbol.getById(id) match {
       case Some(symbol: Symbol) =>
         Ok(

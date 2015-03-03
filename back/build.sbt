@@ -13,7 +13,10 @@ libraryDependencies ++= Seq(
   "com.github.nscala-time" %% "nscala-time" % "1.0.0",
   "org.eclipse.jgit" % "org.eclipse.jgit" % "2.0.0.201206130900-r",
   "org.gitective" % "gitective-core" % "0.9.9",
-  "org.apache.xmlrpc" % "xmlrpc-client" % "3.1.3"
+  "org.apache.xmlrpc" % "xmlrpc-client" % "3.1.3",
+  "org.xerial" % "sqlite-jdbc" % "3.7.2",
+  "net.databinder.dispatch" %% "dispatch-core" % "0.11.2",
+  "org.scala-tools.time" % "time_2.9.1" % "0.5"
 )
 
 play.Project.playScalaSettings
