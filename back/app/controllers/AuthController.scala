@@ -12,13 +12,6 @@ object AuthController extends Controller {
   def authenticate = Action { implicit request =>
     val callback_uri = routes.AuthController.callback.absoluteURL()
 
-    Redirect(ServiceProvider.facebook.getAuthURI(callback_uri, Seq()))
-  }
-
-  // Grant additional permissions to a facebook token
-  def obtainPermission = Action { implicit request =>
-    val callback_uri = routes.AuthController.callback.absoluteURL()
-
     Redirect(ServiceProvider.facebook.getAuthURI(callback_uri, Seq("email")))
   }
 
@@ -62,7 +55,11 @@ object AuthController extends Controller {
       // TODO: make this show an error page?
       case Left(error) => InternalServerError(error)
       case Right(email) => Redirect(
-        request.session("redirect_to")
+        try {
+         request.session("redirect_to")
+        } catch {
+          case _: Exception => routes.Application.index.absoluteURL()
+        }
       ).withSession(
         session + ("email" -> email) - "redirect_to")
     }

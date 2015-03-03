@@ -7,10 +7,15 @@ import play.api._
 object Global extends GlobalSettings {
   private val config = ConfigFactory.load
 
-  val facebookAppId = config.getString("facebook.appID")
-  val facebookSecret = config.getString("facebook.secret")
-  val whitelist =
-    config.getStringList("accio.whitelist").toList
+  val (facebookAppID, facebookSecret) =
+    if (Play.isDev(Play.current))
+      (config.getString("facebook.dev.appID"),
+      config.getString("facebook.dev.secret"))
+    else
+      (config.getString("facebook.prod.appID"),
+      config.getString("facebook.prod.secret"))
+
+  val whitelist = config.getStringList("accio.whitelist").toList
 
   override def onStart(app: Application) {
     // Initialize the repo if it just got stomped by a db evolution

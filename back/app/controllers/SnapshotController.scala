@@ -23,7 +23,7 @@ object SnapshotController extends Controller {
       Table.where(_.id === id).delete
     }
 
-  Ok
+    Ok
   }
 
   // scalastyle:ignore method.length
