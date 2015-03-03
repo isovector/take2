@@ -35,7 +35,7 @@ fi
 
 echo -n "checking for vimrc... "
 if [ -e ~/.vimrc ]; then
-    if grep "Plug" ~/.vimrc > /dev/null; then
+    if grep "Plug" ~/.vimrc > /dev/null || grep "Bundle" ~/.vimrc > /dev/null; then
         echo "incompatible"
         echo
         echo "FATAL ERROR: incompatible package manager"

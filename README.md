@@ -1,12 +1,27 @@
-take2
+Accio
 =====
 
-TODO: write a description of the project
+Accio is a extended analytics platform for collaborative coding environments.
+Its main features track *who's been working on what* and *who knows what* about
+your codebase. Additionally, it uses real-time sampling of your programming
+habits to get a sense of where your codebase might be smelly; if two files
+always need to be edited at the same time, there is likely an implicit
+dependency to be found here.
+
+In short, Accio gives you a high-level view about the management aspects of
+your project.
+
 
 ## User Guide
 
 > This section is for users who already have an Accio-enabled project, and just
 > need to configure their editor to connect to it.
+
+Most of Accio's benefits come from tracking what you're working on, while you
+work on it. This functionality comes in the form of a vim (other editors to be
+added one day) plugin, which will periodically inform the Accio server about
+what you're working on, and how it's diverged from the last pushed commit. The
+purpose of this section is to help get this plugin set up.
 
 Running the following command will install the connection protocol on your
 computer, and non-destructively update your vim configuration to use the editor
@@ -53,7 +68,10 @@ bash init_project.sh && \
 rm init_project.sh
 ```
 
-After committing the newly created files, your project *should* be
-Accio-enabled. Direct all of your developers to the **User Guide** section to
-get them connected.
+Add a user named **AccioServer** as a contributor with read-access on your
+*Github*- or *Bitbucket*-hosted repository. This will allow Accio to poll for
+code changes and keep our analytics up to date.
+
+Your project should now be Accio-enabled. Direct all of your developers to the
+**User Guide** section to get them connected.
 
