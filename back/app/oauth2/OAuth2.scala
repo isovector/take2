@@ -8,11 +8,11 @@ package oauth2
 
 import dispatch._
 import java.util.concurrent.ExecutionException
-import org.scala_tools.time.Imports.DateTime
 import play.api.Logger
 import scala.concurrent._
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
+import org.scala_tools.time.Imports.DateTime
 
 case class AuthToken(token: String, expiry: DateTime)
 
@@ -46,15 +46,19 @@ class OAuth2
    * @return URL of Authorization Server with parameter for the application
    */
   def getOAuth2AuthorizationURI (
-      providerURI: String,
-      params: Map[String, String] = Map()) : String = {
+    providerURI: String,
+    params: Map[String, String] = Map()
+  ) : String =
+  {
     request = url(providerURI).GET
     (request <<? params).url
   }
 
   def getOAuth2Request (
-      providerTokenURI: String,
-      params: Map[String, String] = Map()) : Option[String] = {
+    providerTokenURI: String,
+    params: Map[String, String] = Map()
+  ) : Option[String] =
+  {
     response = ""
     request = url(providerTokenURI).GET <<? params
     try
@@ -79,8 +83,10 @@ class OAuth2
    * @return Server response or None
    */
   def postOAuth2Request (
-      providerTokenURI: String,
-      params: Map[String, String] = Map()) : Option[String] = {
+    providerTokenURI: String,
+    params: Map[String, String] = Map()
+  ) : Option[String] =
+  {
     response = ""
     request = url(providerTokenURI).POST
     request << params
@@ -106,9 +112,11 @@ class OAuth2
    * @return server response string or None
    */
   def getOAuth2Resource (
-      resourceURI: String,
-      params: Map[String, String] = Map(),
-      headers: Map[String, String] = Map()) : Option[String] = {
+    resourceURI: String,
+    params: Map[String, String] = Map(),
+    headers: Map[String, String] = Map()
+  ) : Option[String] =
+  {
     request = url(resourceURI).GET
     request.addQueryParameter("access_token", accessToken)
     response = ""
@@ -134,9 +142,7 @@ class OAuth2
 }
 
 object ServiceProvider {
-  import models._
+  import models.Global
 
-  val facebook =
-    new oauth2.Facebook(Global.facebookAppId, Global.facebookSecret)
+  val facebook = new oauth2.FaceBook(Global.facebookAppID, Global.facebookSecret)
 }
-

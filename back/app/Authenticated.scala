@@ -15,4 +15,3 @@ object Authenticated extends AuthenticatedBuilder({ request =>
       None
   }
 })
-

@@ -74,4 +74,3 @@ object AuthController extends Controller {
     ).withSession(session - "email")
   }
 }
-
