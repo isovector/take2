@@ -8,7 +8,7 @@ import actions._
 object Application extends Controller {
 
   def index = LoginAware { implicit request =>
-    if (request.user == "LOGIN") {
+    if (request.user.isEmpty) {
       Redirect(routes.AuthController.authenticate)
     } else {
       Ok(views.html.index())
