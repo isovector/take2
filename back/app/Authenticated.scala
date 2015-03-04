@@ -8,14 +8,10 @@ import play.api.Play.current
 import models._
 
 object LoginAware extends AuthenticatedBuilder({ request =>
-  val email = request.session.get("email").getOrElse("")
-
-  if (email.isEmpty) {
-    Some("LOGIN")
-  } else if (Global.whitelist contains email) {
-    Some(email)
-  } else {
-    None
+  request.session.get("email") match {
+    case Some(email) if Global.whitelist contains email => Some(email)
+    case None => Some("")
+    case _ => None
   }
 })
 

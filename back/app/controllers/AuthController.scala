@@ -55,11 +55,7 @@ object AuthController extends Controller {
       // TODO: make this show an error page?
       case Left(error) => InternalServerError(error)
       case Right(email) => Redirect(
-        try {
-         request.session("redirect_to")
-        } catch {
-          case _: Exception => routes.Application.index.absoluteURL()
-        }
+        request.session.get("redirect_to") getOrElse routes.Application.index.absoluteURL()
       ).withSession(
         session + ("email" -> email) - "redirect_to")
     }
