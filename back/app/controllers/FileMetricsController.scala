@@ -9,6 +9,7 @@ import play.api.libs.json._
 import play.api.mvc._
 import play.api.Play.current
 
+import actions._
 import models._
 import utils._
 import utils.DateConversions._
@@ -21,7 +22,7 @@ object FileMetricsController extends Controller {
 
   private val recentDuration = 5.minutes;
 
-  def getFileLineViews(file: String) = Action {
+  def getFileLineViews(file: String) = Authenticated { implicit request =>
     import Json._
 
     val lines = Snapshot.lineviews(_.user) {
@@ -61,7 +62,7 @@ object FileMetricsController extends Controller {
     ).as("text/text")
   }
 
-  def getUsersInFile(prefix: String) = Action {
+  def getUsersInFile(prefix: String) = Authenticated { implicit request =>
     val since = DateTime.now - recentDuration
 
     // TODO(sandy): it would be nice to get this using getFilesOpenedSince
@@ -83,7 +84,7 @@ object FileMetricsController extends Controller {
     ).as("text/text")
   }
 
-  def getFileExperts(file: String) = Action {
+  def getFileExperts(file: String) = Authenticated { implicit request =>
     val experts = DashboardModel.getFileExperts(file)
 
     Ok(
@@ -92,7 +93,7 @@ object FileMetricsController extends Controller {
         "knowledge" -> (_._2)))
   }
 
-  def getFileCoefficientsFor(file: String) = Action {
+  def getFileCoefficientsFor(file: String) = Authenticated { implicit request =>
     Coefficient.update()
 
     Ok(

@@ -14,6 +14,7 @@ import play.api.Play.current
 import scala.collection.JavaConversions._
 import scala.concurrent.duration._
 
+import actions._
 import models._
 import utils._
 import utils.JSON._
@@ -32,7 +33,7 @@ object RepoController extends Controller {
     file.getPath.substring(pathLength)
   }
 
-  def retrieveFileByPath(filepath: String) = Action {
+  def retrieveFileByPath(filepath: String) = Authenticated { implicit request =>
     var fileObj = RepoModel.getFile(filepath)
 
     (fileObj.exists match {
@@ -67,19 +68,19 @@ object RepoController extends Controller {
       }
   }
 
-  def initialize = Action {
+  def initialize = Authenticated { implicit request =>
     RepoModel.initialize
     Ok("cool")
   }
 
-  def commitsLoaded = Action {
+  def commitsLoaded = Authenticated { implicit request =>
     // DEBUG
     Ok(Commit.inMemory.mapJs(
       "id" -> (_.id)
     ))
   }
 
-  def destroyCommits = Action {
+  def destroyCommits = Authenticated { implicit request =>
     // DEBUG
     DB.withSession { implicit session =>
       TableQuery[CommitModel].delete
@@ -88,7 +89,7 @@ object RepoController extends Controller {
     Ok("yup")
   }
 
-  def buildSymbols = Action {
+  def buildSymbols = Authenticated { implicit request =>
     // DEBUG
     DB.withSession { implicit sesion =>
       TableQuery[SymbolModel].delete
@@ -97,7 +98,7 @@ object RepoController extends Controller {
     Ok("done")
   }
 
-  def retrieveFileByRegex(toFind: String) = Action {
+  def retrieveFileByRegex(toFind: String) = Authenticated { implicit request =>
     val regex = ".*?" + toFind + ".*?"
     val files = RepoFile.getAll.filter(_._1.matches(regex)).map(_._2)
 

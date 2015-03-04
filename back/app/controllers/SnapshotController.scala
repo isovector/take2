@@ -9,6 +9,7 @@ import play.api.libs.json._
 import play.api.mvc._
 import play.api.Play.current
 
+import actions._
 import models._
 import utils._
 
@@ -17,16 +18,16 @@ import play.api.db.slick.Config.driver.simple._
 object SnapshotController extends Controller {
   private var Table = TableQuery[SnapshotModel]
 
-  def delete(id: Int) = Action {
+  def delete(id: Int) = Authenticated { implicit request =>
     val drop = DB.withSession { implicit session =>
       Table.where(_.id === id).delete
     }
 
-  Ok
+    Ok
   }
 
   // scalastyle:ignore method.length
-  def create = Action { implicit request =>
+  def create = Authenticated { implicit request =>
     // WHY DOES THIS HAVE TO SUCK SO HARD?
     case class SnapshotFormData(
       timestamp: Long,
