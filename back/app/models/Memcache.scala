@@ -17,6 +17,14 @@ case class MemcacheVal(id: String, var value: String) {
       Table.filter(_.id === id).update(this)
     }
   }
+
+  def delete() = {
+    DB.withSession { implicit session =>
+      Table.filter(_.id === id).delete
+    }
+
+    Memcache.expire(id)
+  }
 }
 
 object Memcache extends Flyweight {
@@ -45,6 +53,10 @@ object Memcache extends Flyweight {
     }.getOrElse {
      create(id, value)
     }
+  }
+
+  def -=(id: Key) = {
+    getById(id).map(_.delete())
   }
 
   def rawGet(id: Key): Option[MemcacheVal] = {
