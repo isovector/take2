@@ -8,8 +8,8 @@ habits to get a sense of where your codebase might be smelly; if two files
 always need to be edited at the same time, there is likely an implicit
 dependency to be found here.
 
-In short, Accio gives you a high-level view about the management aspects of
-your project.
+In short, Accio gives you a high-level view about the management aspects of your
+project.
 
 
 ## User Guide
@@ -28,15 +28,14 @@ computer, and non-destructively update your vim configuration to use the editor
 plugin.
 
 ```bash
-wget https://raw.githubusercontent.com/isovector/take2/master/scripts/install_client.sh && \
-chmod +x install_client.sh && \
-bash install_client.sh && \
-rm install_client.sh
+wget -O-
+https://raw.githubusercontent.com/isovector/take2/master/scripts/install_client.sh
+| bash
 ```
 
-If your .vimrc file cannot be patched safely, it will cancel the
-installer and direct you with instructions to continue manually.  Contact Sandy
-(isovector) if you need additional help.
+If your .vimrc file cannot be patched safely, it will cancel the installer and
+direct you with instructions to continue manually.  Contact Sandy (isovector) if
+you need additional help.
 
 Setup will ask for root to install the connection protocol. If you don't trust
 us, you can install it directly from pip:
@@ -74,4 +73,3 @@ code changes and keep our analytics up to date.
 
 Your project should now be Accio-enabled. Direct all of your developers to the
 **User Guide** section to get them connected.
-
