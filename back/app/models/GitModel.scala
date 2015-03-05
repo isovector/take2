@@ -11,6 +11,7 @@ import org.eclipse.jgit.lib.Constants
 import org.eclipse.jgit.revwalk._
 import org.eclipse.jgit.storage._
 import org.eclipse.jgit.storage.file._
+import org.eclipse.jgit.transport._
 import org.eclipse.jgit.treewalk._
 import org.eclipse.jgit.util.io._
 import org.gitective.core._
@@ -18,6 +19,15 @@ import play.api._
 import scala.collection.JavaConversions._
 
 trait GitModel extends SourceRepositoryModel {
+  // Disable TransportErrors when trying to fetch code on weird servers
+  SshSessionFactory.setInstance(new JschConfigSessionFactory {
+    override def configure(
+        hc: OpenSshConfig.Host,
+        session: com.jcraft.jsch.Session): Unit = {
+      session.setConfig("StrictHostKeyChecking", "no")
+    }
+  })
+
   private val repo = new FileRepository(local + File.separator + ".git")
   private val git = new Git(repo)
   private val revwalk = new RevWalk(repo)
