@@ -42,7 +42,7 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
 		});
 	}
 
-   $scope.getExpertUsers = function(filename) {
+    $scope.getExpertUsers = function(filename) {
 		$http.get('/api/experts/' + filename).success(function(data) {
 			$scope.expertUsers = data;
 		}).error(function() {
@@ -92,11 +92,15 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
     $scope.popupGetter = function () {
         // I hate myself
         var checkExist = setInterval(function () {
-            if ($('.popover').length) {
+            if ($('.popover').length) {    
+                clearInterval(checkExist);           
                 $scope.makePopup();
-                clearInterval(checkExist);
                 var oldPop = $('.popover').attr("id");
                 var stillExists = setInterval(function () {
+                    // If we have more than one popup, destroy the earlier one
+                    if ($('.popover').length > 1) {
+                        $('.popover')[0].remove();
+                    };
                     if (!($('.popover').length)) {
                         clearInterval(stillExists);
                         $scope.popupGetter();
@@ -105,7 +109,6 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
                         $scope.makePopup();
                     }
                 }, 10);
-
             }
         }, 500);
     }
@@ -122,8 +125,7 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
     }
 
     // Adding chart, and styling the popup (title, arrow, margins)
-    $scope.makePopup = function (el) {
-
+    $scope.makePopup = function () {
         var popbox = document.getElementById($('.popover')[0].id);
         
         // Chart creation
@@ -181,7 +183,7 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
         })).totalCount;
         
         $scope.lineItems.forEach(function (lineItem) {
-            
+
             if (lineItem.line < lines.length / 2 && lineItem.totalCount > 0) {
                
                 var color = 'background-color:';
@@ -200,19 +202,24 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
                         lines[(lineItem.line - 1) + lines.length / 2].style.cssText = 'background-color: #FFFFFF !important';
                     });
 
-                // Creating popup to be displayed on hover
                 $(lines[lineItem.line - 1 + lines.length / 2]).popover({
-                    trigger: 'hover',
+                    trigger: 'click',
                     html: true,
                     title: 'Users',
-                    content: '<canvas id="myChart" width="200px" height="200px"/><br/><div id="legend" width="200px" height="200px" style="list-style: none;">Loading...</div>',
-
+                    content: '<canvas id="myChart" width="200px" height="200px"/>'+
+                        '<br/>'+
+                        '<div id="legend" width="200px" height="200px" style="list-style: none;">' +
+                           'Loading...' +
+                        '</div>' +
+                        '<a href="/symbol/' + lineItem.symbolId + '" >' +
+                            'See related to this section'+
+                        '</a>',
                     container: 'body',
                     placement: 'left',
                     animation: false
-
                 });
 
+                $(lines[lineItem.line - 1 + lines.length / 2]).attr('symbolId', lineItem.symbolId);
             }
         });
     }
@@ -241,6 +248,9 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
             var lineIndex;
             // Make a copy so we can modify the line when we iterate
             var lineItemForIteration = lineItem;
+            symbolId = _.find($scope.symbolArray, function(symbol) {
+                return symbol.line == lineItem.line; 
+            }).id;
             while (lineItemForIteration.line != symbolToFill.endLine + 1) {
                 if ((lineIndex = _.findIndex($scope.lines, { line: lineItemForIteration.line })) != -1) {
                     // Preparing line to be modified if line already exists
@@ -253,6 +263,7 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
                     var tempObj = new Object();
                     tempObj.line = lineItemForIteration.line;
                     tempObj.users = [];
+                    tempObj.symbolId = symbolId;
                     $scope.lines.push(tempObj);
                 }
                 // Creating new user object and pushing on to appropriate line object
@@ -288,6 +299,7 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
             return lineItem;
         });
 
+        console.log($scope.lineItems);
         // Call the importance maker
         $scope.add_importance();
         return userColor;
@@ -343,7 +355,7 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
             }
         }).error(function (data) {
            
-        });        
+        });
     }
     $scope.init();
 }]);

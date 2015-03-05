@@ -17,7 +17,9 @@ GET     /directory                  controllers.RepoController.retrieveFileByPat
 GET     /directory/                 controllers.RepoController.retrieveFileByPath(file = "")
 GET     /directory/*file            controllers.RepoController.retrieveFileByPath(file)
 
-GET     /users/*userId              controllers.ProfileController.getUser(userId: Int)
+GET     /users/:userId              controllers.ProfileController.getUser(userId: Int)
+
+GET     /symbol/:symbolId           controllers.SymbolController.getSymbol(symbolId: Int)
 
 GET     /api/search/directory/*file controllers.RepoController.retrieveFileByRegex(file)
 
