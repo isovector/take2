@@ -30,8 +30,6 @@ object AuthController extends Controller {
             Map("fields" -> "email")
           ).get
 
-          Logger.info(idPayload.toString)
-
           val email = (idPayload \ "email").as[String]
           Right(email)
         } catch {

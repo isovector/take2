@@ -8,11 +8,11 @@ package oauth2
 
 import dispatch._
 import java.util.concurrent.ExecutionException
+import org.scala_tools.time.Imports.DateTime
 import play.api.Logger
 import scala.concurrent._
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
-import org.scala_tools.time.Imports.DateTime
 
 case class AuthToken(token: String, expiry: DateTime)
 
@@ -144,5 +144,5 @@ class OAuth2
 object ServiceProvider {
   import models.Global
 
-  val facebook = new oauth2.FaceBook(Global.facebookAppID, Global.facebookSecret)
+  val facebook = new oauth2.Facebook(Global.facebookAppID, Global.facebookSecret)
 }

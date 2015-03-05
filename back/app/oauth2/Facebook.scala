@@ -1,9 +1,9 @@
 package oauth2
 
-import play.api.Logger
 import java.security.MessageDigest
 import org.scala_tools.time.Imports.DateTime
 import play.api.libs.json.{Json, JsValue}
+import play.api.Logger
 
 /**
  * User   : Anh T. Nguyen
@@ -13,7 +13,7 @@ import play.api.libs.json.{Json, JsValue}
  * Use as your own risk..
  * Facebook OAuth2 wrapper class
  */
-case class FaceBook (
+case class Facebook (
   applicationID: String,
   secretKey: String
 ) extends OAuth2
@@ -63,8 +63,6 @@ case class FaceBook (
     request = url("https://graph.facebook.com/v2.1" + endpoint).GET <<?
       (params + ("access_token" -> token))
     response = ""
-
-    Logger.info(request.url)
 
     try
     {
