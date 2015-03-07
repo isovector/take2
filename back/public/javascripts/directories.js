@@ -47,11 +47,16 @@ frostbite.filter('isDirectory', function() {
     $scope.setFilename = function(filename) {
 		$scope.items = filename;
 		$scope.order();
-		$scope.pathArray = $scope.items[0].path.split("/");
-		// For windows
-		if($scope.pathArray.length == 1){
-			$scope.pathArray = $scope.items[0].path.split("\\");
-		}
+		// Get our path for breadcrumbs
+        // Splitting path based on deliminating char OS uses
+		if($scope.items[0].path.indexOf("/") > -1) {
+            $scope.pathArray = $scope.items[0].path.split("/");
+        } else if($scope.items[0].path.indexOf("\\") > -1) {
+            $scope.pathArray = $scope.items[0].path.split("\\");
+        } else {
+            $scope.pathArray == $scope.items[0].path;
+        }
+        
 		$scope.pathArray.pop();
 		for (var i = 0; i < $scope.items.length; i++) {
 			//TODO: add name

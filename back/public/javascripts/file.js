@@ -114,11 +114,14 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
     }
 
     $scope.setFileContents = function (filestuff) {
-        //Get our path for breadcrumbs
-        $scope.pathArray = filestuff.path.split("/");
-        // For windows
-        if($scope.pathArray.length == 1){
+        // Get our path for breadcrumbs
+        // Splitting path based on deliminating char OS uses
+        if(filestuff.path.indexOf("/") > -1) {
+            $scope.pathArray = filestuff.path.split("/");
+        } else if(filestuff.path.indexOf("\\") > -1) {
             $scope.pathArray = filestuff.path.split("\\");
+        } else {
+            $scope.pathArray == filestuff.path;
         }
         //Insert the code content into the page
         $('#file_brush').html(filestuff.contents);
