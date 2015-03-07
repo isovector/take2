@@ -35,13 +35,19 @@ frostbite.filter('isDirectory', function() {
 		}
 	};
 })
-.controller('DirecCtrl', ['$scope', '$http', '$timeout', function($scope, $http, $timeout) {
+.controller('DirecCtrl', ['$scope', '$filter', '$http', '$timeout', function($scope, $filter, $http, $timeout) {
     $scope.filename = "";
 
     $scope.items = []
-    
+    var orderBy = $filter('orderBy'); 
+	$scope.order = function() {
+		$scope.items = orderBy($scope.items, ['-isDir', 'name'], false);
+	}
+
     $scope.setFilename = function(filename) {
 		$scope.items = filename;
+		$scope.order();
+		console.log(filename);
 		$scope.pathArray = $scope.items[0].path.split("/");
 		$scope.pathArray.pop();
 		for (var i = 0; i < $scope.items.length; i++) {
