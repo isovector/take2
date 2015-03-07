@@ -47,7 +47,6 @@ frostbite.filter('isDirectory', function() {
     $scope.setFilename = function(filename) {
 		$scope.items = filename;
 		$scope.order();
-		console.log(filename);
 		$scope.pathArray = $scope.items[0].path.split("/");
 		$scope.pathArray.pop();
 		for (var i = 0; i < $scope.items.length; i++) {
