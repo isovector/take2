@@ -3,8 +3,13 @@ frostbite.filter('percent', function() {
 		return (input*100).toFixed(2);
 	}
 })
-frostbite.controller('ProfileCtrl', ['$scope', '$http', '$timeout', function($scope, $http, $timeout) {
+frostbite.controller('ProfileCtrl', ['$scope','$filter', '$http', '$timeout', function($scope, $filter, $http, $timeout) {
     $scope.user = {};
+
+	var orderBy = $filter('orderBy');
+	$scope.orderByPercentile = function() {
+		$scope.user.expertise = orderBy($scope.user.expertise, ['-knowledge', 'filename'], false);
+	}
 
 	$scope.init = function(data) {
 		$scope.user = data;
@@ -24,5 +29,6 @@ frostbite.controller('ProfileCtrl', ['$scope', '$http', '$timeout', function($sc
 			return {filename: index, knowledge: value};
 		});
 		$scope.user.expertise = array;
+		$scope.orderByPercentile();
    }	   
 }]);
