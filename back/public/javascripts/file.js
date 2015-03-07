@@ -26,7 +26,7 @@ frostbite.filter('percent', function() {
 	}
 })
 
-frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $http, $q) {
+frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', function ($scope, $filter, $http, $q) {
     $scope.lines = []
     $scope.lineItems = []
     $scope.path = ""
@@ -34,9 +34,19 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
     $scope.useFakeData = false;
     $scope.userChartData = []
 
+	var orderBy = $filter('orderBy');
+	$scope.sortRelatedFiles = function() {
+		$scope.relatedFiles = orderBy($scope.relatedFiles, ['-coefficient', 'filename'], false);
+	}
+
+	$scope.sortExperts = function() {
+		$scope.expertUsers = orderBy($scope.expertUsers, ['-knowledge', 'name'], false);
+	}
+
     $scope.getRelatedFiles = function (filename) {
 		$http.get('/api/coefficients/' + filename).success(function(data) {
 			$scope.relatedFiles = data;
+			$scope.sortRelatedFiles();
 		}).error(function() {
 			$scope.relatedFiles = [];	
 		});
@@ -45,6 +55,7 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
     $scope.getExpertUsers = function(filename) {
 		$http.get('/api/experts/' + filename).success(function(data) {
 			$scope.expertUsers = data;
+			$scope.sortExperts();
 		}).error(function() {
 			$scope.expertUsers = [];	
 		});
