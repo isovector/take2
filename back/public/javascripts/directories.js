@@ -49,9 +49,9 @@ frostbite.filter('isDirectory', function() {
 		$scope.order();
 		$scope.pathArray = $scope.items[0].path.split("/");
 		// For windows
-        if($scope.pathArray.length == 1){
-            $scope.pathArray = $scope.items[0].path.split("\\");
-        }
+		if($scope.pathArray.length == 1){
+			$scope.pathArray = $scope.items[0].path.split("\\");
+		}
 		$scope.pathArray.pop();
 		for (var i = 0; i < $scope.items.length; i++) {
 			//TODO: add name

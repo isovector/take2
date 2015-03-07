@@ -115,7 +115,6 @@ frostbite.controller('FileCtrl', ['$scope','$http', '$q', function ($scope, $htt
 
     $scope.setFileContents = function (filestuff) {
         //Get our path for breadcrumbs
-        debugger;
         $scope.pathArray = filestuff.path.split("/");
         // For windows
         if($scope.pathArray.length == 1){
