@@ -1,5 +1,15 @@
 var frostbite = angular.module('frostbite', ['ngResource', 'ui.listview', 'ui.bootstrap']);
 
+frostbite.filter('addSlash', function() {
+	return function(input, index, pathArray) {
+		if (pathArray.length - 1 == index) {
+			return input;
+		} else {
+			return input + "/";
+		}
+	}
+})
+
 frostbite.filter('pathName', function() {
        return function(input) {
                return input.replace(/^.*[\\\/]/, '')
