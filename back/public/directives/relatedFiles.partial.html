@@ -1,12 +1,16 @@
 <div class="col-md-12 related-files-widget well">
 	<div ng-if="relatedFiles.length != 0">
 		<span>Files related to this one: </span>
-		<ul>
-			<li ng-repeat="file in relatedFiles" data-spy="affix">
-			<a href="/directory/{{file.destination}}">{{file.destination | pathName }}</a>
-			<span style="float:right">{{file.coefficient | percent}}%</span>
-			</li>
-		</ul>
+		<table class="sidebar-table">
+			<tr ng-repeat="file in relatedFiles" data-spy="affix">
+				<td>
+					<a href="/directory/{{file.destination}}">{{file.destination | pathName }}</a>
+				</td>
+				<td>
+					<span style="float:right">{{file.coefficient | percent}}%</span>
+				</td>
+			</tr>
+		</table>
 	</div>
 	<div ng-if="relatedFiles.length == 0">
 		There are no files related to this one.

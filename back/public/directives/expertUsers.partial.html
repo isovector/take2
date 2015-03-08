@@ -1,13 +1,16 @@
 <div class="col-md-12 popular-files-widget well">
 	<div ng-if="expertUsers.length != 0">
 		<span>There are {{expertUsers.length}} experts in this file:</span>
-		<ul>
-			<li ng-repeat="user in expertUsers" data-spy="affix">
-			<!-- TODO: put a href to the users profile! or email ro something... -->
-			<a href="/users/{{user.user.id}}">{{user.user.name}}</a>
-			<span style="float:right">{{user.knowledge | percent}}%</span>
-			</li>
-		</ul>
+		<table class="sidebar-table">
+			<tr ng-repeat="user in expertUsers" data-spy="affix">
+				<td>
+					<a href="/users/{{user.user.id}}">{{user.user.name}}</a>
+				</td>
+				<td>
+					<span style="float:right">{{user.knowledge | percent}}%</span>
+				</td>
+			</tr>
+		</table>
 	</div>
 	<div ng-if="expertUsers.length == 0">
 		There are no expert users found for this file.
