@@ -53,3 +53,7 @@ article {
 .pie-legend {
     list-style: none;    
 }
+
+.sidebar-table {
+	width: 100%;
+}
