@@ -40,7 +40,6 @@
 			<div breadcrumbs></div>
             
 			<div class="row widget-holder">
-                <input type="checkbox" data-on-text="File" data-off-text="User" data-size="normal" name="my-checkbox" checked>
                 <input type="checkbox" data-on-text="Real" data-off-text="Data" data-size="normal" name="fake-data" checked>
 			</div>
 			<div class="row widget-holder">
@@ -50,15 +49,11 @@
 					</pre>
 				</div>
 			</div>
-            <div class="user-viewer"  style="display:none;">
-                <canvas id="userChart" width='500px' height="500px" style="width: 200px;display: block;margin-left: auto;margin-right: auto;"></canvas>
-                <br/>
-                <div id="user-legend" width="200px" height="200px" style="list-style: none;">Loading...</div>
+			<div class="col-lg-3">
+				<div expert-users-graph experts="expertUsers"></div>
+				<div related-files files="relatedFiles"></div>
+				<div expert-users experts="expertUsers"></div>
 			</div>
-				<div class="col-lg-3">
-					<div related-files files="relatedFiles"></div>
-					<div expert-users experts="expertUsers"></div>
-				</div>
 		</div>
 		</article>
 	</body>

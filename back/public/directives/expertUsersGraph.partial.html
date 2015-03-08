@@ -1,0 +1,10 @@
+<div class="col-md-12 popular-files-widget well">
+	<div ng-if="expertUsers.length != 0" id="expertUsersGraphdiv">
+		<span> Time spent in file by users:</span>
+		<canvas id="userChart" style="width:220px" width="220px"></canvas></br>	
+		<div id="user-legend" widht="300px" height="300px" style="width:300px">Loading...</div>
+	</div>
+	<div ng-if="expertUsers.length == 0">
+		There are no expert users found for this file.
+	</div>
+</div>
