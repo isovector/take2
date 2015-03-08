@@ -19,6 +19,16 @@ frostbite.directive('expertUsers', function() {
 
 	    }
 });
+frostbite.directive('expertUsersGraph', function() {
+	return {
+		restrict: 'A',
+		replace: true,
+		templateUrl: "/assets/directives/expertUsersGraph.partial.html",
+		scope : {
+			expertUsers: '=experts'
+		}
+    }
+});
 
 frostbite.filter('percent', function() {
 	return function(input) {
@@ -26,13 +36,22 @@ frostbite.filter('percent', function() {
 	}
 })
 
-frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', function ($scope, $filter, $http, $q) {
+frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', '$interval', function ($scope, $filter, $http, $q, $interval) {
     $scope.lines = []
     $scope.lineItems = []
     $scope.path = ""
     $scope.showFile = true;
     $scope.useFakeData = false;
-    $scope.userChartData = []
+	$scope.timeoutCount = 0;
+	var MAXCOUNT = 5;
+	$scope.userChartData = [];			
+
+	$scope.getChart = function() {
+		$scope.timeoutCount++;
+		$scope.makeUserChart();
+	};
+
+	var stopInterval = $interval($scope.getChart, 300);
 
 	var orderBy = $filter('orderBy');
 	$scope.sortRelatedFiles = function() {
@@ -64,30 +83,24 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', function (
     $scope.init = function () {
         SyntaxHighlighter.all();
         $scope.popupGetter();
-
-        $("[name='my-checkbox']").bootstrapSwitch();
-        $('input[name="my-checkbox"]').bootstrapSwitch('onSwitchChange',(function () {
-            if ($(".file-viewer").css("display") == "none") {
-                $(".file-viewer").css("display", "block");
-                $(".user-viewer").css("display", "none");
-            }else{
-                $(".file-viewer").css("display", "none");
-                $(".user-viewer").css("display", "block");
-                $scope.makeUserChart();
-            }
-        }));
-
-        $("[name='fake-data']").bootstrapSwitch();
-        $('input[name="fake-data"]').bootstrapSwitch('onSwitchChange', (function () {
-            
-            $scope.useFakeData = !$scope.useFakeData;
-            $scope.create_data();
-        }));
     }
 
     $scope.makeUserChart = function(){
-        var ctx = $("#userChart").get(0).getContext("2d");
+		var ctx = $("#userChart");
+		if (ctx == null) {
+			return;
+		}
+		ctx = ctx.get(0);
+		if (ctx == null) {
+			return;
+		}
+		if ($scope.userChartData.length != 0 || $scope.timeoutCount > MAXCOUNT) {
+			$interval.cancel(stopInterval);
+		} else {
+			return;
+		}
 
+		ctx = ctx.getContext("2d");
         var options = {
             legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%> <%=segments[i].value*5%>s<%}%></li><%}%></ul>",
             segmentShowStroke: true,
@@ -96,7 +109,11 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', function (
         }
         var myNewChart = new Chart(ctx).Pie($scope.userChartData, options);
         var legend = myNewChart.generateLegend();
-        $("#user-legend").html(legend);
+		if (myNewChart.segments.length == 0) {
+			$("#expertUsersGraphdiv").html("<div style=\"height:160px;display:inline-block;\"><span>Time spent in file by users:</span><div style=\"height:100%;\"><span style=\"position:absolute;bottom:20px;\">No user data found.</span></div></div>");
+		} else {
+			$("#user-legend").html(legend);
+		}
     }
 
     // Checking for popup on page - modify it with appropriate data when it does
@@ -140,7 +157,7 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', function (
         $scope.create_data();
         $scope.getExpertUsers(filestuff.path);
         $scope.getRelatedFiles(filestuff.path);
-    }
+	}
 
     // Adding chart, and styling the popup (title, arrow, margins)
     $scope.makePopup = function () {
@@ -250,7 +267,6 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', function (
             highlight: color
         }
         $scope.userChartData.push(chartItem);
-        
     }
 
     // Parse data and attach user data to lines of code
@@ -345,10 +361,6 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', function (
     // Get data and send to parser
     $scope.create_data = function () {
         $http.get("/api/metrics/all/" + $scope.path).success(function (data) {
-            // Fake it til you make it
-            if ($scope.useFakeData) {
-                data = {"file":"back/app/models/UserModel.scala","commit":"(unimplemented)","userData":[{"user":{"id":1,"name":"Sandy Maguire","email":"sandy@sandymaguire.me","picture":"(unimplemented)","lastActivity":1425163907882},"timeSpent":14,"timeSpentByLine":[{"line":20,"count":16},{"line":78,"count":2},{"line":29,"count":18},{"line":60,"count":18},{"line":77,"count":2},{"line":34,"count":54},{"line":54,"count":18},{"line":66,"count":10},{"line":35,"count":18},{"line":48,"count":18},{"line":16,"count":9},{"line":40,"count":18},{"line":23,"count":17},{"line":36,"count":18}]}],"symbols":[{"id":139,"line":16,"name":"User","kind":"c"},{"id":140,"line":20,"name":"lastActivity","kind":"l"},{"id":141,"line":23,"name":"save","kind":"m"},{"id":142,"line":29,"name":"getExpertise","kind":"m"},{"id":143,"line":34,"name":"User","kind":"c"},{"id":144,"line":35,"name":"T","kind":"T"},{"id":145,"line":36,"name":"Key","kind":"T"},{"id":146,"line":40,"name":"create","kind":"m"},{"id":147,"line":48,"name":"getAll","kind":"m"},{"id":148,"line":54,"name":"rawGet","kind":"m"},{"id":149,"line":60,"name":"getByEmail","kind":"m"},{"id":150,"line":66,"name":"getActiveSince","kind":"m"},{"id":151,"line":77,"name":"implicitUserWrites","kind":"l"},{"id":152,"line":78,"name":"writes","kind":"m"},{"id":153,"line":87,"name":"implicitUserColumnMapper","kind":"m"},{"id":154,"line":92,"name":"UserModel","kind":"c"},{"id":155,"line":93,"name":"id","kind":"m"},{"id":156,"line":94,"name":"name","kind":"m"},{"id":157,"line":95,"name":"email","kind":"m"},{"id":158,"line":96,"name":"lastActivity","kind":"m"},{"id":159,"line":98,"name":"user","kind":"l"},{"id":459,"line":34,"name":"User","kind":"c"},{"id":468,"line":34,"name":"User","kind":"c"}]};
-            }
             // Make the user colors array
             var colors = [];
             if(data.userData.length == 1){
@@ -359,12 +371,12 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', function (
                     })
                 );
             } else {
-                colors = Please.make_color({
-                    colors_returned: data.userData.length,
-                    scheme_type: 'analogous'
-                });
-            }
-            // Add the symbols so we can mark sections as the same
+	            colors = Please.make_color({
+		            colors_returned: data.userData.length,
+		            scheme_type: 'analogous'
+		        });
+	        }
+			// Add the symbols so we can mark sections as the same
             $scope.add_symbols(data.symbols);  
 
             for (var i = 0; i < data.userData.length; i++) {
