@@ -83,13 +83,6 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', '$interval
     $scope.init = function () {
         SyntaxHighlighter.all();
         $scope.popupGetter();
-
-        $("[name='fake-data']").bootstrapSwitch();
-        $('input[name="fake-data"]').bootstrapSwitch('onSwitchChange', (function () {
-            
-            $scope.useFakeData = !$scope.useFakeData;
-            $scope.create_data();
-        }));
     }
 
     $scope.makeUserChart = function(){
