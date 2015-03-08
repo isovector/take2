@@ -21,6 +21,8 @@ case class RepoFile(
     var dels: Int) {
   private val Table = TableQuery[RepoFileModel]
 
+  val exists = RepoFile.exists(file)
+
   def save() = {
     DB.withSession { implicit session =>
       Table.filter(_.file === file).update(this)
@@ -79,9 +81,9 @@ object RepoFile {
   def getAll: Map[String, RepoFile] = {
     DB.withSession { implicit session =>
       Table.list
-      }.map { record =>
-        record.file -> (record: RepoFile)
-      }.toMap
+    } .filter(_.exists)
+      .map(r => r.file -> (r: RepoFile))
+      .toMap
   }
 
   def getByFile(file: String): Option[RepoFile] = {
@@ -121,6 +123,8 @@ object RepoFile {
       case (k, v) => k -> v.length
     }
   }
+
+  def exists(file: String) = RepoModel.getFile(file).exists
 }
 
 class RepoFileModel(tag: Tag) extends Table[RepoFile](tag, "RepoFile") {

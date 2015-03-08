@@ -49,6 +49,7 @@ object DashboardModel {
       TableQuery[ChangeModel]
         .filter(_.user === user)
         .list
+        .filter(RepoFile exists _.file)
         .map { change =>
           val file = RepoFile.getByFile(change.file).get
           change.file -> computeExpertise(change, file)
