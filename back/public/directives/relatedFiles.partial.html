@@ -2,7 +2,7 @@
 	<div ng-if="relatedFiles.length != 0">
 		<span>Files related to this one: </span>
 		<ul>
-			<li ng-repeat="file in relatedFiles">
+			<li ng-repeat="file in relatedFiles" data-spy="affix">
 			<a href="/directory/{{file.destination}}">{{file.destination | pathName }}</a>
 			<span style="float:right">{{file.coefficient | percent}}%</span>
 			</li>
