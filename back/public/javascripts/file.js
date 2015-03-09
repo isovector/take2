@@ -165,6 +165,21 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', '$interval
         return typeof(brushType) != "undefined" ? brushType : "plain";
     }
 
+    var entityMap = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': '&quot;',
+        "'": '&#39;',
+        "/": '&#x2F;'
+      };
+
+      function escapeHtml(string) {
+        return String(string).replace(/[&<>"'\/]/g, function (s) {
+          return entityMap[s];
+        });
+      }
+
     $scope.setFileContents = function (filestuff) {
         // Get our path for breadcrumbs
         // Splitting path based on deliminating char OS uses
@@ -180,7 +195,7 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', '$interval
         $("#file_brush").attr('class', 'brush: ' + getBrushType(filestuff.name));
         
         //Insert the code content into the page
-        $('#file_brush').html(filestuff.contents);
+        $('#file_brush').html(escapeHtml(filestuff.contents));
         $scope.path = filestuff.path;
         $scope.create_data();
         $scope.getExpertUsers(filestuff.path);
