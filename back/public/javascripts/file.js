@@ -141,22 +141,6 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', '$interval
         }, 500);
     }
 
-    var entityMap = {
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': '&quot;',
-        "'": '&#39;',
-        "/": '&#x2F;'
-    };
-
-    function escapeHtml(string) {
-        return String(string).replace(/[&<>"'\/]/g, function (s) {
-          return entityMap[s];
-        });
-    };
-
-
     var brushMap = {
         "sh" : "bash",
         "cpp": "cpp",
@@ -191,12 +175,12 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', '$interval
         } else {
             $scope.pathArray == filestuff.path;
         }
-        
+
         // Set highlight type based on filename ending
         $("#file_brush").attr('class', 'brush: ' + getBrushType(filestuff.name));
         
         //Insert the code content into the page
-        $('#file_brush').html(escapeHtml(filestuff.contents));
+        $('#file_brush').html(filestuff.contents);
         $scope.path = filestuff.path;
         $scope.create_data();
         $scope.getExpertUsers(filestuff.path);
