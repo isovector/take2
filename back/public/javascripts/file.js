@@ -141,6 +141,30 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', '$interval
         }, 500);
     }
 
+    var brushMap = {
+        "sh" : "bash",
+        "cpp": "cpp",
+        "cc": "cpp",
+        "c": "cpp",
+        "cs": "csharp",
+        "css": "css",
+        "java": "java",
+        "js": "js",
+        "pl": "perl",
+        "txt": "text",
+        "py": "python",
+        "rb": "rails",
+        "scala": "scala",
+        "sql": "sql",
+        "vb": "vb",
+        "xml": "xml"
+    };
+
+    function getBrushType(filename){
+        var brushType = brushMap[filename.split(".").pop()];
+        return typeof(brushType) != "undefined" ? brushType : "plain";
+    }
+
     var entityMap = {
         "&": "&amp;",
         "<": "&lt;",
@@ -166,6 +190,10 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', '$interval
         } else {
             $scope.pathArray == filestuff.path;
         }
+
+        // Set highlight type based on filename ending
+        $("#file_brush").attr('class', 'brush: ' + getBrushType(filestuff.name));
+        
         //Insert the code content into the page
         $('#file_brush').html(escapeHtml(filestuff.contents));
         $scope.path = filestuff.path;
