@@ -1,5 +1,4 @@
 from envoy import run as envoy_run
-from os.path import normpath
 
 from accio.scm import SCMBase
 
@@ -16,10 +15,7 @@ class Git(SCMBase):
         return None
 
     def _get_file_content(self, file_path, commit):
-        r = envoy_run('git show %s:"%s"' % (
-            commit,
-            normpath(file_path)))
-
+        r = envoy_run('git show %s:"%s"' % (commit,file_path.replace('\\', '/')))
         return r.std_out
 
     def _get_name(self):

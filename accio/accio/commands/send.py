@@ -1,7 +1,7 @@
 from json import dumps
 from sys import stdout, stderr, stdin
 from time import time
-from os.path import relpath
+from os.path import relpath, normpath
 
 from accio.common import repo_url
 from accio.network import Connection
@@ -46,7 +46,7 @@ def send(filename, start, end, buffer, debug=False, use_repo_path=None):
 
     payload = {
         "timestamp": int(time() * 1000),
-        "file": filename,
+        "file": normpath(filename).replace('\\', '/'),
         "name": git.name,
         "email": git.email,
         "branch": git.branch,

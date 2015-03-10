@@ -163,7 +163,10 @@ endfunction
 function! recording#onExit()
     python << endpython
 global accioProc
-accioProc.terminate()
+try:
+    accioProc.terminate()
+except:
+    pass
 gTimer.cancel()
 gTimer = None
 endpython
