@@ -1,12 +1,16 @@
 <div class="col-md-12 popular-files-widget well">
 	<div ng-if="popularFiles.length != 0">
 		<span>These are the {{popularFiles.length}} most popular files in the past {{timeSpan}}</span>
-		<ul>
-			<li ng-repeat="file in popularFiles">
-			<a href="/directory/{{file.file}}">{{file.file | pathName }}</a>
-			<span style="float:right">{{file.snapshots | timeago}}</span>
-			</li>
-		</ul>
+		<table class="sidebar-table">
+			<tr ng-repeat="file in popularFiles">
+				<td>
+					<a href="/directory/{{file.file}}">{{file.file | pathName }}</a>
+				</td>
+				<td>
+					<span style="float:right">{{file.snapshots | timeago}}</span>
+				</td>
+			</tr>
+		</table>
 	</div>
 	<div ng-if="popularFiles.length == 0">
 		There are no popular files for the past {{timeSpan}}

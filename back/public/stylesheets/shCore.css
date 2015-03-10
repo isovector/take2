@@ -98,6 +98,7 @@
   white-space: pre !important;
 }
 .syntaxhighlighter table td.gutter .line {
+  color: black;
   text-align: right !important;
   padding: 0 0.5em 0 1em !important;
 }
