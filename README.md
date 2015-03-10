@@ -29,8 +29,7 @@ plugin.
 
 ```bash
 wget -O-
-https://raw.githubusercontent.com/isovector/take2/master/scripts/install_client.sh
-| bash
+https://raw.githubusercontent.com/isovector/take2/master/scripts/install_client.sh | bash
 ```
 
 If your .vimrc file cannot be patched safely, it will cancel the installer and
@@ -38,7 +37,8 @@ direct you with instructions to continue manually.  Contact Sandy (isovector) if
 you need additional help.
 
 Setup will ask for root to install the connection protocol. If you don't trust
-us, you can install it directly from pip:
+us, you can first install it directly from pip (but you will still need to run
+the above script):
 
 ```bash
 sudo pip install accio
