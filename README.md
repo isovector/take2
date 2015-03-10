@@ -49,6 +49,16 @@ is Accio-enabled, your vim will silently send reports of what you're working on
 to the Accio server, which will use this information to perform implicit code
 coupling analytics on the codebase. Sweet!
 
+### Extra steps for Sublime Text
+
+Copy the file `take2/front/sublime/accio.py` into your plugins folder. For windows
+this can generally be found in
+`C:\Users\__user_name__\AppData\Roaming\Sublime Text 2\Packages\User\'
+and for linux based systems, this is generally found in
+`~/Library/Application Support/Sublime Text 2/Packages/User`.
+If the location doesn't exist, you can check in Sublime by clicking
+Preferences > Browse Packages... menu
+
 
 ## Maintainer Guide
 
