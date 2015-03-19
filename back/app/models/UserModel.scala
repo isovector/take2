@@ -84,7 +84,6 @@ object User extends utils.Flyweight {
         "id" -> user.id,
         "name" -> user.name,
         "email" -> user.email,
-        "picture" -> Todo.unimplemented,
         "lastActivity" -> user.lastActivity)
   }
 

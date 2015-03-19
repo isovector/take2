@@ -126,11 +126,23 @@ frostbite.controller('FileController', ['$scope', 'FileMetricsAPI', function($sc
 	});
 }]);
 
-frostbite.controller('IndexController', ['$scope', 'CurrentStatsAPI', 'FileMetricsAPI', function($scope, CurrentStatsAPI, FileMetricsAPI) {
+frostbite.controller('IndexController', ['$scope','$http', 'CurrentStatsAPI', 'FileMetricsAPI', function($scope, $http, CurrentStatsAPI, FileMetricsAPI) {
 	CurrentStatsAPI.getAllOpen(function(data){
 		console.log(data);
 		$scope.openFiles = data;
 	});
+
+	$scope.getAllUsers = function() {
+        $http.get('/api/users/all').success(function(data) {
+			// $scope.allUsers = data;
+			console.log(data);
+			$scope.users = data;
+		}).error(function() {
+			$scope.users = [];
+		});
+	}
+
+	$scope.getAllUsers();
 
 	var oneWeek = 7 * 24 * 60 * 60;
 	FileMetricsAPI.getPopularSince({fileOrSince: Math.round(Date.now()/1000 - oneWeek)}, function(data) {
@@ -209,6 +221,17 @@ frostbite.directive('popularFiles', function() {
 		scope : {
 			popularFiles: '=files',
 			timeSpan: '='
+		}
+	}
+});
+
+frostbite.directive('allUsers', function() {
+	return {
+		restrict: 'A',
+		replace: true,
+		templateUrl: "/assets/directives/allUsers.partial.html",
+		scope: {
+			users: '=users'
 		}
 	}
 });

@@ -16,6 +16,7 @@
 
 <script src="@routes.Assets.at("javascripts/lodash.min.js")" type="text/javascript"></script>
 <script src="@routes.Assets.at("javascripts/main.js")" type="text/javascript"></script>
+<script src="@routes.Assets.at("javascripts/file.js")" type="text/javascript"></script>
 <script src="@routes.Assets.at("javascripts/directories.js")" type="text/javascript"></script>
 <script src="@routes.Assets.at("javascripts/symbol.js")" type="text/javascript"></script>
 <script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/md5.js"></script>
@@ -33,7 +34,7 @@
 				<tr ng-repeat='symbol in relatedSymbols'>
 					<td><a href="/directory/{{symbol.symbol.file}}?symbolId={{symbol.symbol.id}}" >{{symbol.symbol.file}}<a><td>
 					<td>{{symbol.symbol.line}}<td>
-					<td>{{symbol.weight}}<td>
+					<td>{{symbol.weight | percent}}%<td>
 				</tr>
 			</table>
 		</div>

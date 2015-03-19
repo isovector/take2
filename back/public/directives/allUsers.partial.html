@@ -1,0 +1,17 @@
+<div class="col-md-12 related-files-widget well">
+	<div ng-if="users.length != 0">
+		<span>Users in this project ({{users.length}}) </span>
+		<table style="margin-left:10px;margin-top:10px" class="sidebar-table">
+			<tr ng-repeat="user in users | limitTo:5" data-spy="affix">
+				<td>
+					<a href="/users/{{user.id}}">{{user.name}}</a>
+				</td>																									     </tr>
+			</table>
+		<div style="margin-top:10px;" ng-if="users.length > 5">
+			<a style="font-weight:bold;" href="/users">See all users on this project</a>
+		</div>
+	</div>
+    <div ng-if="users.length == 0">
+        No users were found.
+    </div>
+</div>

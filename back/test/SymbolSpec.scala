@@ -16,7 +16,6 @@ class SymbolSpec extends Specification with SymbolTestData  {
     }
 
     "fail to find ambiguous renamings" in  {
-      // TODO(sandy): there is probably a better way of doing this maybe
       findOld(newAmbiguous1) must_== None
     }
 

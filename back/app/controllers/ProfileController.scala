@@ -17,22 +17,30 @@ import utils.JSON._
 import play.api.db.slick.Config.driver.simple._
 
 object ProfileController extends Controller {
+  def getUsers = Action {
+    Ok(
+      User.getAll().mapJs(
+        "id" -> (_.id),
+        "name" -> (_.name),
+        "email" -> (_.email)
+      ).toString
+    )
+  }
 
   def getUser(userId: Int) = Action {
-	val user = User.getById(userId);
-	user match{ 
-		case Some(u: User) =>
-			Ok(
-				views.html.profile(u.asJs(
-				"id" -> (_.id),
-				"name" -> (_.name),
-				"email" -> (_.email),
-				"expertise" -> (_.getExpertise())
-			).toString
-	)) 
-		case None =>
-			// error
-			Forbidden
-	}
+    val user = User.getById(userId);
+    user match{
+      case Some(u: User) =>
+        Ok(
+          views.html.profile(u.asJs(
+            "id" -> (_.id),
+            "name" -> (_.name),
+            "email" -> (_.email),
+            "expertise" -> (_.getExpertise())
+          ).toString
+        ))
+      case None => Forbidden
+    }
   }
+
 }

@@ -81,9 +81,6 @@ trait GitModel extends SourceRepositoryModel {
   def lastCommit = repo.resolve(Constants.HEAD).name
 
   def isHead(commit: Commit): Boolean = {
-    utils.Todo.hack
-    // HACK(sandy): this probably should rely on commit.children.length == 0
-
     commit.id == lastCommit
   }
 
@@ -150,8 +147,6 @@ trait GitModel extends SourceRepositoryModel {
           .setStartPoint("origin/" + branch)
           .call
 
-          // TODO(sandy): there is probably a better way to do this
-          // but it works so YOLO
           val config = repo.getConfig
           config.setString("branch", branch, "remote", "origin")
           config.setString("branch", branch, "merge", "refs/heads/" + branch)

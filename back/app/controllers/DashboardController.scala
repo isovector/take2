@@ -98,4 +98,14 @@ object DashboardController extends Controller {
       case None => NotFound
     }
   }
+
+  def getAllUsers = Action {
+    Ok(
+      User.getAll().mapJs(
+        "id" -> (_.id),
+        "name" -> (_.name),
+        "email" -> (_.email)
+      ).toString
+    ).as("text/js")
+  }
 }
