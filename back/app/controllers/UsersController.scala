@@ -19,7 +19,6 @@ import play.api.db.slick.Config.driver.simple._
 object UsersController extends Controller {
 
   def getUsers = Action {
-  	// Needs to pass a list of all users
 	Ok(views.html.users())
   }
 }
