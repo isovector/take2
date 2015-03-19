@@ -15,7 +15,7 @@ frostbite.directive('expertUsers', function() {
 			templateUrl: "/assets/directives/expertUsers.partial.html",
 	        scope : {
 	            expertUsers: '=experts'
-	        }      
+	        }
 
 	    }
 });
@@ -44,7 +44,7 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', '$interval
     $scope.useFakeData = false;
 	$scope.timeoutCount = 0;
 	var MAXCOUNT = 5;
-	$scope.userChartData = [];			
+	$scope.userChartData = [];
 
 	$scope.getChart = function() {
 		$scope.timeoutCount++;
@@ -67,7 +67,7 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', '$interval
 			$scope.relatedFiles = data;
 			$scope.sortRelatedFiles();
 		}).error(function() {
-			$scope.relatedFiles = [];	
+			$scope.relatedFiles = [];
 		});
 	}
 
@@ -76,7 +76,7 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', '$interval
 			$scope.expertUsers = data;
 			$scope.sortExperts();
 		}).error(function() {
-			$scope.expertUsers = [];	
+			$scope.expertUsers = [];
 		});
 	}
 
@@ -120,8 +120,8 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', '$interval
     $scope.popupGetter = function () {
         // I hate myself
         var checkExist = setInterval(function () {
-            if ($('.popover').length) {    
-                clearInterval(checkExist);           
+            if ($('.popover').length) {
+                clearInterval(checkExist);
                 $scope.makePopup();
                 var oldPop = $('.popover').attr("id");
                 var stillExists = setInterval(function () {
@@ -193,7 +193,7 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', '$interval
 
         // Set highlight type based on filename ending
         $("#file_brush").attr('class', 'brush: ' + getBrushType(filestuff.name));
-        
+
         //Insert the code content into the page
         $('#file_brush').html(escapeHtml(filestuff.contents));
         $scope.path = filestuff.path;
@@ -205,10 +205,10 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', '$interval
     // Adding chart, and styling the popup (title, arrow, margins)
     $scope.makePopup = function () {
         var popbox = document.getElementById($('.popover')[0].id);
-        
+
         // Chart creation
         var ctx = $("#myChart").get(0).getContext("2d");
-       
+
         // TODO - Change this to finding "number" for extensibility
         var lineSelected = $("[aria-describedby^='popover']");
 
@@ -240,7 +240,7 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', '$interval
 
     // Add importance properties to lines (color, hover, popup)
     $scope.add_importance = function () {
-        
+
         var lines = $('.line');
         var colors = [
             '#E9F2FF',
@@ -259,16 +259,16 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', '$interval
         var maxLineCount = (_.max($scope.lineItems, function(lineItem){
             return lineItem.totalCount;
         })).totalCount;
-        
+
         $scope.lineItems.forEach(function (lineItem) {
 
             if (lineItem.line < lines.length / 2 && lineItem.totalCount > 0) {
-               
+
                 var color = 'background-color:';
 
                 color += colors[Math.floor(lineItem.totalCount/maxLineCount * colors.length) - 1];
                 color += ' !important';
-               
+
                 lines[lineItem.line - 1].style.cssText = color;
                 // Highlighting the line on hover
                 $(lines[(lineItem.line - 1) + lines.length / 2]).hover(
@@ -326,9 +326,9 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', '$interval
             // Make a copy so we can modify the line when we iterate
             var lineItemForIteration = lineItem;
             symbolId = _.find($scope.symbolArray, function(symbol) {
-                return symbol.line == lineItem.line; 
+                return symbol.line == lineItem.line;
             }).id;
-            while (lineItemForIteration.line != symbolToFill.endLine + 1) {
+            while (lineItemForIteration.line < symbolToFill.endLine + 1) {
                 if ((lineIndex = _.findIndex($scope.lines, { line: lineItemForIteration.line })) != -1) {
                     // Preparing line to be modified if line already exists
                     tempObj = $scope.lines[lineIndex];
@@ -354,7 +354,7 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', '$interval
                 //Increment our line by 1 until we reach the end of the symbol
                 lineItemForIteration.line += 1;
             }
-            
+
         });
 
         // Add chart data and totalCount properties to the lines
@@ -399,8 +399,8 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', '$interval
             };
         };
     }
-    
-    
+
+
     // Get data and send to parser
     $scope.create_data = function () {
         $http.get("/api/metrics/all/" + $scope.path).success(function (data) {
@@ -420,14 +420,14 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', '$interval
 		        });
 	        }
 			// Add the symbols so we can mark sections as the same
-            $scope.add_symbols(data.symbols);  
+            $scope.add_symbols(data.symbols);
 
             for (var i = 0; i < data.userData.length; i++) {
                 $scope.add_lines(data.userData[i], colors[i]);
                 $scope.add_user(data.userData[i], colors[i]);
             }
         }).error(function (data) {
-           
+
         });
     }
     $scope.init();
