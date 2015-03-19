@@ -10,7 +10,6 @@ import scala.io.Source
 
 object CoefficientCalculator {
   // Compute how much a user knows about a file
-  // (the math here is pretty sketchy)
   def generateUserCoefficients = {
     // How many snapshots * lines you need to be considered an expert
     val expertLevelMultiplier = 10

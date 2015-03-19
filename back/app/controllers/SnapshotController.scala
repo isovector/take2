@@ -27,7 +27,6 @@ object SnapshotController extends Controller {
 
   // scalastyle:ignore method.length
   def create = Action { implicit request =>
-    // WHY DOES THIS HAVE TO SUCK SO HARD?
     case class SnapshotFormData(
       timestamp: Long,
       file: String,
@@ -49,7 +48,6 @@ object SnapshotController extends Controller {
     )(SnapshotFormData.apply)(SnapshotFormData.unapply)).bindFromRequest.get
 
     if (!RepoModel.getFile(snapFormData.file).exists) {
-      // is there a nicer way of doing this?
       Logger.info("doesn't exist")
       NotFound
     } else if (!RepoFile.isTracked(snapFormData.file)) {

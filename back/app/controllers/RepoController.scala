@@ -72,31 +72,6 @@ object RepoController extends Controller {
     Ok("cool")
   }
 
-  def commitsLoaded = Action {
-    // DEBUG
-    Ok(Commit.inMemory.mapJs(
-      "id" -> (_.id)
-    ))
-  }
-
-  def destroyCommits = Action {
-    // DEBUG
-    DB.withSession { implicit session =>
-      TableQuery[CommitModel].delete
-    }
-    Commit.clear
-    Ok("yup")
-  }
-
-  def buildSymbols = Action {
-    // DEBUG
-    DB.withSession { implicit sesion =>
-      TableQuery[SymbolModel].delete
-    }
-    Symbol.synchronizeWithRepo()
-    Ok("done")
-  }
-
   def retrieveFileByRegex(toFind: String) = Action {
     val regex = ".*?" + toFind + ".*?"
     val files = RepoFile.getAll.filter(_._1.matches(regex)).map(_._2)
