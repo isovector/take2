@@ -7,6 +7,7 @@ import play.api.db.slick.DB
 import play.api.libs.json._
 import play.api.Logger
 import play.api.Play.current
+import utils.Implicits._
 
 case class Cluster(
     id: Int,
@@ -99,8 +100,10 @@ object Cluster extends utils.Flyweight {
         .flatMap(
           _.snapshots
             .filter(_.file != file)
-            .flatMap(_.symbols)
-        )
+            .flatMap(_.symbols))
+        .sortBy(_.id)
+        .distinctBy(_.distinctive)
+
 
     val total = symbols.length
     symbols

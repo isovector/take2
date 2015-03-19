@@ -20,6 +20,8 @@ case class Symbol(
       kind == other.kind
   }
 
+  lazy val distinctive = (file, name, line, kind)
+
   def needsUpdate(other: Symbol): Boolean = {
     !((this ~== other) && line == other.line)
   }
