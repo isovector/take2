@@ -16,12 +16,11 @@
 	<link href="@routes.Assets.at("stylesheets/css/bootstrap.min.css")" rel="stylesheet">
 
 	<div frostbite-header></div>
-
 	<body>
 		<article ng-controller="IndexController" class="container">
-			<div class="row widget-holder">
+		<div class="row widget-holder">
 				<div class="col-md-4">
-					<div current-files open-files="openFiles"></div>
+					<div all-users users="users"></div>
 				</div>
 				<div class="col-md-4">
 					<div popular-files files="popularOneWeek" time-span="'week'"></div>
@@ -29,11 +28,12 @@
 				<div class="col-md-4">
 					<div popular-files files="popularOneDay" time-span="'day'"></div>
 				</div>
+			</div>
+			<div class="row widget-holder">
 				<div class="col-md-4">
-					<div all-users users="users"></div>
+					<div current-files open-files="openFiles"></div>
 				</div>
 			</div>
-
 		</article>
 	</body>
 </html>
