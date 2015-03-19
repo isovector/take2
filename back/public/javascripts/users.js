@@ -2,8 +2,6 @@ frostbite.controller('UsersCtrl', ['$scope', '$filter', '$http', '$q', function 
 
     $scope.getAllUsers = function() {
         $http.get('/api/users/all').success(function(data) {
-            // $scope.allUsers = data;
-            console.log(data);
             $scope.users = data;
             _.forEach($scope.users, function(user){
                 user.picture = $scope.getPicture(user.email);
