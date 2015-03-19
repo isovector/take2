@@ -99,8 +99,6 @@ object RepoFile {
       timestamp: DateTime) = {
     filenames.map { filename =>
       getByFile(filename).map { file =>
-        // HACK(sandy): only update file timestamps for master
-        Todo.hack
         if (branch == RepoModel.defaultBranch) {
           file.touch(commitId, timestamp)
         }

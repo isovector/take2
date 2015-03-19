@@ -35,7 +35,6 @@ object FileMetricsController extends Controller {
     Ok(
       Json.toJson(Map(
         "file" -> toJson(file),
-        "commit" -> toJson(Todo.unimplemented),
         "userData" -> toJson(lines.toSeq.map {
           case (user, snaps) => toJson(Map(
             "user" -> toJson(user),
@@ -63,7 +62,6 @@ object FileMetricsController extends Controller {
   def getUsersInFile(prefix: String) = Action {
     val since = DateTime.now - recentDuration
 
-    // TODO(sandy): it would be nice to get this using getFilesOpenedSince
     val users = DB.withSession { implicit session =>
       Table
         .where(_.file.like(prefix + "%"))

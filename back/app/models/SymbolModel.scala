@@ -189,8 +189,6 @@ object Symbol extends utils.Flyweight {
     }
 
     // Otherwise, look at the diff to try to watch things move around
-    // TODO(sandy or matt): this would work much better if we used a patience
-    // diff algorithm on the python side
     newToOld.get(newSymbol.line) flatMap { oldLine =>
       val oldSymbol = oldSymbols.find(_.line == oldLine).get
       if (oldSymbol ~== newSymbol) {
