@@ -431,7 +431,7 @@ frostbite.controller('FileCtrl', ['$scope', '$filter', '$http', '$q', '$interval
             }
         }).error(function (data) {
            
-       });
+        });
     }
     $scope.init();
 }]);
