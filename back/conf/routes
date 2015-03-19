@@ -25,6 +25,7 @@ GET     /api/coefficients/*file     controllers.FileMetricsController.getFileCoe
 GET     /api/experts                controllers.DashboardController.getAbsoluteExperts
 GET     /api/experts/*file          controllers.FileMetricsController.getFileExperts(file)
 GET     /api/symbols/:id            controllers.DashboardController.getClusteredSymbols(id: Int)
+GET     /api/users/all              controllers.DashboardController.getAllUsers
 
 GET     /api/metrics/all/*file      controllers.FileMetricsController.getFileLineViews(file)
 GET     /api/metrics/popular/:since controllers.DashboardController.getMostPopularFiles(since)
