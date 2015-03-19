@@ -120,6 +120,7 @@ trait GitModel extends SourceRepositoryModel {
       RepoModel.getFile(".")
     )
       .!!
+      .replace("\r", "\n")
       .split("\n")
       .filter(_.length != 0)
       .map ( line =>
