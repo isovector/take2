@@ -1,8 +1,9 @@
 <!doctype html>
 <html ng-app="frostbite">
-<link href="@routes.Assets.at("stylesheets/directorieslistview.css")" rel="stylesheet">	
+<link href="@routes.Assets.at("stylesheets/directorieslistview.css")" rel="stylesheet">
 <link href="@routes.Assets.at("stylesheets/css/bootstrap.min.css")" rel="stylesheet">
 <link href="@routes.Assets.at("stylesheets/main.css")" rel="stylesheet">
+<link href="@routes.Assets.at("stylesheets/users.css")" rel="stylesheet">
 
 <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
 <script src="@routes.Assets.at("javascripts/angular-1.2.1/angular.js")" type="text/javascript"></script>
@@ -20,11 +21,33 @@
 
 <div frostbite-header></div>
 
-<body ng-controller="UsersCtrl" ng-init="init()">
+<body ng-controller="UsersCtrl" ng-init="getAllUsers()">
 	<article>
-	<div class="container">
-		
-	</div>
+		<div class="container">
+			<div ng-if="users.length != 0">
+				<table style="margin-left:10px;margin-top:10px" class="sidebar-table">
+					<tr>
+						<th class="col-md-2"></th>
+						<th class="text-large col-md-5">Username</th>
+						<th class="text-large col-md-5">Email</th>
+					</tr>
+					<tr ng-repeat="user in users" data-spy="affix">
+						<td class="col-md-2">
+							<img id="profile-pic" id="thumbnail" ng-src={{user.picture}} ng-alt="/assets/images/Lana.jpg">
+						</td>
+						<td class="col-md-5">
+							<a class="text-medium" href="/users/{{user.id}}">{{user.name}}</a>
+						</td>			
+						<td class="col-md-5">
+							<a class="text-medium" href="mailto:{{user.email}}">{{user.email}}</a>
+						</td>																							     
+					</tr>
+				</table>
+			</div>
+		    <div ng-if="users.length == 0">
+		        No users were found.
+		    </div>
+		</div>
 	</article>
 </body>
 

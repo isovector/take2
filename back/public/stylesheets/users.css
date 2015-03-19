@@ -1,0 +1,19 @@
+.text-large {
+	font-size:30px;
+}
+
+.text-medium {
+	font-size:24px;
+}
+
+#profile-pic {
+	float:left;
+	border:5px solid;
+	border-radius:25px;
+	width: 75px;
+  	height: 75px;
+}
+
+td, th {
+	padding-bottom: 10px;
+}
