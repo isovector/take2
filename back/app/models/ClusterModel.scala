@@ -123,6 +123,7 @@ class ClusterModel(tag: Tag) extends Table[Cluster](tag, "Cluster") {
   def created   = column[DateTime]("created")
   def snapshots = column[Seq[Snapshot]]("snapshots", O.DBType("TEXT"))
   def files     = column[String]("files", O.DBType("TEXT"))
+  def userIndex = index("cluster_user_idx", user, unique = false)
 
   val underlying = Cluster.apply _
   def * = (

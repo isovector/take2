@@ -50,6 +50,7 @@ class ChangeModel(tag: Tag) extends Table[Change](tag, "Change") {
   def file = column[String]("file")
   def adds = column[Int]("adds")
   def dels = column[Int]("dels")
+  def userFileIndex = index("change_user_idx", (user, file), unique = false)
 
   val change = Change.apply _
   def * = (id, user, file, adds, dels) <> (change.tupled, Change.unapply _)

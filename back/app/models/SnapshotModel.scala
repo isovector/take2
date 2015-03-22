@@ -86,6 +86,7 @@ class SnapshotModel(tag: Tag) extends Table[Snapshot](tag, "Snapshot") {
   def user = column[User]("user")
   def commitId = column[String]("commitId")
   def symbols = column[Seq[Symbol]]("symbols", O.DBType("TEXT"))
+  def userIndex = index("snapshot_user_idx", user, unique = false)
 
   val snapshot = Snapshot.apply _
   def * = (
