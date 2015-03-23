@@ -80,7 +80,7 @@ trait Flyweight {
   final def create(row: T): T = {
     cached.synchronized {
       val newRow = insert(row)
-      cached += row.id -> new Access(newRow, DateTime.now)
+      cached += newRow.id -> new Access(newRow, DateTime.now)
       newRow
     }
   }
