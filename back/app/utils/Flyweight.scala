@@ -12,6 +12,7 @@ trait Flyweight {
   private case class Access(obj: T, var lastTouched: DateTime)
 
   private val cached = scala.collection.mutable.Map[Key, Access]()
+
   def inMemory: Seq[T] = cached.toMap.map(_._2.obj).toSeq
 
   def getById(key: Key): Option[T] = {
@@ -35,11 +36,11 @@ trait Flyweight {
   def preload(objs: Seq[T]) = {
     val now = DateTime.now
 
-    val (toUpdate, toAdd) = objs.partition { obj =>
-      cached.contains(obj.id)
-    }
-
     cached.synchronized {
+      val (toUpdate, toAdd) = objs.partition { obj =>
+        cached.contains(obj.id)
+      }
+
       cached ++= toAdd.map { obj =>
         obj.id -> new Access(obj, now)
       }
@@ -70,9 +71,9 @@ trait Flyweight {
 
   def reclaim(beforeWhen: DateTime): Unit = {
     cached.synchronized {
-      cached --= cached.filter { case (key, access) =>
-        access.lastTouched < beforeWhen
-      }.toList.map(_._1)
+      cached --= cached.filter {
+        case (key, access) => access.lastTouched < beforeWhen
+      }.keys
     }
   }
 
