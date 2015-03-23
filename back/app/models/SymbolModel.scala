@@ -39,12 +39,15 @@ object Symbol extends utils.Flyweight {
 
   lazy private val Table = TableQuery[SymbolModel]
 
-  def create(_1: String, _2: String, _3: Int, _4: String) = {
-    getById(
-      DB.withSession { implicit session =>
-        (Table returning Table.map(_.id)) += new Symbol(0, _1, _2, _3, _4)
-      }
-    ).get
+  def create(_1: String, _2: String, _3: Int, _4: String): Symbol = {
+    create(Symbol(0, _1, _2, _3, _4))
+  }
+
+  def insert(symbol: Symbol): Symbol = {
+    val newId = DB.withSession { implicit session =>
+      (Table returning Table.map(_.id)) += symbol
+    }
+    symbol.copy(id = newId)
   }
 
   def rawGet(id: Key): Option[Symbol] = {

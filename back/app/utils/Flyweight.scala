@@ -7,6 +7,7 @@ trait Flyweight {
   type T <: { val id: Key } // scalastyle:ignore
 
   def rawGet(key: Key): Option[T]
+  protected def insert(row: T): T
 
   private case class Access(obj: T, var lastTouched: DateTime)
 
@@ -72,6 +73,14 @@ trait Flyweight {
       cached --= cached.filter { case (key, access) =>
         access.lastTouched < beforeWhen
       }.toList.map(_._1)
+    }
+  }
+
+  final def create(row: T): T = {
+    cached.synchronized {
+      val newRow = insert(row)
+      cached += row.id -> new Access(newRow, DateTime.now)
+      newRow
     }
   }
 }

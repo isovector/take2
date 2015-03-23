@@ -37,12 +37,14 @@ object User extends utils.Flyweight {
 
   private val Table = TableQuery[UserModel]
 
-  def create(_1: String, _2: String): User = {
-    getById(
-      DB.withSession { implicit session =>
-        (Table returning Table.map(_.id)) += User(0, _1, _2, new DateTime())
-      }
-    ).get
+  def create(_1: String, _2: String): User =
+    create(User(0, _1, _2, DateTime.now))
+
+  def insert(user: User): User = {
+    val newId = DB.withSession { implicit session =>
+      (Table returning Table.map(_.id)) += user
+    }
+    user.copy(id = newId)
   }
 
   def getAll(): Seq[User] = {
