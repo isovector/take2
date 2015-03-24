@@ -30,7 +30,7 @@ object Commit extends utils.Flyweight {
   def create(_1: String, _2: User, _3: String, _4: Seq[Commit]): Commit =
     create(Commit(_1, _2, _3, _4.map(_.id)))
 
-  def insert(commit: Commit): Commit = {
+  protected def insert(commit: Commit): Commit = {
     DB.withSession{ implicit session =>
       Table += commit
     }

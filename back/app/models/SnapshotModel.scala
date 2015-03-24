@@ -43,7 +43,7 @@ object Snapshot extends utils.Flyweight {
     }
   }
 
-  def insert(snap: Snapshot) = {
+  protected def insert(snap: Snapshot) = {
     val newId = DB.withSession { implicit session =>
       (Table returning Table.map(_.id)) += snap
     }
