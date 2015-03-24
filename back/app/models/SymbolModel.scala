@@ -73,7 +73,7 @@ object Symbol extends utils.Flyweight {
     }
   }
 
-  def generateSymbols(srcCommit: Option[String], dstCommit: String) = {
+  def generateSymbols(srcCommit: Option[String], dstCommit: String): Unit = {
     import scala.io._
     import scala.sys.process._
 
@@ -124,6 +124,7 @@ object Symbol extends utils.Flyweight {
       // need to migrate
       it.foreach(_.unsafe.insert())
       Memcache += "lastSymbolCommit" -> dstCommit
+      return // scalastyle:ignore
     }
 
     while (!it.isEmpty) {
@@ -182,7 +183,6 @@ object Symbol extends utils.Flyweight {
 
     ctagsFile.delete()
     Memcache += "lastSymbolCommit" -> dstCommit
-    false
   }
 
   def findOldSymbol(
@@ -258,6 +258,6 @@ class SymbolModel(tag: Tag) extends Table[Symbol](tag, "Symbol") {
     name,
     line,
     kind
-    ) <>(underlying.tupled, Symbol.unapply _)
+  ) <> (underlying.tupled, Symbol.unapply _)
 }
 
