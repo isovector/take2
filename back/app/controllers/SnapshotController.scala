@@ -37,7 +37,7 @@ object SnapshotController extends Controller {
       lines: Seq[Int]
     )
 
-    val snapFormData = Form(mapping(
+    val maybeSnapFormData = Form(mapping(
       "timestamp" -> longNumber,
       "file" -> text,
       "name" -> text,
@@ -45,43 +45,47 @@ object SnapshotController extends Controller {
       "branch" -> text,
       "commit" -> text,
       "lines" -> seq(number)
-    )(SnapshotFormData.apply)(SnapshotFormData.unapply)).bindFromRequest.get
+    )(SnapshotFormData.apply)(SnapshotFormData.unapply)).bindFromRequest
 
-    if (!RepoModel.getFile(snapFormData.file).exists) {
-      Logger.info("doesn't exist")
-      NotFound
-    } else if (!RepoFile.isTracked(snapFormData.file)) {
-      Logger.info("not tracked")
-      NotFound
-    } else {
-      // Build a user if one doesn't exist
-      val user = User.getOrCreate(snapFormData.name, snapFormData.email)
-      user.lastActivity = new DateTime(snapFormData.timestamp)
-      user.save()
+    maybeSnapFormData.fold(_ => BadRequest, { snapFormData =>
+      if (!RepoModel.getFile(snapFormData.file).exists) {
+        Logger.info("doesn't exist")
+        NotFound
+      } else if (!RepoFile.isTracked(snapFormData.file)) {
+        Logger.info("not tracked")
+        NotFound
+      } else {
+        // Build a user if one doesn't exist
+        val user = User.getOrCreate(snapFormData.name, snapFormData.email)
+        user.lastActivity = new DateTime(snapFormData.timestamp)
+        user.save()
 
-      val when = new DateTime(snapFormData.timestamp)
-      val cluster = Cluster.getByUserAndTime(user, when)
+        val when = new DateTime(snapFormData.timestamp)
+        val cluster = Cluster.getByUserAndTime(user, when)
 
-      // Build a commit if one doesn't exist
-      Commit.getById(snapFormData.commit).getOrElse {
-        Logger.info(snapFormData.branch + ": needs update!")
-        RepoModel.update(snapFormData.branch)
+        // Build a commit if one doesn't exist
+        Commit.getById(snapFormData.commit).getOrElse {
+          Logger.info(snapFormData.branch + ": needs update!")
+          RepoModel.update(snapFormData.branch)
+        }
+
+        val snapshot =
+          Snapshot.create(
+            when,
+            snapFormData.file,
+            user,
+            snapFormData.commit,
+            snapFormData.lines)
+
+        cluster.snapshots = cluster.snapshots :+ snapshot
+        cluster.addFile(snapFormData.file)
+        cluster.save()
+
+        Ok
       }
-
-      val snapshot =
-        Snapshot.create(
-          when,
-          snapFormData.file,
-          User.getByEmail(snapFormData.email).get,
-          snapFormData.commit,
-          snapFormData.lines);
-
-      cluster.snapshots = cluster.snapshots :+ snapshot
-      cluster.addFile(snapFormData.file)
-      cluster.save()
-
-      Ok
-    }
+    })
   }
+
+
 }
 

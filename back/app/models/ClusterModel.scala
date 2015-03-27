@@ -45,12 +45,14 @@ object Cluster extends utils.Flyweight {
     }
   }
 
-  def create(_1: User, _2: DateTime, _3: Seq[Snapshot], _4: String) = {
-    getById(
-      DB.withSession { implicit session =>
-        (Table returning Table.map(_.id)) += new Cluster(0, _1, _2, _3, _4)
-      }
-    ).get
+  def create(_1: User, _2: DateTime, _3: Seq[Snapshot], _4: String): Cluster =
+    create(Cluster(0, _1, _2, _3, _4))
+
+  protected def insert(cluster: Cluster) = {
+    val newId =  DB.withSession { implicit session =>
+        (Table returning Table.map(_.id)) += cluster
+    }
+    cluster.copy(id = newId)
   }
 
   def getByUserAndTime(user: User, when: DateTime): Cluster = {
@@ -123,6 +125,7 @@ class ClusterModel(tag: Tag) extends Table[Cluster](tag, "Cluster") {
   def created   = column[DateTime]("created")
   def snapshots = column[Seq[Snapshot]]("snapshots", O.DBType("TEXT"))
   def files     = column[String]("files", O.DBType("TEXT"))
+  def userIndex = index("cluster_user_idx", user, unique = false)
 
   val underlying = Cluster.apply _
   def * = (

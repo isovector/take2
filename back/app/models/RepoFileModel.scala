@@ -131,6 +131,7 @@ class RepoFileModel(tag: Tag) extends Table[RepoFile](tag, "RepoFile") {
   def lastUpdated = column[DateTime]("lastUpdated")
   def adds = column[Int]("adds")
   def dels = column[Int]("dels")
+  def fileIndex = index("repo_file_idx", file, unique = false)
 
   val repoFile = RepoFile.apply _
   def * = (file, lastCommit, lastUpdated, adds, dels) <>

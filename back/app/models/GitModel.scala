@@ -57,7 +57,7 @@ trait GitModel extends SourceRepositoryModel {
 
     git.log.add(repo.resolve("HEAD")).call.filter(
       x => Commit.getById(x.getName).isEmpty
-    ).toList.reverse.map { revCommit =>
+    ).toList.reverseMap { revCommit =>
       Logger.info("creating commit " + revCommit.getName)
       val author = revCommit.getAuthorIdent
 

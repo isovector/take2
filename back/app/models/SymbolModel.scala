@@ -1,6 +1,6 @@
 package models
 
-import java.io.ByteArrayInputStream
+import java.io.{IOException, ByteArrayInputStream}
 import play.api.data._
 import play.api.db.slick.Config.driver.simple._
 import play.api.db.slick.DB
@@ -39,12 +39,15 @@ object Symbol extends utils.Flyweight {
 
   lazy private val Table = TableQuery[SymbolModel]
 
-  def create(_1: String, _2: String, _3: Int, _4: String) = {
-    getById(
-      DB.withSession { implicit session =>
-        (Table returning Table.map(_.id)) += new Symbol(0, _1, _2, _3, _4)
-      }
-    ).get
+  def create(_1: String, _2: String, _3: Int, _4: String): Symbol = {
+    create(Symbol(0, _1, _2, _3, _4))
+  }
+
+  protected def insert(symbol: Symbol): Symbol = {
+    val newId = DB.withSession { implicit session =>
+      (Table returning Table.map(_.id)) += symbol
+    }
+    symbol.copy(id = newId)
   }
 
   def rawGet(id: Key): Option[Symbol] = {
@@ -54,8 +57,6 @@ object Symbol extends utils.Flyweight {
   }
 
   def synchronizeWithRepo(): Unit = {
-    import scala.io._
-    import scala.sys.process._
 
     val srcCommit = Memcache.get("lastSymbolCommit")
     val dstCommit = RepoModel.lastCommit
@@ -63,6 +64,18 @@ object Symbol extends utils.Flyweight {
     if (!srcCommit.isEmpty && srcCommit.get == dstCommit) {
       return // scalastyle:ignore
     }
+
+    try {
+      generateSymbols(srcCommit, dstCommit)
+    } catch {
+      case ex: IOException =>
+        Logger.error("Couldn't generate symbols!")
+    }
+  }
+
+  def generateSymbols(srcCommit: Option[String], dstCommit: String): Unit = {
+    import scala.io._
+    import scala.sys.process._
 
     val ctagsName = ".take2.ctags"
 
@@ -236,6 +249,7 @@ class SymbolModel(tag: Tag) extends Table[Symbol](tag, "Symbol") {
   def name = column[String]("name")
   def line = column[Int]("line")
   def kind = column[String]("kind")
+  def fileIndex = index("symbol_file_idx", file, unique = false)
 
   val underlying = Symbol.apply _
   def * = (
